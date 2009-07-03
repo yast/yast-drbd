@@ -1,0 +1,132 @@
+/**
+ * Package:	Configuration of heartbeat
+ * Authors:	Martin Lazar <mlazar@suse.cz>
+ *
+ * $Id: startup_conf.ycp 30707 2006-05-04 13:19:08Z lslezak $
+ */
+
+{
+
+textdomain "drbd";
+
+import "Report";
+import "Label";
+import "Wizard";
+import "Service";
+import "Drbd";
+
+include "drbd/helps.ycp";
+include "drbd/common.ycp";
+
+
+any ConfigureStartUpDialog () {
+
+    boolean boot = Drbd::start_daemon;
+
+    term Tbooting = `Frame ( _("Booting"),
+		    `Left (
+			`RadioButtonGroup( `id ( "server_type" ),
+			    `VBox (
+				`Left( `RadioButton( `id ("on"), _("On -- Start DRBD Server Now and when Booting") ) ),
+				`Left( `RadioButton( `id ("off"), _("Off -- Server Only Starts Manually") ) ),
+				`VSpacing ( 1 )))));
+
+    term Tonoff = `Frame ( _("Switch On and Off"),
+		    `Left (
+			`HSquash (
+			    `VBox (
+				`HBox (
+				    `Label (_("Current Status: ")),
+				    `ReplacePoint (`id ("status_rp"), `Empty()),
+				    `HStretch ()
+				),
+				`PushButton ( `id ( "start_now" ), `opt( `hstretch ), _("Start DRBD Server Now") ),
+				`PushButton ( `id ( "stop_now" ),  `opt( `hstretch ), _("Stop DRBD Server Now") )
+			    ))));
+
+    term Tpropagate = `Frame ( _("Propagate Configuration"),
+		    `Left (
+			`HSquash (
+			    `VBox (
+				`VBox (
+				    `Left( `Label (_("To propagate this configuration ,
+copy the configuration file '/etc/drbd.conf' to the rest of nodes manually.")))
+				)
+			    ))));
+    
+    term contents = `Empty();
+//    if (Heartbeat::firstrun) {
+//	contents = `VBox (Tbooting, `VSpacing(1), Tpropagate, `VStretch() );
+//    } else {
+	contents = `VBox (Tbooting, `VSpacing(1), Tonoff, `VSpacing(1), Tpropagate, `VStretch() );
+//    }
+
+
+    my_SetContents("startup_conf", contents);
+    
+    UI::ChangeWidget(`id("server_type"), `CurrentButton, boot ? "on" : "off");
+
+    any ret = nil;
+    while(true) {
+    
+	integer status =(integer)Service::Status("drbd");
+	
+	UI::ChangeWidget (`id ("start_now"), `Enabled, status!=0);
+	UI::ChangeWidget (`id ("stop_now"), `Enabled, status==0);
+
+        UI::ReplaceWidget (`id ("status_rp"),
+	    `Label (status==0 ? _("DRBD server is running.") : _("DRBD server is not running.")));
+
+        ret = UI::UserInput();
+
+        if (ret == `abort || ret == `cancel) {
+	    if (ReallyAbort()) return ret;
+	    else continue;
+	}
+
+	if (ret == `next || ret == `back) break;
+	
+	if (ret == "start_now") {
+            
+	    if (! Service::Start("drbd")) {
+		//Report::Error ( Service::Error());
+		Report::Error (_("Start Drbd service failed"));
+	    }
+	    continue;
+	}
+	
+	if (ret == "stop_now") {
+	    if (! Service::Stop("drbd")) {
+		//Report::Error ( Service::Error() );
+		Report::Error (_("Stop Drbd service failed"));
+	    }
+	    continue;
+	}
+	
+	if (ret == `help) {
+	    myHelp("startup_conf");
+	    continue;
+	}
+
+	if (ret == `wizardTree)
+	    ret = (string)UI::QueryWidget (`id (`wizardTree), `CurrentItem);
+
+	if (contains(DIALOG, (string)ret)) {
+	    ret = symbolof(toterm(ret));
+	    break;
+	}
+
+	y2error("unexpected retcode: %1", ret);
+    }
+
+    string boot1 = (string)UI::QueryWidget(`id("server_type"), `CurrentButton);
+    if ((boot1 == "off" && boot) || (boot1 == "on" && !boot)) {
+/*	Drbd::start_daemon_modified = true; */
+	Drbd::start_daemon = !boot;
+    }
+
+    return ret;
+}
+
+/* EOF */
+}
