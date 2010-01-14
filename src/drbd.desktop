@@ -17,8 +17,7 @@ X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=drbd
 
 Icon=yast-iscsi-client
-Exec=/sbin/yast2 drbd 
+Exec=xdg-su -c "/sbin/yast2 drbd"
 
 Name=Drbd
 GenericName=drbd
-X-KDE-SubstituteUID=true
