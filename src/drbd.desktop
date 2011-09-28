@@ -18,5 +18,5 @@ X-SuSE-YaST-AutoInstResource=drbd
 Icon=yast-iscsi-client
 Exec=xdg-su -c "/sbin/yast2 drbd"
 
-Name=Drbd
-GenericName=drbd
+Name=DRBD
+GenericName=DRBD Configuration
