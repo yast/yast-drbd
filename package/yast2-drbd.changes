@@ -1,0 +1,58 @@
+Mon Jan 12 10:37:53 CST 2009 - xwhu@suse.de
+
+- bnc#464116: texts not marked for translation
+
+Thu Dec 18 22:09:29 CST 2008 - xwhu@suse.de
+
+- bnc#459742: drbd module crashes in ncurses mode
+- bnc#459747: drbd module doesn't update to the latest drbd.conf
+
+-------------------------------------------------------------------
+Wed Nov 19 17:49:14 CST 2008 - cmeng@novell.com
+
+- bnc#442758: use another API to set the button lable
+
+-------------------------------------------------------------------
+Thu Oct  2 13:02:01 CST 2008 - xwhu@suse.de
+
+- Replace ReplaceNextButton with SetNextButton (bnc#429021)
+
+-------------------------------------------------------------------
+Wed Jul 16 08:11:51 CEST 2008 - xwhu@suse.de
+
+- pae was not recognized as a kernel arch (bnc#380074)
+
+-------------------------------------------------------------------
+Mon Apr  7 08:42:49 CEST 2008 - xwhu@suse.de
+
+- bugzilla 291490: typo in resource_conf.ycp 
+
+-------------------------------------------------------------------
+Mon Jul 30 13:36:28 CEST 2007 - cmeng@novell.com
+
+- fix bug-295546: resource config get deleted
+- refix bug-291766: check also iseries64 and ppc64
+
+-------------------------------------------------------------------
+Mon Jul 23 11:32:52 CEST 2007 - cmeng@novell.com
+
+- fix bug-291766: yast-drbd doesn't install drbd-kmp-<arch> pack 
+- fix bug-291778: yast-drbd recreate drbd.conf while it doesn't exist
+- fix bug-291785: set the default val of protocol even 'advance page' not be accesed
+- fix bug-291771: refine some error messages and logs
+
+-------------------------------------------------------------------
+Mon Jun 18 07:23:46 CEST 2007 - xwhu@novell.com
+
+- Change the instruction message about propagating configuration
+- Reuse yast-iscsi-client.png 
+
+-------------------------------------------------------------------
+Thu Apr 26 09:44:39 CEST 2007 - xwhu@novell.com
+
+- update to version 2.13.1
+
+-------------------------------------------------------------------
+Tue Apr 24 10:20:52 CEST 2007 - xwhu@novell.com
+
+- initial version 2.13.0
