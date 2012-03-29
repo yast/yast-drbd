@@ -348,7 +348,7 @@ any ResDialog(string resname)
                 string str = (string) UI::QueryWidget(`id(the_id), `Value);
                 if (str == nil || size(str) == 0)
                 {
-                    Popup::Warning(_("Please fill out all fields."));
+                    Popup::Warning(_("Fill out all fields."));
 					ret = nil;
 					break;
                 }

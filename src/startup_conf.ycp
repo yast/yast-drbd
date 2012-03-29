@@ -49,8 +49,9 @@ any ConfigureStartUpDialog () {
 			`HSquash (
 			    `VBox (
 				`VBox (
-				    `Left( `Label (_("To propagate this configuration ,
-copy the configuration file '/etc/drbd.conf' to the rest of nodes manually.")))
+				    `Left( `Label (_("To propagate this configuration,
+copy the configuration file '/etc/drbd.conf' to the rest of nodes manually.
+")))
 				)
 			    ))));
     
@@ -90,7 +91,7 @@ copy the configuration file '/etc/drbd.conf' to the rest of nodes manually.")))
             
 	    if (! Service::Start("drbd")) {
 		//Report::Error ( Service::Error());
-		Report::Error (_("Start Drbd service failed"));
+		Report::Error (_("Starting DRBD service failed."));
 	    }
 	    continue;
 	}
@@ -98,7 +99,7 @@ copy the configuration file '/etc/drbd.conf' to the rest of nodes manually.")))
 	if (ret == "stop_now") {
 	    if (! Service::Stop("drbd")) {
 		//Report::Error ( Service::Error() );
-		Report::Error (_("Stop Drbd service failed"));
+		Report::Error (_("Stopping DRBD service failed."));
 	    }
 	    continue;
 	}
