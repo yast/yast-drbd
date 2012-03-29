@@ -87,9 +87,9 @@ else if(func == "AskUser") {
 else if(func == "Description") {
     ret = $[
 	/* Rich text title for Drbd in proposals */
-	"rich_text_title" : _("Drbd"),
+	"rich_text_title" : _("DRBD"),
 	/* Menu title for Drbd in proposals */
-	"menu_title" : _("&Drbd"),
+	"menu_title" : _("&DRBD"),
 	"id" : "drbd",
     ];
 }

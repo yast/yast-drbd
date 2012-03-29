@@ -59,10 +59,10 @@ symbol WriteDialog() {
 any Configure1Dialog () {
 
     /* Drbd configure1 dialog caption */
-    string caption = _("Drbd Configuration");
+    string caption = _("DRBD Configuration");
 
     /* Drbd configure1 dialog contents */
-    term contents = `Label (_("First part of configuration of drbd"));
+    term contents = `Label (_("First part of DRBD configuration"));
 
     Wizard::SetContentsButtons(caption, contents, HELPS["c1"]:"",
 	    Label::BackButton(), Label::NextButton());
@@ -96,10 +96,10 @@ any Configure1Dialog () {
 any Configure2Dialog () {
 
     /* Drbd configure2 dialog caption */
-    string caption = _("Drbd Configuration");
+    string caption = _("DRBD Configuration");
 
     /* Drbd configure2 dialog contents */
-    term contents = `Label (_("Second part of configuration of drbd"));
+    term contents = `Label (_("Second part of DRBD configuration"));
 
     Wizard::SetContentsButtons(caption, contents, HELPS["c2"]:"",
 	    Label::BackButton(), Label::NextButton());

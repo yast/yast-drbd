@@ -51,7 +51,7 @@ include "drbd/wizards.ycp";
 map cmdline_description = $[
     "id" 	: "drbd",
     /* Command line help text for the Xdrbd module */
-    "help"	: _("Configuration of drbd"),
+    "help"	: _("Configuration of DRBD"),
     "guihandler"        : DrbdSequence,
     "initialize"        : Drbd::Read,
     "finish"            : Drbd::Write,
