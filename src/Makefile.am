@@ -3,9 +3,7 @@
 yncludedir = @yncludedir@/drbd
 
 client_DATA =			\
-	drbd.ycp		\
-	drbd_auto.ycp	\
-	drbd_proposal.ycp
+	drbd.ycp
 
 ynclude_DATA =	       \
 	helps.ycp		   \
