@@ -6,6 +6,8 @@ Group:          System/YaST
 BuildRequires:  perl-XML-Writer ruby rubygem-racc update-desktop-files yast2 yast2-devtools yast2-testsuite
 Requires:       yast2 
 BuildArch:      noarch
+Requires:       yast2-ruby-bindings >= 1.0.0
+
 Summary:        YaST2 - DRBD Configuration
 
 %description
@@ -30,7 +32,7 @@ Authors:
 %files
 %defattr(-,root,root)
 @yncludedir@/drbd/
-@clientdir@/drbd.ycp
+@clientdir@/drbd.rb
 @moduledir@/Drbd.*
 @desktopdir@/drbd.desktop
 @scrconfdir@/*.scr
