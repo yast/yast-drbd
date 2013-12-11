@@ -25,7 +25,7 @@ Source0:        %{name}-%{version}.tar.bz2
 License:        GPL v2 or later
 Group:          System/YaST
 BuildRequires:  perl-XML-Writer ruby rubygem-racc update-desktop-files yast2 yast2-devtools yast2-testsuite
-BuildRequires:  yast2-devtools >= 3.0.6
+BuildRequires:  yast2-devtools >= 3.1.10
 Requires:       yast2 
 BuildArch:      noarch
 Requires:       yast2-ruby-bindings >= 1.0.0
