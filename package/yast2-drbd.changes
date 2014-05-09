@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May  9 04:24:44 UTC 2014 - nwang@suse.com
+
+- BNC#875677. Change desktop file,move DRBD from Misc to 
+  High_Availability categorie. 
+
+-------------------------------------------------------------------
 Wed Sep 18 15:56:35 UTC 2013 - lslezak@suse.cz
 
 - do not use *.spec.in template, use *.spec file with RPM macros
