@@ -30,7 +30,7 @@ Authors:
 %files
 %defattr(-,root,root)
 @yncludedir@/drbd/
-@clientdir@/drbd.ycp
+@clientdir@/drbd.rb
 @moduledir@/Drbd.*
 @desktopdir@/drbd.desktop
 @scrconfdir@/*.scr
