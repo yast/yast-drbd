@@ -1,7 +1,7 @@
 
 class DrbdParser
 
-token TK_GLOBAL TK_RESOURCE TK_ON TK_NET TK_DISK_S TK_SYNCER TK_STARTUP TK_DISABLE_IP_VERIFICATION TK_PROTOCOL TK_ADDRESS TK_DISK TK_DEVICE TK_META_DISK TK_MINOR_COUNT TK_INTEGER TK_STRING TK_ON_IO_ERROR TK_SIZE TK_TIMEOUT TK_CONNECT_INT TK_PING_INT TK_MAX_BUFFERS TK_IPADDR TK_UNPLUG_WATERMARK TK_MAX_EPOCH_SIZE TK_SNDBUF_SIZE TK_RATE TK_AL_EXTENTS TK_WFC_TIMEOUT TK_DEGR_WFC_TIMEOUT TK_KO_COUNT TK_ON_DISCONNECT TK_DIALOG_REFRESH TK_USAGE_COUNT TK_COMMON TK_HANDLERS TK_FENCING TK_USE_BMBV TK_NO_DISK_BARRIER TK_NO_DISK_FLUSHES TK_NO_DISK_DRAIN TK_NO_MD_FLUSHES TK_MAX_BIO_BVECS TK_PINT_TIMEOUT TK_ALLOW_TWO_PRIMARIES TK_CRAM_HMAC_ALG TK_SHARED_SECRET TK_AFTER_SB_0PRI TK_AFTER_SB_1PRI TK_AFTER_SB_2PRI TK_DATA_INTEGRITY_ALG TK_RR_CONFLICT TK_NO_TCP_CORK TK_CPU_MASK TK_VERIFY_ALG TK_AFTER TK_FLEXIBLE_META_DISK TK_PRI_ON_INCON_DEGR TK_PRI_LOST_AFTER_SB TK_PRI_LOST TK_OUTDATE_PEER TK_LOCAL_IO_ERROR TK_SPLIT_BRAIN TK_BEFORE_RESYNC_TARGET TK_AFTER_RESYNC_TARGET TK_WAIT_AFTER_SB TK_BECOME_PRIMARY_ON TK_IPV6ADDR TK_IPV6
+token TK_GLOBAL TK_RESOURCE TK_ON TK_NET TK_DISK_S TK_SYNCER TK_STARTUP TK_DISABLE_IP_VERIFICATION TK_PROTOCOL TK_ADDRESS TK_DISK TK_DEVICE TK_META_DISK TK_MINOR_COUNT TK_INTEGER TK_STRING TK_ON_IO_ERROR TK_SIZE TK_TIMEOUT TK_CONNECT_INT TK_PING_INT TK_MAX_BUFFERS TK_IPADDR TK_UNPLUG_WATERMARK TK_MAX_EPOCH_SIZE TK_SNDBUF_SIZE TK_RATE TK_AL_EXTENTS TK_WFC_TIMEOUT TK_DEGR_WFC_TIMEOUT TK_KO_COUNT TK_ON_DISCONNECT TK_DIALOG_REFRESH TK_USAGE_COUNT TK_COMMON TK_HANDLERS TK_FENCING TK_USE_BMBV TK_NO_DISK_BARRIER TK_NO_DISK_FLUSHES TK_NO_DISK_DRAIN TK_NO_MD_FLUSHES TK_MAX_BIO_BVECS TK_PINT_TIMEOUT TK_ALLOW_TWO_PRIMARIES TK_CRAM_HMAC_ALG TK_SHARED_SECRET TK_AFTER_SB_0PRI TK_AFTER_SB_1PRI TK_AFTER_SB_2PRI TK_DATA_INTEGRITY_ALG TK_RR_CONFLICT TK_NO_TCP_CORK TK_CPU_MASK TK_VERIFY_ALG TK_AFTER TK_FLEXIBLE_META_DISK TK_PRI_ON_INCON_DEGR TK_PRI_LOST_AFTER_SB TK_PRI_LOST TK_OUTDATE_PEER TK_LOCAL_IO_ERROR TK_SPLIT_BRAIN TK_BEFORE_RESYNC_TARGET TK_AFTER_RESYNC_TARGET TK_WAIT_AFTER_SB TK_BECOME_PRIMARY_ON TK_IPV6ADDR TK_IPV6 TK_FLOATING TK_STACK_ON_TOP_OF TK_MINOR
 
 rule
 	config: global_sec common_sec resources { $drbd['global'] = val[0]; $drbd['common'] = val[1]; $drbd['resources'] = val[2]; return $drbd; }
@@ -25,6 +25,7 @@ rule
 			| TK_SYNCER '{' sync_stmts '}' { return ["#{val[0]}", val[2]]; }
 			| TK_STARTUP '{' startup_stmts '}' { return ["#{val[0]}", val[2]]; }
 			| TK_HANDLERS '{' handlers_stmts '}' { return ["#{val[0]}", val[2]]; }
+			| TK_PROTOCOL TK_STRING ';' { return ["#{val[0]}", val[1]]; }
 
 	resources: /* none */ { return {}; }
 	         | resources resource { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
@@ -34,20 +35,37 @@ rule
 	resource_name: TK_STRING { return val[0]; }
 
 	res_stmts: /* none */ { return {}; }
-		| res_stmts res_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
+		| res_stmts res_stmt ';' { nk = val[1][0]; 
+			                      if nk == "floating" then
+								    if (!val[0]["floating"]) then val[0]["floating"] = {}; end
+									val[0]["floating"][val[1][1]] = {}
+								  else
+			                        val[0][nk] = val[1][1]; 
+								  end
+								  return val[0]; }
 		| res_stmts section {nk = val[1][0]; 
                                   if nk == "on" then 
-				      if (!val[0]["on"]) then val[0]["on"] = {}; end
+				                      if (!val[0]["on"]) then val[0]["on"] = {}; end
                                       val[0]["on"][val[1][1]] = val[1][2];  
+								  elsif nk == "floating" then
+									  if (!val[0]["floating"]) then val[0]["floating"] = {}; end
+									  val[0]["floating"][val[1][1]] = val[1][2];
+								  elsif nk == "stacked-on-top-of" then
+									  if (!val[0]["stacked-on-top-of"]) then val[0]["stacked-on-top-of"] = {}; end
+									  val[0]["stacked-on-top-of"][val[1][1]] = val[1][2]
                                   else
                                       val[0][nk] = val[1][1]; 
                                   end
                                   return val[0]; }
 
 	res_stmt: TK_PROTOCOL TK_STRING { return ["#{val[0]}", val[1]]; } 
-         | TK_DEVICE TK_STRING { return ["#{val[0]}", val[1]]; }
+		 | TK_DEVICE TK_STRING minor_stmt { return ["#{val[0]}", "#{val[1]} #{val[2]}"]; }
 		 | TK_META_DISK meta_disk_and_index { return ["#{val[0]}", val[1]]; }
 		 | TK_DISK TK_STRING { return ["#{val[0]}", val[1]]; }
+		 | TK_FLOATING ip_and_port { return ["#{val[0]}", val[1]]; }
+
+    minor_stmt: /* none */ { return ""; }
+         | TK_MINOR TK_STRING { return "minor #{val[1]}"; } 
 
 	section: TK_DISK_S disk_stmts '}' { return ["#{val[0]}", val[1]]; }
 		   | TK_NET '{' net_stmts '}' { return ["#{val[0]}", val[2]]; }
@@ -55,6 +73,8 @@ rule
 		   | TK_STARTUP '{' startup_stmts '}' { return ["#{val[0]}", val[2]]; }
 		   | TK_HANDLERS '{' handlers_stmts '}' { return ["#{val[0]}", val[2]]; }
 		   | TK_ON hostname '{' host_stmts '}' { return ["#{val[0]}", "#{val[1]}", val[3]]; }
+		   | TK_FLOATING ip_and_port '{' floating_stmts '}' { return ["#{val[0]}", "#{val[1]}", val[3]]; }
+		   | TK_STACK_ON_TOP_OF resource_name '{' stack_on_top_of_stmts '}' { return ["#{val[0]}", "#{val[1]}", val[3]]; }
 
 	hostname: TK_STRING { return val[0]; }
 
@@ -102,11 +122,25 @@ rule
 			 | TK_AFTER TK_STRING { return ["#{val[0]}", val[1]]; }
 			 | TK_AL_EXTENTS TK_STRING { return ["#{val[0]}", val[1]]; }
 
+	floating_stmts: /* none */ { return {}; }
+	         | floating_stmts floating_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
+
+	floating_stmt: TK_DISK TK_STRING { return ["#{val[0]}", val[1]]; }
+             | TK_DEVICE TK_STRING { return ["#{val[0]}", val[1]]; }
+			 | TK_META_DISK meta_disk_and_index { return ["#{val[0]}", val[1]]; }
+			 | TK_FLEXIBLE_META_DISK flexible_meta_disk { return ["#{val[0]}", val[1]]; }
+
+	stack_on_top_of_stmts: /* none */ { return {}; }
+	         | stack_on_top_of_stmts stack_on_top_of_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
+
+	stack_on_top_of_stmt: TK_DEVICE TK_STRING { return ["#{val[0]}", val[1]]; }
+       	     | TK_ADDRESS ip_and_port { return ["#{val[0]}", val[1]]; }
+
 	host_stmts: /* none */ { return {}; }
-              | host_stmts host_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
+             | host_stmts host_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
 
 	host_stmt: TK_DISK TK_STRING { return ["#{val[0]}", val[1]]; }
-             | TK_DEVICE TK_STRING { return ["#{val[0]}", val[1]]; }
+             | TK_DEVICE TK_STRING minor_stmt { return ["#{val[0]}", "#{val[1]} #{val[2]}"]; }
 			 | TK_ADDRESS ip_and_port { return ["#{val[0]}", val[1]]; }
 			 | TK_META_DISK meta_disk_and_index { return ["#{val[0]}", val[1]]; }
 			 | TK_FLEXIBLE_META_DISK flexible_meta_disk { return ["#{val[0]}", val[1]]; }
@@ -126,6 +160,7 @@ rule
 	ip_and_port: TK_STRING ':' TK_STRING { return "#{val[0]}:#{val[2]}"; }
 			 | TK_IPV6 TK_IPV6ADDR ":" TK_STRING { return "#{val[0]} #{val[1]}:#{val[3]}"; }
 			 | TK_STRING TK_STRING ':' TK_STRING { return "#{val[0]} #{val[1]}:#{val[3]}"; }
+			 | TK_STRING { return "#{val[0]}"; }
 
 	meta_disk_and_index: TK_STRING TK_STRING { return "#{val[0]} #{val[1]}"; }
  		       | TK_STRING { return val[0]; }
@@ -164,7 +199,7 @@ $drbd = Hash.new()
 				@q.push [:TK_GLOBAL, 'global']
 			when /\Aminor-count/
 				@q.push [:TK_MINOR_COUNT, 'minor-count']
-			when /\Aresource/
+			when /\Aresource[ \t\n]/
 				@q.push [:TK_RESOURCE, 'resource']
 			when /\Acommon/
 				@q.push [:TK_COMMON, 'common']	
@@ -176,6 +211,8 @@ $drbd = Hash.new()
 				@q.push [:TK_DISK, 'disk']
 			when /\Anet/
 				@q.push [:TK_NET, 'net']
+			when /\Aminor/
+				@q.push [:TK_MINOR, 'minor']
 			when /\Asyncer/
 				@q.push [:TK_SYNCER, 'syncer']
 			when /\Astartup/
@@ -240,6 +277,10 @@ $drbd = Hash.new()
 				@q.push [:TK_CPU_MASK, 'cpu-mask']
 			when /\Averify-alg/
 				@q.push [:TK_VERIFY_ALG, 'verify-alg']	
+			when /\Afloating/
+			    @q.push [:TK_FLOATING, 'floating']
+			when /\Astacked-on-top-of/
+				@q.push [:TK_STACK_ON_TOP_OF, 'stacked-on-top-of']
 			when /\Asize/
 				@q.push [:TK_SIZE, 'size']
 			when /\Atimeout/
@@ -315,13 +356,13 @@ $drbdcfg = "/etc/drbd.conf"
 $configstr = ""
 in_skip = false
 
-if !File.exist?($drbdcfg)
-	file = File.open($drbdcfg, "w")
+if !File.exist?($drbdcfg+".YaST2prepare")
+	file = File.open($drbdcfg+".YaST2prepare", "w")
         file.close
 end
 
 
-File.open($drbdcfg, "r") do |file|
+File.open($drbdcfg+".YaST2prepare", "r") do |file|
    file.each_line do |line| 
       line = line.gsub(/#.*$/, '').chomp
       if (line =~ /^skip\s+/) then in_skip = true end
@@ -549,140 +590,182 @@ def writeFile()
   errlog $drbd.to_s	
   errlog "start to writeFile"
   File.open($drbdcfg+".YaST2new", "w") do |file|
+    file.puts "# YaST2 created seperated configuration file"
+    file.puts "include \"/etc/drbd.d/global_common.conf\";"
+	File.open("/etc/drbd.d/global_common.conf.YaST2new", "w") do |gccfile|
+
     if $drbd.has_key?("global") then
-      file.puts "global {"
+      gccfile.puts "global {"
       $drbd["global"].each_key do |key|
 	    if key == "disable-ip-verification" then
 		  if $drbd["global"][key] == "" or $drbd["global"][key] == "true" then
-		    file.puts "   "+key+";"
+		    gccfile.puts "   "+key+";"
 		  end
 		else
-          file.puts "   "+key+"\t"+$drbd["global"][key]+";"
+          gccfile.puts "   "+key+"\t"+$drbd["global"][key]+";"
 		end
       end
-      file.puts "}"
-    end
+      gccfile.puts "}"
+    end # <-- has global
 
 	if $drbd.has_key?("common") then
-		file.puts "common {"
+		gccfile.puts "common {"
 
         if $drbd["common"].has_key?("disk_s") then
-          file.puts "   disk {"
+          gccfile.puts "   disk {"
           $drbd["common"]["disk_s"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["common"]["disk_s"][key]+";"
+            gccfile.puts "      "+key+"\t"+$drbd["common"]["disk_s"][key]+";"
           end
-          file.puts "   }"
+          gccfile.puts "   }"
         end
 
         if $drbd["common"].has_key?("syncer") then
-          file.puts "   syncer {"
+          gccfile.puts "   syncer {"
           $drbd["common"]["syncer"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["common"]["syncer"][key]+";"
+            gccfile.puts "      "+key+"\t"+$drbd["common"]["syncer"][key]+";"
           end
-          file.puts "   }"
+          gccfile.puts "   }"
         end
 
         if $drbd["common"].has_key?("net") then
-          file.puts "   net {"
+          gccfile.puts "   net {"
           $drbd["common"]["net"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["common"]["net"][key]+";"
+            gccfile.puts "      "+key+"\t"+$drbd["common"]["net"][key]+";"
           end
-          file.puts "   }"
+          gccfile.puts "   }"
         end
 
         if $drbd["common"].has_key?("startup") then
-          file.puts "   startup {"
+          gccfile.puts "   startup {"
           $drbd["common"]["startup"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["common"]["startup"][key]+";"
+            gccfile.puts "      "+key+"\t"+$drbd["common"]["startup"][key]+";"
           end
-          file.puts "   }"
+          gccfile.puts "   }"
         end
 
         if $drbd["common"].has_key?("handlers") then
-          file.puts "   handlers {"
+          gccfile.puts "   handlers {"
           $drbd["common"]["handlers"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["common"]["handlers"][key]+";"
+            gccfile.puts "      "+key+"\t"+$drbd["common"]["handlers"][key]+";"
           end
-          file.puts "   }"
+          gccfile.puts "   }"
         end
 
-		file.puts "}"
-	end
+		gccfile.puts "}"
+	end # <-- has common
+
+	end # <-- end of File.open(gccfile)
 
     if $drbd.has_key?("resources") then
       $drbd["resources"].each_key do |res_name|
-        file.puts "resource "+res_name+" {"
+
+	    file.puts "include \"/etc/drbd.d/"+res_name+".res\";" # <-- put the config of resource into a split file.
+
+		File.open("/etc/drbd.d/"+res_name+".res.YaST2new", "w") do |resfile|
+
+        resfile.puts "resource "+res_name+" {"
 
         if $drbd["resources"][res_name].has_key?("protocol") then
-          file.puts "   protocol\t"+$drbd["resources"][res_name]["protocol"]+";"
+          resfile.puts "   protocol\t"+$drbd["resources"][res_name]["protocol"]+";"
         end
 		if $drbd["resources"][res_name].has_key?("device") then
-          file.puts "   device\t"+$drbd["resources"][res_name]["device"]+";"
+          resfile.puts "   device\t"+$drbd["resources"][res_name]["device"]+";"
         end
 		if $drbd["resources"][res_name].has_key?("disk") then
-          file.puts "   disk\t"+$drbd["resources"][res_name]["disk"]+";"
+          resfile.puts "   disk\t"+$drbd["resources"][res_name]["disk"]+";"
         end
 		if $drbd["resources"][res_name].has_key?("meta-disk") then
-          file.puts "   meta-disk\t"+$drbd["resources"][res_name]["meta-disk"]+";"
+          resfile.puts "   meta-disk\t"+$drbd["resources"][res_name]["meta-disk"]+";"
         end
 
         if $drbd["resources"][res_name].has_key?("disk_s") then
-          file.puts "   disk {"
+          resfile.puts "   disk {"
           $drbd["resources"][res_name]["disk_s"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["resources"][res_name]["disk_s"][key]+";"
+            resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["disk_s"][key]+";"
           end
-          file.puts "   }"
+          resfile.puts "   }"
         end
 
         if $drbd["resources"][res_name].has_key?("syncer") then
-          file.puts "   syncer {"
+          resfile.puts "   syncer {"
           $drbd["resources"][res_name]["syncer"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["resources"][res_name]["syncer"][key]+";"
+            resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["syncer"][key]+";"
           end
-          file.puts "   }"
+          resfile.puts "   }"
         end
 
         if $drbd["resources"][res_name].has_key?("net") then
-          file.puts "   net {"
+          resfile.puts "   net {"
           $drbd["resources"][res_name]["net"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["resources"][res_name]["net"][key]+";"
+            resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["net"][key]+";"
           end
-          file.puts "   }"
+          resfile.puts "   }"
         end
 
         if $drbd["resources"][res_name].has_key?("startup") then
-          file.puts "   startup {"
+          resfile.puts "   startup {"
           $drbd["resources"][res_name]["startup"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["resources"][res_name]["startup"][key]+";"
+            resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["startup"][key]+";"
           end
-          file.puts "   }"
+          resfile.puts "   }"
         end
 
         if $drbd["resources"][res_name].has_key?("handlers") then
-          file.puts "   handlers {"
+          resfile.puts "   handlers {"
           $drbd["resources"][res_name]["handlers"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["resources"][res_name]["handlers"][key]+";"
+            resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["handlers"][key]+";"
           end
-          file.puts "   }"
+          resfile.puts "   }"
         end
 
         if $drbd["resources"][res_name].has_key?("on") then
           $drbd["resources"][res_name]["on"].each_key do |node_name|
-            file.puts "   on "+node_name+" {"
+            resfile.puts "   on "+node_name+" {"
             $drbd["resources"][res_name]["on"][node_name].each_key do |key|
-              file.puts "      "+key+"\t"+$drbd["resources"][res_name]["on"][node_name][key]+";"
+              resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["on"][node_name][key]+";"
             end
-            file.puts "   }"
+            resfile.puts "   }"
           end
         end
 
-        file.puts "}"
-      end
-    end
-  end
-end
+		if $drbd["resources"][res_name].has_key?("stacked-on-top-of") then
+		  $drbd["resources"][res_name]["stacked-on-top-of"].each_key do |rn|
+		    resfile.puts "   stack_on_top_of "+rn+" {"
+			$drbd["resources"][res_name]["stacked-on-top-of"][rn].each_key do |key|
+			  resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["stacked-on-top-of"][rn][key]+";"
+			end
+			resfile.puts "   }"
+		  end
+		end
+
+		if $drbd["resources"][res_name].has_key?("floating") then
+		  $drbd["resources"][res_name]["floating"].each_key do |ipp|
+		    if $drbd["resources"][res_name]["floating"][ipp] == {} then
+			  resfile.puts "   floating "+ipp+";"
+			else
+			  resfile.puts "   floating "+ipp+" {"
+			  $drbd["resources"][res_name]["floating"][ipp].each_key do |key|
+			    resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["floating"][ipp][key]+";"
+			  end
+			  resfile.puts "   }"
+			end
+		  end
+		end # <-- floating key
+        resfile.puts "}"
+		end # <-- File.open(seperate cfg file)
+      end # <-- each resource section
+    end # <-- has resources
+  end # <-- File.open($drbdcfg)
+end # <-- end of function
 
 def commitChange()
+  Dir.glob("/etc/drbd.d/*.YaST2new") { |newfile|
+    origfile = newfile.split(".")[0..-2].join(".")
+    if File.exist?(origfile) then
+      File.rename(origfile, origfile+".YaST2save")
+    end
+    File.rename(newfile, origfile)
+  }
   if not File.exist?($drbdcfg+".YaST2new") then
     return
   elsif File.exist?($drbdcfg) then

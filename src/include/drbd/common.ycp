@@ -20,7 +20,9 @@
 	map NAME = $[
 		"startup_conf":  _("Start-up Configuration"),
 		"global_conf":   _("Global Configuration"),
-		"resource_conf": _("Resource Configuration")
+		"resource_conf": _("Resource Configuration"),
+		"basic_conf": _("Resource Basic Configuration"),
+		"advance_conf": _("Resource Advanced Configuration")
 	];
 
 	boolean PollAbort() {

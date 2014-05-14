@@ -1,13 +1,14 @@
 [Desktop Entry]
 Type=Application
-Categories=Qt;X-SuSE-YaST;X-SuSE-YaST-Misc;
+Categories=Qt;X-SuSE-YaST;X-SuSE-YaST-High_Availability;
 
 X-KDE-ModuleType=Library
+X-KDE-RootOnly=true
 X-KDE-HasReadOnlyMode=true
 X-KDE-Library=yast2
 X-SuSE-YaST-Call=drbd
 
-X-SuSE-YaST-Group=Misc
+X-SuSE-YaST-Group=High_Availability
 X-SuSE-YaST-Argument=
 X-SuSE-YaST-RootOnly=true
 X-SuSE-YaST-AutoInst=
@@ -16,7 +17,8 @@ X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=drbd
 
 Icon=yast-iscsi-client
-Exec=xdg-su -c "/sbin/yast2 drbd"
+Exec=/sbin/yast2 drbd 
 
 Name=DRBD
-GenericName=DRBD Configuration
+GenericName=Configure the DRBD(Distributed Replicated Block Device) device
+X-KDE-SubstituteUID=true

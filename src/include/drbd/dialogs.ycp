@@ -33,22 +33,41 @@ textdomain "drbd";
 import "Label";
 import "Wizard";
 import "Drbd";
+import "Popup";
 
 include "drbd/helps.ycp";
 include "drbd/common.ycp";
 
 
+boolean update_conf_warning()
+{
+	if (SCR::Read(.target.size, "/etc/drbd.conf") > 0) {
+		if (SCR::Execute(.target.bash, "/usr/bin/grep '# YaST2 created seperated configuration file' /etc/drbd.conf") != 0) {
+			return Popup::YesNo(_("Warning: YaST2 DRBD module will rename all\n") +
+				_("included files for DRBD into a supported schema.\n\nDo you want to continue?"));
+		}
+	}
+	return true;
+}
 
 symbol ReadDialog() {
     Wizard::RestoreHelp(HELPS["read"]:"");
     boolean ret = Drbd::Read();
+    if (ret == false)
+		Popup::Error(_("Failed to read DRBD configuration file:\n") + Drbd::global_error);
+
+	if (update_conf_warning() == false)
+		return `abort;
+
     return ret ? `next : `abort;
 }
 
 symbol WriteDialog() {
     Wizard::RestoreHelp(HELPS["write"]:"");
     boolean ret = Drbd::Write();
-    return ret ? `next : `abort;
+    if (ret == false)
+		Popup::Error(_("Failed to write configuration to disk:\n") + Drbd::global_error);
+    return ret ? `next : `main;
 }
 
 
@@ -62,7 +81,7 @@ any Configure1Dialog () {
     string caption = _("DRBD Configuration");
 
     /* Drbd configure1 dialog contents */
-    term contents = `Label (_("First part of DRBD configuration"));
+    term contents = `Label (_("First part of configuration of DRBD"));
 
     Wizard::SetContentsButtons(caption, contents, HELPS["c1"]:"",
 	    Label::BackButton(), Label::NextButton());
@@ -99,7 +118,7 @@ any Configure2Dialog () {
     string caption = _("DRBD Configuration");
 
     /* Drbd configure2 dialog contents */
-    term contents = `Label (_("Second part of DRBD configuration"));
+    term contents = `Label (_("Second part of configuration of DRBD"));
 
     Wizard::SetContentsButtons(caption, contents, HELPS["c2"]:"",
 	    Label::BackButton(), Label::NextButton());

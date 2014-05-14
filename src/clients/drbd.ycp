@@ -39,7 +39,7 @@ textdomain "drbd";
 
 /* The main () */
 y2milestone ("----------------------------------------");
-y2milestone ("Drbd module started");
+y2milestone ("DRBD module started");
 
 import "Progress";
 import "Report";
@@ -84,7 +84,7 @@ else ret = CommandLine::Run(cmdline_description);
 y2debug("ret=%1", ret);
 
 /* Finish */
-y2milestone("Drbd module finished");
+y2milestone("DRBD module finished");
 y2milestone("----------------------------------------");
 
 return ret;

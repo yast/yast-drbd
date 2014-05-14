@@ -35,6 +35,7 @@
 module "Drbd";
 textdomain "drbd";
 
+import "Popup";
 import "Progress";
 import "Report";
 import "Summary";
@@ -54,6 +55,41 @@ global map<string, list<string> > config_name = $["disk_s":["on-io-error", "size
 	   "net":["timeout", "connect-int", "ping-int", "max-buffers", "unplug-watermark", "max-epoch-size", "sndbuf-size", "ko-count"],
 	   "startup":["wfc-timeout", "degr-wfc-timeout"]];
 
+global string global_error = "";
+
+boolean prepare_conf_file()
+{
+	string merge_script = "
+		pushd " + drbd_dir + " > /dev/null 2>&1
+		cat drbd.conf | while read line; do
+			s=`echo $line | awk '{print $1}'`;
+			if [[ x$s =~ xinclude ]]; then
+				cat `echo $line | sed 's/include//' | sed 's/;//g' | sed 's/\"//g'`;
+			else
+				echo $line;
+			fi
+		done > drbd.conf.YaST2prepare 
+		popd > /dev/null 2>&1
+	";
+
+	if (SCR::Execute(.target.bash, "/usr/bin/grep '^[ \t]*include' " + drbd_dir + "/drbd.conf") == 0) {
+		map out = (map) SCR::Execute(.target.bash_output, merge_script);
+		if (out["exit"]:0 != 0 || size(out["stderr"]:"") != 0) {
+			global_error = _("Failed to merge separated DRBD conf files\n") + out["stderr"]:"";
+			y2error("Failed to merge separated DRBD conf files:\n%1", out);
+			return false;
+		}
+	} else {
+		any r = SCR::Execute(.target.bash, "/bin/cp " + drbd_dir + "/drbd.conf " + drbd_dir + "/drbd.conf.YaST2prepare");
+		if (r != 0) {
+			y2error("Failed to write drbd.conf.YaST2prepare");
+			global_error = _("Failed to write drbd.conf.YaST2prepare");
+			return false;
+		}
+	}
+
+	return true;
+}
 
 global boolean Read() {
     /* DRBD read dialog caption */
@@ -77,7 +113,8 @@ global boolean Read() {
 
     // check installed packages
     // find out which krbd-kmp-<arch> to be installed
-    map out = (map) SCR::Execute(.target.bash_output, "echo -n `uname -r|grep -Eo \"default|smp|bigsmp|pae|xen|xenpae|debug|ppc64|iseries64\"`");
+    map out = (map) SCR::Execute(.target.bash_output,
+		"echo -n `uname -r|grep -Eo \"default|smp|bigsmp|desktop|pae|xen|xenpae|debug|ppc64|iseries64\"`");
     string krbd_kmp_arch= out["stdout"]:"default";
 
     if (!Mode::test() && !PackageSystem::CheckAndInstallPackagesInteractive(["drbd", "drbd-kmp-" + krbd_kmp_arch]))
@@ -85,16 +122,67 @@ global boolean Read() {
         return false;
     }
 
-    if (SCR::Read(.target.size, drbd_dir + "/drbd.conf") > 0) 
+    if (SCR::Read(.target.size, drbd_dir + "/drbd.conf") > 0)
 	{
-        y2milestone("read drbd conf file: %1", drbd_dir);
+	        y2milestone("DRBD conf file is %1/drbd.conf", drbd_dir);
+
+		if (prepare_conf_file() == false)
+			return false;
+
+/*
+		//merge include file
+		if (SCR::Execute(.target.bash, "/usr/bin/grep '^[ \t]*include' " + drbd_dir + "/drbd.conf") == 0)
+		{
+			if (Popup::YesNo(_("Warning: YaST2 DRBD module will rename all included files ") +
+				_(" for DRBD into a supported schema. Do you want to continue?")))
+			{
+				string merge_script = "
+                       pushd " + drbd_dir + " > /dev/null 2>&1
+                       cat drbd.conf | while read line; do
+                         s=`echo $line | awk '{print $1}'`;
+                         if [[ x$s =~ xinclude ]]; then
+                            cat `echo $line | sed 's/include//' | sed 's/;//g' | sed 's/\"//g'`;
+                         else
+                            echo $line;
+                         fi
+                       done > drbd.conf.YaST2prepare 
+                       popd > /dev/null 2>&1
+				";
+				map out = (map) SCR::Execute(.target.bash_output, merge_script);
+				if (out["exit"]:0 != 0 || size(out["stderr"]:"") != 0)
+				{
+					y2error("Failed to merge separated configuration files:\n	exit code = %1\n	stderr = %2", out["exit"]:0, out["stderr"]:"");
+					Popup::Error(_("Failed to merge separated configuration files."));
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			map out = (map)SCR::Execute(.target.bash, "/bin/cp " + drbd_dir + "/drbd.conf " + drbd_dir + "/drbd.conf.YaST2prepare");
+			if (out["exit"]:0 != 0) {
+				y2error("Failed to prepare drbd.conf for reading");
+				return false;
+			}
+		}
+
+		map out = (map)SCR::Execute(.target.bash_output, "/bin/mkdir -p " + drbd_dir + "/drbd.d");
+		if (out["exit"]:0 != 0) {
+			y2error("Failed to prepare the directory for DRBD");
+			return false;
+		}
+*/
 
 		//read global configs
-        foreach (string key, [ "disable-ip-verification", "minor-count", "dialog-refresh"],
-        {
-            string val = (string)SCR::Read(topath(sformat(".drbd.global.%1", key)));
-            global_config[key] = val;
-        });
+		foreach (string key, [ "disable-ip-verification", "minor-count", "dialog-refresh"],
+		{
+		    string val = (string)SCR::Read(topath(sformat(".drbd.global.%1", key)));
+		    global_config[key] = val;
+		});
 		if (global_config["minor-count"]:nil == nil) {
 			global_config["minor-count"] = "5";
 		}
@@ -162,10 +250,11 @@ global boolean Read() {
 			}
 		});
     } else {
-        y2milestone("drbd conf file %1 not found", drbd_dir);
+	SCR::Execute(.target.bash, "rm /etc/drbd.conf.YaST2prepare");
+        y2milestone("DRBD conf file %1/drbd.conf not found", drbd_dir);
     }
 
-	y2milestone("resource_config=%1", resource_config);
+	y2milestone("read resource_config=%1", resource_config);
 
     Progress::NextStage();
     start_daemon = Service::Enabled("drbd");
@@ -212,6 +301,57 @@ map del_empty_item(map old_map)
     return new_map;
 }
 
+void restore_yast_save_files()
+{
+	SCR::Execute(.target.bash, "/bin/mv /etc/drbd.conf.YaST2save /etc/drbd.conf");
+	SCR::Execute(.target.bash, "/usr/bin/rename .YaST2save '' /etc/drbd.d/*.YaST2save");
+}
+
+boolean validate_configure()
+{
+	map out = $[];
+
+
+	if (SCR::Read(.target.size, "/etc/drbd.conf") < 0)
+		return true;
+
+	out = (map) SCR::Execute(.target.bash_output, "/bin/cp /etc/drbd.conf /etc/drbd.conf.bak");
+	if (out["exit"]:0 != 0) {
+		global_error = _("Failed to backup drbd.conf");
+		y2error("Failed to backup drbd.conf\n %1", out);
+		return false;
+	}
+
+	out = (map) SCR::Execute(.target.bash_output, "/bin/echo>/etc/drbd.conf");
+	if (out["exit"]:0 != 0) {
+		global_error = _("Failed to clean drbd.conf for drbdadm test");
+		y2error("Failed to clean drbd.conf for drbdadm test\n%1", out);
+		return false;
+	}
+
+	y2milestone("drbdadm res=%1", resource_config);
+	any r = foreach (string key, any val, (map<string, any>) resource_config,
+	{
+		out = (map) SCR::Execute(.target.bash_output, "/sbin/drbdadm -t /etc/drbd.d/" + key + ".res sh-nop");
+		if (out["exit"]:0 != 0) {
+			global_error = sformat(_("Invalid configuration of resource %1\n%2"), key, out["stderr"]:"");
+			y2error("Invalid configuration of resource %1\n%2", key, out);
+			return false;
+		}
+	});
+
+	if (r == false) return false;
+
+	if ((SCR::Read(.target.size, "/etc/drbd.conf.bak") >= 0) &&
+		(SCR::Execute(.target.bash, "/bin/mv /etc/drbd.conf.bak /etc/drbd.conf") != 0))
+	{
+		global_error = _("Failed to bring drbd.conf back");
+		y2error("Failed to bring drbd.conf back");
+		return false;
+	}
+
+	return true;
+}
 
 global boolean Write() {
 	/* DRBD write dialog caption */
@@ -235,6 +375,13 @@ global boolean Write() {
 		""
 	);
 
+
+	if (SCR::Execute(.target.bash, "/bin/mkdir -p " + drbd_dir + "/drbd.d") != 0) {
+		global_error = _("Failed to make directory /etc/drbd.d");
+		y2error("Failed to make directory /etc/drbd.d");
+		return false;
+	}
+
 	//global config here
 	Progress::NextStage();
 	y2debug("to write global config: global_config=%1", global_config);
@@ -244,8 +391,6 @@ global boolean Write() {
 			SCR::Write(topath(sformat(".drbd.global.%1", key)), global_config[key]:nil);
 		}
 	});
-	sleep(100);
-
 
 	//resource config here
 	Progress::NextStage();
@@ -254,14 +399,19 @@ global boolean Write() {
 	y2debug("to write resource config: resource_config=%1", resource_config);
 
 	SCR::Write(topath(".drbd"), "");
-	sleep(100);
 
+	if (validate_configure() == false) {
+		restore_yast_save_files();
+		return false;
+	}
 
 	Progress::NextStage();
 	if (start_daemon) {
 		Service::Enable("drbd");
-		if (Service::Status("drbd") == 0) Service::Restart("drbd");
-		else Service::Start("drbd");
+		if (Service::Status("drbd") == 0)
+			Service::Restart("drbd");
+		else
+			Service::Start("drbd");
 	}
 	else {
 		Service::Disable("drbd");

@@ -49,12 +49,11 @@ any ConfigureStartUpDialog () {
 			`HSquash (
 			    `VBox (
 				`VBox (
-				    `Left( `Label (_("To propagate this configuration,
-copy the configuration file '/etc/drbd.conf' to the rest of nodes manually.
-")))
+				    `Left( `Label (_("To propagate this configuration ,
+copy the configuration file '/etc/drbd.conf' to the rest of nodes manually.")))
 				)
 			    ))));
-    
+
     term contents = `Empty();
 //    if (Heartbeat::firstrun) {
 //	contents = `VBox (Tbooting, `VSpacing(1), Tpropagate, `VStretch() );
@@ -64,14 +63,14 @@ copy the configuration file '/etc/drbd.conf' to the rest of nodes manually.
 
 
     my_SetContents("startup_conf", contents);
-    
+
     UI::ChangeWidget(`id("server_type"), `CurrentButton, boot ? "on" : "off");
 
     any ret = nil;
     while(true) {
-    
+
 	integer status =(integer)Service::Status("drbd");
-	
+
 	UI::ChangeWidget (`id ("start_now"), `Enabled, status!=0);
 	UI::ChangeWidget (`id ("stop_now"), `Enabled, status==0);
 
@@ -86,24 +85,24 @@ copy the configuration file '/etc/drbd.conf' to the rest of nodes manually.
 	}
 
 	if (ret == `next || ret == `back) break;
-	
+
 	if (ret == "start_now") {
-            
+
 	    if (! Service::Start("drbd")) {
 		//Report::Error ( Service::Error());
-		Report::Error (_("Starting DRBD service failed."));
+		Report::Error (_("Start DRBD service failed"));
 	    }
 	    continue;
 	}
-	
+
 	if (ret == "stop_now") {
 	    if (! Service::Stop("drbd")) {
 		//Report::Error ( Service::Error() );
-		Report::Error (_("Stopping DRBD service failed."));
+		Report::Error (_("Stop DRBD service failed"));
 	    }
 	    continue;
 	}
-	
+
 	if (ret == `help) {
 	    myHelp("startup_conf");
 	    continue;

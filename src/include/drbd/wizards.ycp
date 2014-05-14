@@ -65,7 +65,6 @@ any TabSequence()
 	});
 
     Wizard::CreateTree(tree, "DRBD");
-    Wizard::SetDesktopTitleAndIcon ("drbd");
 
     // Buttons redefinition
     Wizard::SetNextButton(`next, Label::FinishButton());
@@ -117,6 +116,7 @@ any DrbdSequence() {
 		],
         "write" : $[
             `abort  : `abort,
+            `main   : "main",
             `next   : `next
 		]
 	];

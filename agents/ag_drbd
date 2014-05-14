@@ -13,19 +13,23 @@ $drbd = Hash.new()
 
 class DrbdParser < Racc::Parser
 
-module_eval <<'..end drbd.rb.yy modeval..id56022be3c0', 'drbd.rb.yy', 149
+module_eval <<'..end drbd.rb.yy modeval..idcb652328cb', 'drbd.rb.yy', 100
 	def parse(str)
-		@yydebug = false
+#		@yydebug = true
 		@q = []
 		until str.empty? || !str
 			case str
 			when /\A\s+/
 			when /\Adisable-ip-verification/
 				@q.push [:TK_DISABLE_IP_VERIFICATION, 'disable-ip-verification']
-			when /\Ausage-count/
-				@q.push [:TK_USAGE_COUNT, 'usage-count']
+			when /\Adisable-io-hints/
+				@q.push [:TK_DISABLE_IO_HINTS, 'disable-io-hints']
+			when /\Aincon-degr-cmd/
+				@q.push [:TK_INCON_DEGR_CMD, 'incon-degr-cmd']
 			when /\Adialog-refresh/
 				@q.push [:TK_DIALOG_REFRESH, 'dialog-refresh']	
+			when /\Aon-disconnect/
+				@q.push [:TK_ON_DISCONNECT, 'on-disconnect']
 			when /\Aon-io-error/
 				@q.push [:TK_ON_IO_ERROR, 'on-io-error']
 			when /\Aglobal/
@@ -34,12 +38,10 @@ module_eval <<'..end drbd.rb.yy modeval..id56022be3c0', 'drbd.rb.yy', 149
 				@q.push [:TK_MINOR_COUNT, 'minor-count']
 			when /\Aresource/
 				@q.push [:TK_RESOURCE, 'resource']
-			when /\Acommon/
-				@q.push [:TK_COMMON, 'common']	
 			when /\Aprotocol/
 				@q.push [:TK_PROTOCOL, 'protocol']
 			when /\Adisk\s*\{/
-				@q.push [:TK_DISK_S, 'disk_s']
+				@q.push [:TK_DISK_S, 'disk']
 			when /\Adisk/
 				@q.push [:TK_DISK, 'disk']
 			when /\Anet/
@@ -48,80 +50,12 @@ module_eval <<'..end drbd.rb.yy modeval..id56022be3c0', 'drbd.rb.yy', 149
 				@q.push [:TK_SYNCER, 'syncer']
 			when /\Astartup/
 				@q.push [:TK_STARTUP, 'startup']
-			when /\Ahandlers/
-				@q.push [:TK_HANDLERS, 'handlers']	
-			when /\Afencing/
-				@q.push [:TK_FENCING, 'fencing']	
-			when /\Ause-bmbv/
-				@q.push [:TK_USE_BMBV, 'use-bmbv']
-			when /\Ano-disk-barrier/
-				@q.push [:TK_NO_DISK_BARRIER, 'no-disk-barrier']
-			when /\Ano-disk-flushes/
-				@q.push [:TK_NO_DISK_FLUSHES, 'no-disk-flushes']
-			when /\Ano-disk-drain/
-				@q.push [:TK_NO_DISK_DRAIN, 'no-disk-drain']
-			when /\Ano-md-flushes/
-				@q.push [:TK_NO_MD_FLUSHES, 'no-md-flushes']
-			when /\Amax-bio-bvecs/
-				@q.push [:TK_MAX_BIO_BVECS, 'max-bio-bvecs']
-			when /\Aping-timeout/
-				@q.push [:TK_PING_TIMEOUT, 'ping-timeout']
-			when /\Aallow-two-primaries/
-				@q.push [:TK_ALLOW_TWO_PRIMARIES, 'allow-two-primaries']
-			when /\Acram-hmac-alg/
-				@q.push [:TK_CRAM_HMAC_ALG, 'cram-hmac-alg']
-			when /\Ashared-secret/
-				@q.push [:TK_SHARED_SECRET, 'shared-secret']
-			when /\Aafter-sb-0pri/
-				@q.push [:TK_AFTER_SB_0PRI, 'after-sb-0pri']
-			when /\Aafter-sb-1pri/
-				@q.push [:TK_AFTER_SB_0PRI, 'after-sb-1pri']
-			when /\Aafter-sb-2pri/
-				@q.push [:TK_AFTER_SB_0PRI, 'after-sb-2pri']
-			when /\Adata-integrity-alg/
-				@q.push [:TK_DATA_INTEGRITY_ALG, 'data-integrity-alg']	
-			when /\Arr-conflict/
-				@q.push [:TK_RR_CONFLICT, 'rr-conflict']
-			when /\Apri-on-incon-degr/
-				@q.push [:TK_PRI_ON_INCON_DEGR, 'pri-on-incon-degr']
-			when /\Apri-lost-after-sb/
-				@q.push [:TK_PRI_LOST_AFTER_SB, 'pri-lost-after-sb']
-			when /\Apri-lost/
-				@q.push [:TK_PRI_LOST, 'pri-lost']	
-			when /\Aoutdate-peer/
-				@q.push [:TK_OUTDATE_PEER, 'outdate-peer']
-			when /\Alocal-io-error/
-				@q.push [:TK_LOCAL_IO_ERROR, 'local-io-error']
-			when /\Asplit-brain/
-				@q.push [:TK_SPLIT_BRAIN, 'split-brain']
-			when /\Abefore-resync-target/
-				@q.push [:TK_BEFORE_RESYNC_TARGET, 'before-rsync-target']
-			when /\Aafter-resync-target/
-				@q.push [:TK_AFTER_RESYNC_TARGET, 'after-resync-target']
-			when /\Await-after-sb/
-				@q.push [:TK_WAIT_AFTER_SB, 'wait-after-sb']
-			when /\Abecome-primary-on/
-				@q.push [:TK_BECOME_PRIMARY_ON, 'become-primary-on']	
-			when /\Ano-tcp-cork/
-				@q.push [:TK_NO_TCP_CORK, 'no-tcp-cork']
-			when /\Acpu-mask/
-				@q.push [:TK_CPU_MASK, 'cpu-mask']
-			when /\Averify-alg/
-				@q.push [:TK_VERIFY_ALG, 'verify-alg']	
 			when /\Asize/
 				@q.push [:TK_SIZE, 'size']
 			when /\Atimeout/
 				@q.push [:TK_TIMEOUT, 'timeout']
 			when /\Aconnect-int/
 				@q.push [:TK_CONNECT_INT, 'connect-int']
-			when /\Aafter-sb-0pri/
-				@q.push [:TK_AFTER_SB_0PRI, 'after-sb-0pri']
-			when /\Aafter-sb-1pri/
-				@q.push [:TK_AFTER_SB_0PRI, 'after-sb-1pri']
-			when /\Aafter-sb-2pri/
-				@q.push [:TK_AFTER_SB_0PRI, 'after-sb-2pri']
-			when /\Arr-conflict/
-				@q.push [:TK_RR_CONFLICT, 'rr-conflict']	
 			when /\Aping-int/
 				@q.push [:TK_PING_INT, 'ping-int']
 			when /\Amax-buffers/
@@ -134,34 +68,32 @@ module_eval <<'..end drbd.rb.yy modeval..id56022be3c0', 'drbd.rb.yy', 149
 				@q.push [:TK_SNDBUF_SIZE, 'sndbuf-size']
 			when /\Ako-count/
 				@q.push [:TK_KO_COUNT, 'ko-count']
+			when /\Askip-sync/
+				@q.push [:TK_SKIP_SYNC, 'skip-sync']
+			when /\Ause-csums/
+				@q.push [:TK_USE_CSUMS, 'use-csums']
 			when /\Arate/
 				@q.push [:TK_RATE, 'rate']
+			when /\Agroup/
+				@q.push [:TK_SYNC_GROUP, 'group']
 			when /\Aal-extents/
 				@q.push [:TK_AL_EXTENTS, 'al-extents']
-			when /\Aafter/
-				@q.push [:TK_AFTER, 'after']	
 			when /\Adevice/
 				@q.push [:TK_DEVICE, 'device']
 			when /\Aaddress/
 				@q.push [:TK_ADDRESS, 'address']
 			when /\Ameta-disk/
 				@q.push [:TK_META_DISK, 'meta-disk']
-			when /\Aflexible-meta-disk/
-				@q.push [:TK_FLEXIBLE_META_DISK, 'flexible-meta-disk']	
-			when /\Adegr-wfc-timeout/
-				@q.push [:TK_DEGR_WFC_TIMEOUT, 'degr-wfc-timeout']
 			when /\Awfc-timeout/
 				@q.push [:TK_WFC_TIMEOUT, 'wfc-timeout']
-			when /\Aipv6/
-				@q.push [:TK_IPV6, 'ipv6']	
+			when /\Adegr-wfc-timeout/
+				@q.push [:TK_DEGR_WFC_TIMEOUT, 'degr-wfc-timeout']
 			when /\Aon\s*/
 				@q.push [:TK_ON, 'on']
 			when /\A"[^"]*"/
 				@q.push [:TK_STRING, $&]
-			when /\A\[[\w\.\/:]+:[\w\.\/:]+\]/
-				@q.push [:TK_IPV6ADDR, $&]	
 			when /\A[\w\.\/\[\]-]+/
-				@q.push [:TK_STRING, $&]
+				@q.push [:TK_STRING, $&]	
 			when /\A.|\n/o
 				s = $&
 				@q.push [s, s]
@@ -176,255 +108,143 @@ module_eval <<'..end drbd.rb.yy modeval..id56022be3c0', 'drbd.rb.yy', 149
 		@q.shift
 	end	
 			
-..end drbd.rb.yy modeval..id56022be3c0
+..end drbd.rb.yy modeval..idcb652328cb
 
 ##### racc 1.4.5 generates ###
 
 racc_reduce_table = [
  0, 0, :racc_error,
- 3, 76, :_reduce_1,
- 0, 77, :_reduce_2,
- 4, 77, :_reduce_3,
- 0, 80, :_reduce_4,
- 3, 80, :_reduce_5,
- 2, 81, :_reduce_6,
- 1, 81, :_reduce_7,
- 2, 81, :_reduce_8,
- 2, 81, :_reduce_9,
- 0, 78, :_reduce_10,
- 4, 78, :_reduce_11,
- 0, 82, :_reduce_12,
- 2, 82, :_reduce_13,
- 3, 83, :_reduce_14,
- 4, 83, :_reduce_15,
- 4, 83, :_reduce_16,
- 4, 83, :_reduce_17,
- 4, 83, :_reduce_18,
- 0, 79, :_reduce_19,
- 2, 79, :_reduce_20,
- 5, 89, :_reduce_21,
- 1, 90, :_reduce_22,
- 0, 91, :_reduce_23,
- 3, 91, :_reduce_24,
- 2, 91, :_reduce_25,
- 2, 92, :_reduce_26,
- 2, 92, :_reduce_27,
- 2, 92, :_reduce_28,
- 2, 92, :_reduce_29,
- 3, 93, :_reduce_30,
- 4, 93, :_reduce_31,
- 4, 93, :_reduce_32,
- 4, 93, :_reduce_33,
- 4, 93, :_reduce_34,
- 5, 93, :_reduce_35,
- 1, 95, :_reduce_36,
- 0, 84, :_reduce_37,
- 3, 84, :_reduce_38,
- 2, 97, :_reduce_39,
- 2, 97, :_reduce_40,
- 2, 97, :_reduce_41,
- 2, 97, :_reduce_42,
- 2, 97, :_reduce_43,
- 2, 97, :_reduce_44,
- 2, 97, :_reduce_45,
- 2, 97, :_reduce_46,
- 2, 97, :_reduce_47,
- 0, 85, :_reduce_48,
- 3, 85, :_reduce_49,
- 2, 98, :_reduce_50,
- 2, 98, :_reduce_51,
- 2, 98, :_reduce_52,
- 2, 98, :_reduce_53,
- 2, 98, :_reduce_54,
- 2, 98, :_reduce_55,
- 2, 98, :_reduce_56,
- 2, 98, :_reduce_57,
- 2, 98, :_reduce_58,
- 1, 98, :_reduce_59,
- 2, 98, :_reduce_60,
- 2, 98, :_reduce_61,
- 2, 98, :_reduce_62,
- 2, 98, :_reduce_63,
- 2, 98, :_reduce_64,
- 2, 98, :_reduce_65,
- 2, 98, :_reduce_66,
- 1, 98, :_reduce_67,
- 0, 86, :_reduce_68,
- 3, 86, :_reduce_69,
- 2, 99, :_reduce_70,
- 2, 99, :_reduce_71,
- 2, 99, :_reduce_72,
- 2, 99, :_reduce_73,
- 2, 99, :_reduce_74,
- 0, 96, :_reduce_75,
- 3, 96, :_reduce_76,
- 2, 100, :_reduce_77,
- 2, 100, :_reduce_78,
- 2, 100, :_reduce_79,
- 2, 100, :_reduce_80,
- 2, 100, :_reduce_81,
- 0, 88, :_reduce_82,
- 3, 88, :_reduce_83,
- 2, 103, :_reduce_84,
- 2, 103, :_reduce_85,
- 2, 103, :_reduce_86,
- 2, 103, :_reduce_87,
- 2, 103, :_reduce_88,
- 2, 103, :_reduce_89,
- 2, 103, :_reduce_90,
- 2, 103, :_reduce_91,
- 3, 101, :_reduce_92,
- 4, 101, :_reduce_93,
- 4, 101, :_reduce_94,
- 2, 94, :_reduce_95,
- 1, 94, :_reduce_96,
- 1, 102, :_reduce_97,
- 0, 87, :_reduce_98,
- 3, 87, :_reduce_99,
- 2, 104, :_reduce_100,
- 1, 104, :_reduce_101,
- 2, 104, :_reduce_102,
- 2, 104, :_reduce_103 ]
+ 2, 45, :_reduce_1,
+ 0, 46, :_reduce_2,
+ 4, 46, :_reduce_3,
+ 0, 48, :_reduce_4,
+ 3, 48, :_reduce_5,
+ 1, 49, :_reduce_6,
+ 1, 49, :_reduce_7,
+ 2, 49, :_reduce_8,
+ 2, 49, :_reduce_9,
+ 0, 47, :_reduce_10,
+ 2, 47, :_reduce_11,
+ 5, 50, :_reduce_12,
+ 1, 51, :_reduce_13,
+ 0, 52, :_reduce_14,
+ 3, 52, :_reduce_15,
+ 2, 52, :_reduce_16,
+ 2, 53, :_reduce_17,
+ 2, 53, :_reduce_18,
+ 3, 54, :_reduce_19,
+ 4, 54, :_reduce_20,
+ 4, 54, :_reduce_21,
+ 4, 54, :_reduce_22,
+ 5, 54, :_reduce_23,
+ 1, 59, :_reduce_24,
+ 0, 55, :_reduce_25,
+ 3, 55, :_reduce_26,
+ 2, 61, :_reduce_27,
+ 2, 61, :_reduce_28,
+ 0, 56, :_reduce_29,
+ 3, 56, :_reduce_30,
+ 2, 62, :_reduce_31,
+ 2, 62, :_reduce_32,
+ 2, 62, :_reduce_33,
+ 2, 62, :_reduce_34,
+ 2, 62, :_reduce_35,
+ 2, 62, :_reduce_36,
+ 2, 62, :_reduce_37,
+ 2, 62, :_reduce_38,
+ 2, 62, :_reduce_39,
+ 0, 57, :_reduce_40,
+ 3, 57, :_reduce_41,
+ 1, 63, :_reduce_42,
+ 1, 63, :_reduce_43,
+ 2, 63, :_reduce_44,
+ 2, 63, :_reduce_45,
+ 2, 63, :_reduce_46,
+ 0, 60, :_reduce_47,
+ 3, 60, :_reduce_48,
+ 2, 64, :_reduce_49,
+ 2, 64, :_reduce_50,
+ 2, 64, :_reduce_51,
+ 2, 64, :_reduce_52,
+ 3, 65, :_reduce_53,
+ 2, 66, :_reduce_54,
+ 1, 66, :_reduce_55,
+ 0, 58, :_reduce_56,
+ 3, 58, :_reduce_57,
+ 2, 67, :_reduce_58,
+ 2, 67, :_reduce_59 ]
 
-racc_reduce_n = 104
+racc_reduce_n = 60
 
-racc_shift_n = 207
+racc_shift_n = 110
 
 racc_action_table = [
-    59,    62,    64,    66,    67,   200,    68,   166,    56,    57,
-    58,    24,    25,    28,    29,    38,    20,    39,   192,    35,
-    34,    33,    17,   183,   184,   186,   188,    48,    50,    32,
-    99,   100,   101,    60,    48,    50,   113,   115,   102,   103,
-   104,    15,    16,    23,   105,   120,   121,    44,    45,    47,
-    49,    51,    53,    43,    44,    45,    47,    49,    51,    53,
-    43,   106,   201,   109,   111,   112,   120,   121,    65,   107,
-   187,   191,   108,    31,    30,   122,   123,   124,    27,    19,
-   114,   175,   116,   117,   189,   126,   128,   182,    46,    94,
-    97,    79,    80,   129,    84,    86,    88,   130,   132,   133,
-   134,    96,   135,   116,   117,   136,   137,   138,   119,   139,
-   140,   141,   142,   143,    81,    82,    83,    85,    87,    89,
-    91,    92,    93,    95,    94,    97,    79,    80,   144,    84,
-    86,    88,   145,   113,   115,   146,    96,   147,   148,   149,
-   150,    90,   151,   152,   153,   154,   155,   156,   157,    81,
-    82,    83,    85,    87,    89,    91,    92,    93,    95,   158,
-   109,   111,   112,   159,   160,    70,    72,    73,    75,    76,
-    77,    78,    69,   161,   162,   163,   180,   181,   179,    70,
-    72,    73,    75,    76,    77,    78,    69,   164,   165,    36,
-   167,   168,    74,   169,   170,   171,   172,    22,     2,    13,
-    11,     9,     7,     6,   193,   194,   195,   197,   124,   199,
-     5,   202,   203,   204,   205,   206 ]
+    26,    27,    28,    29,    30,    47,    48,    24,    25,    15,
+    16,     2,    77,    78,    79,    80,    20,    13,    21,    22,
+    68,    71,    72,    66,    67,    18,    46,    52,    53,    54,
+    55,    70,    58,    59,    60,    34,    35,    31,    37,    12,
+    81,    14,    56,    57,    74,    75,    62,    38,    40,    41,
+    76,    42,    43,     9,     7,    63,    64,    65,     5,    19,
+     4,    83,    84,    85,    86,    87,    88,    89,    90,    91,
+    92,    93,    94,    95,    96,    97,    98,    99,   100,   102,
+   103,   105,   106,   107,   108,   109 ]
 
 racc_action_check = [
-    40,    40,    40,    40,    40,   192,    40,   115,    40,    40,
-    40,    14,    14,    14,    14,    28,    10,    29,   183,    23,
-    21,    18,    10,   178,   178,   178,   178,   131,   131,    17,
-    43,    44,    45,    40,    37,    37,    54,    54,    47,    48,
-    49,    10,    10,    14,    50,   177,   177,   131,   131,   131,
-   131,   131,   131,   131,    37,    37,    37,    37,    37,    37,
-    37,    51,   192,    54,    54,    54,    55,    55,    40,    52,
-   178,   183,    53,    16,    15,    56,    57,    58,    14,    10,
-    54,   131,   177,   177,   178,    59,    60,   177,    37,    42,
-    42,    42,    42,    61,    42,    42,    42,    62,    66,    67,
-    68,    42,    69,    55,    55,    70,    71,    72,    55,    73,
-    75,    76,    77,    78,    42,    42,    42,    42,    42,    42,
-    42,    42,    42,    42,   174,   174,   174,   174,    79,   174,
-   174,   174,    80,   176,   176,    81,   174,    83,    84,    85,
-    86,    42,    87,    88,    89,    91,    92,    93,    94,   174,
-   174,   174,   174,   174,   174,   174,   174,   174,   174,    96,
-   176,   176,   176,    97,    98,   173,   173,   173,   173,   173,
-   173,   173,   173,   109,   110,   111,   174,   176,   173,    41,
-    41,    41,    41,    41,    41,    41,    41,   112,   113,    24,
-   117,   118,    41,   120,   121,   124,   127,    13,     0,     8,
-     7,     5,     3,     2,   184,   185,   186,   187,   188,   191,
-     1,   199,   200,   201,   202,   203 ]
+    23,    23,    23,    23,    23,    39,    39,    23,    23,     8,
+     8,     0,    51,    51,    51,    51,    12,     8,    13,    17,
+    49,    49,    49,    49,    49,     9,    39,    44,    44,    44,
+    44,    49,    44,    44,    44,    24,    25,    23,    26,     8,
+    51,     8,    44,    44,    50,    50,    44,    27,    29,    30,
+    50,    32,    36,     6,     4,    45,    47,    48,     2,    11,
+     1,    52,    53,    54,    55,    56,    57,    58,    59,    60,
+    61,    66,    67,    69,    72,    73,    74,    75,    77,    78,
+    79,    80,    82,   100,   105,   107 ]
 
 racc_action_pointer = [
-   196,   174,   132,   202,   nil,   130,   nil,   200,   196,   nil,
-     7,   nil,   nil,   180,     6,    57,    56,    12,   -52,   nil,
-   nil,   -51,   nil,   -52,   118,   nil,   nil,   nil,   -56,   -54,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,    16,   nil,   nil,
-    -4,   120,    69,    13,    14,    15,   nil,    21,    22,    23,
-    27,    44,    -4,    55,     8,    36,    58,    59,    60,    68,
-    15,    20,    26,   nil,   nil,   nil,    27,    28,    83,    85,
-    88,    33,    90,    92,   nil,    93,    94,    95,    96,   111,
-   115,   118,   nil,   120,   121,   122,   123,   125,   126,   127,
-   nil,   128,   129,   130,   131,   nil,   142,   146,    91,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   156,
-   101,   158,   170,   171,   nil,   -10,   nil,   173,   118,   nil,
-   176,   177,   nil,   nil,   178,   nil,   nil,   125,   nil,   nil,
-   nil,     9,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
+     9,    60,    18,   nil,    54,   nil,    50,   nil,     0,     6,
+   nil,    17,    -3,    -1,   nil,   nil,   nil,   -21,   nil,   nil,
+   nil,   nil,   nil,    -4,    16,    17,    19,     7,   nil,     8,
+     9,   nil,     9,   nil,   nil,   nil,    12,   nil,   nil,   -15,
+   nil,   nil,   nil,   nil,     5,    13,   nil,    37,    38,   -10,
+     9,    -1,    42,    43,    44,    45,    46,    47,    48,    49,
+    50,    28,   nil,   nil,   nil,   nil,    52,    53,   nil,    31,
+   nil,   nil,    55,    33,    57,    58,   nil,    59,    60,    61,
+    62,   nil,    40,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   106,   104,   nil,   105,    15,    12,   nil,
-   nil,   nil,   nil,     1,   187,   132,   189,   190,   191,   nil,
-   nil,   140,   -12,   nil,   nil,   nil,   nil,   nil,   nil,   137,
-   138,   196,   197,   198,   nil,   nil,   nil ]
+    40,   nil,   nil,   nil,   nil,    65,   nil,    66,   nil,   nil ]
 
 racc_action_default = [
-    -2,   -10,  -104,  -104,   -19,  -104,    -4,  -104,    -1,   -12,
-  -104,   207,   -20,  -104,  -104,  -104,  -104,  -104,  -104,    -3,
-    -7,  -104,   -22,  -104,  -104,   -37,   -13,   -11,  -104,  -104,
-    -9,    -6,    -8,    -5,   -23,   -82,   -48,  -104,   -68,   -98,
-  -104,  -104,  -104,  -104,  -104,  -104,   -14,  -104,  -104,  -104,
-  -104,  -104,  -104,  -104,  -104,  -104,  -104,  -104,  -104,  -104,
-  -104,  -104,  -104,   -25,   -37,   -21,  -104,  -104,  -104,  -104,
-  -104,  -104,  -104,  -104,   -18,  -104,  -104,  -104,  -104,  -104,
-  -104,  -104,   -59,  -104,  -104,  -104,  -104,  -104,  -104,  -104,
-   -15,  -104,  -104,  -104,  -104,   -67,  -104,  -104,  -104,   -47,
-   -41,   -42,   -43,   -39,   -44,   -40,   -45,   -38,   -46,  -104,
-  -104,  -104,  -104,  -104,   -16,  -104,  -101,  -104,  -104,   -17,
-  -104,  -104,   -29,   -27,   -96,   -28,   -36,  -104,   -82,   -24,
-   -48,  -104,   -68,   -98,   -26,   -91,   -84,   -83,   -85,   -86,
-   -87,   -88,   -89,   -90,   -52,   -54,   -53,   -60,   -55,   -61,
-   -56,   -62,   -57,   -63,   -64,   -65,   -66,   -50,   -58,   -51,
-   -49,   -71,   -69,   -72,   -73,   -70,   -74,  -102,   -99,  -100,
-  -103,   -95,   -75,  -104,  -104,   -30,  -104,  -104,  -104,   -34,
-   -31,   -32,   -33,  -104,  -104,  -104,  -104,  -104,  -104,   -35,
-   -79,  -104,  -104,   -77,   -76,   -78,   -81,   -97,   -80,  -104,
-  -104,  -104,  -104,  -104,   -92,   -93,   -94 ]
+    -2,   -60,   -60,   -10,   -60,    -4,    -1,   110,   -60,   -60,
+   -11,   -60,   -60,   -60,    -3,    -6,    -7,   -60,   -13,    -5,
+    -9,    -8,   -14,   -60,   -60,   -60,   -60,   -60,   -25,   -60,
+   -60,   -12,   -60,   -16,   -17,   -18,   -60,   -24,   -29,   -60,
+   -40,   -56,   -15,   -47,   -60,   -60,   -19,   -60,   -60,   -60,
+   -60,   -60,   -60,   -60,   -60,   -60,   -60,   -60,   -60,   -60,
+   -60,   -60,   -20,   -26,   -27,   -28,   -60,   -60,   -42,   -60,
+   -21,   -43,   -60,   -60,   -60,   -60,   -22,   -60,   -60,   -60,
+   -60,   -23,   -60,   -31,   -32,   -33,   -34,   -38,   -39,   -35,
+   -36,   -37,   -30,   -45,   -46,   -41,   -44,   -57,   -58,   -59,
+   -60,   -51,   -49,   -50,   -52,   -55,   -48,   -60,   -54,   -53 ]
 
 racc_goto_table = [
-   125,    55,    54,    42,    37,    41,     3,    26,    18,    10,
-     8,     4,    14,    12,    21,    40,    61,    63,     1,   127,
-   178,   185,   190,   196,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   131,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   177,   176,   174,   173,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   198 ]
+     1,     3,     6,     8,    11,    10,    17,    23,    32,    33,
+    39,    44,    49,    50,    36,    51,    45,    61,    69,    82,
+   101,   104,    73 ]
 
 racc_goto_check = [
-    19,    12,    11,    10,     9,    13,     1,     8,     6,     5,
-     4,     3,     7,    14,    15,    16,    17,    18,     2,    20,
-    21,    25,    26,    27,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,     9,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,    12,    11,    10,    13,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-    19 ]
+     1,     2,     3,     4,     5,     6,     7,     8,     9,    10,
+    11,    12,    13,    14,    15,    16,    17,    18,    19,    20,
+    21,    22,    23 ]
 
 racc_goto_pointer = [
-   nil,     6,    18,    10,     6,     3,    -2,     3,    -7,   -21,
-   -33,   -36,   -38,   -30,     5,     1,   -19,   -24,   -23,   -58,
-   -40,  -152,   nil,   nil,   nil,  -157,  -161,  -164,   nil,   nil ]
+   nil,     0,     1,    -1,    -2,    -4,    -1,    -3,   -15,   -15,
+   -14,   -18,   -27,   -28,   -28,   -12,   -28,   -23,   -27,   -31,
+   -32,   -57,   -59,   -28 ]
 
 racc_goto_default = [
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,    52,    98,   110,   nil,   nil,   nil,    71,   118 ]
+   nil,   nil,   nil,   nil ]
 
 racc_token_table = {
  false => 0,
@@ -436,76 +256,45 @@ racc_token_table = {
  :TK_DISK_S => 6,
  :TK_SYNCER => 7,
  :TK_STARTUP => 8,
- :TK_DISABLE_IP_VERIFICATION => 9,
- :TK_PROTOCOL => 10,
- :TK_ADDRESS => 11,
- :TK_DISK => 12,
- :TK_DEVICE => 13,
- :TK_META_DISK => 14,
- :TK_MINOR_COUNT => 15,
- :TK_INTEGER => 16,
- :TK_STRING => 17,
- :TK_ON_IO_ERROR => 18,
- :TK_SIZE => 19,
- :TK_TIMEOUT => 20,
- :TK_CONNECT_INT => 21,
- :TK_PING_INT => 22,
- :TK_MAX_BUFFERS => 23,
- :TK_IPADDR => 24,
- :TK_UNPLUG_WATERMARK => 25,
- :TK_MAX_EPOCH_SIZE => 26,
- :TK_SNDBUF_SIZE => 27,
- :TK_RATE => 28,
- :TK_AL_EXTENTS => 29,
- :TK_WFC_TIMEOUT => 30,
- :TK_DEGR_WFC_TIMEOUT => 31,
- :TK_KO_COUNT => 32,
- :TK_ON_DISCONNECT => 33,
- :TK_DIALOG_REFRESH => 34,
- :TK_USAGE_COUNT => 35,
- :TK_COMMON => 36,
- :TK_HANDLERS => 37,
- :TK_FENCING => 38,
- :TK_USE_BMBV => 39,
- :TK_NO_DISK_BARRIER => 40,
- :TK_NO_DISK_FLUSHES => 41,
- :TK_NO_DISK_DRAIN => 42,
- :TK_NO_MD_FLUSHES => 43,
- :TK_MAX_BIO_BVECS => 44,
- :TK_PINT_TIMEOUT => 45,
- :TK_ALLOW_TWO_PRIMARIES => 46,
- :TK_CRAM_HMAC_ALG => 47,
- :TK_SHARED_SECRET => 48,
- :TK_AFTER_SB_0PRI => 49,
- :TK_AFTER_SB_1PRI => 50,
- :TK_AFTER_SB_2PRI => 51,
- :TK_DATA_INTEGRITY_ALG => 52,
- :TK_RR_CONFLICT => 53,
- :TK_NO_TCP_CORK => 54,
- :TK_CPU_MASK => 55,
- :TK_VERIFY_ALG => 56,
- :TK_AFTER => 57,
- :TK_FLEXIBLE_META_DISK => 58,
- :TK_PRI_ON_INCON_DEGR => 59,
- :TK_PRI_LOST_AFTER_SB => 60,
- :TK_PRI_LOST => 61,
- :TK_OUTDATE_PEER => 62,
- :TK_LOCAL_IO_ERROR => 63,
- :TK_SPLIT_BRAIN => 64,
- :TK_BEFORE_RESYNC_TARGET => 65,
- :TK_AFTER_RESYNC_TARGET => 66,
- :TK_WAIT_AFTER_SB => 67,
- :TK_BECOME_PRIMARY_ON => 68,
- :TK_IPV6ADDR => 69,
- :TK_IPV6 => 70,
- "{" => 71,
- "}" => 72,
- ";" => 73,
- ":" => 74 }
+ :TK_DISABLE_IO_HINTS => 9,
+ :TK_DISABLE_IP_VERIFICATION => 10,
+ :TK_PROTOCOL => 11,
+ :TK_INCON_DEGR_CMD => 12,
+ :TK_ADDRESS => 13,
+ :TK_DISK => 14,
+ :TK_DEVICE => 15,
+ :TK_META_DISK => 16,
+ :TK_MINOR_COUNT => 17,
+ :TK_INTEGER => 18,
+ :TK_STRING => 19,
+ :TK_ON_IO_ERROR => 20,
+ :TK_SIZE => 21,
+ :TK_TIMEOUT => 22,
+ :TK_CONNECT_INT => 23,
+ :TK_PING_INT => 24,
+ :TK_MAX_BUFFERS => 25,
+ :TK_IPADDR => 26,
+ :TK_UNPLUG_WATERMARK => 27,
+ :TK_MAX_EPOCH_SIZE => 28,
+ :TK_SNDBUF_SIZE => 29,
+ :TK_SKIP_SYNC => 30,
+ :TK_USE_CSUMS => 31,
+ :TK_RATE => 32,
+ :TK_SYNC_GROUP => 33,
+ :TK_AL_EXTENTS => 34,
+ :TK_WFC_TIMEOUT => 35,
+ :TK_DEGR_WFC_TIMEOUT => 36,
+ :TK_KO_COUNT => 37,
+ :TK_ON_DISCONNECT => 38,
+ :TK_DIALOG_REFRESH => 39,
+ "{" => 40,
+ "}" => 41,
+ ";" => 42,
+ ":" => 43 }
 
 racc_use_result_var = true
 
-racc_nt_base = 75
+racc_nt_base = 44
 
 Racc_arg = [
  racc_action_table,
@@ -533,8 +322,10 @@ Racc_token_to_s_table = [
 'TK_DISK_S',
 'TK_SYNCER',
 'TK_STARTUP',
+'TK_DISABLE_IO_HINTS',
 'TK_DISABLE_IP_VERIFICATION',
 'TK_PROTOCOL',
+'TK_INCON_DEGR_CMD',
 'TK_ADDRESS',
 'TK_DISK',
 'TK_DEVICE',
@@ -552,49 +343,16 @@ Racc_token_to_s_table = [
 'TK_UNPLUG_WATERMARK',
 'TK_MAX_EPOCH_SIZE',
 'TK_SNDBUF_SIZE',
+'TK_SKIP_SYNC',
+'TK_USE_CSUMS',
 'TK_RATE',
+'TK_SYNC_GROUP',
 'TK_AL_EXTENTS',
 'TK_WFC_TIMEOUT',
 'TK_DEGR_WFC_TIMEOUT',
 'TK_KO_COUNT',
 'TK_ON_DISCONNECT',
 'TK_DIALOG_REFRESH',
-'TK_USAGE_COUNT',
-'TK_COMMON',
-'TK_HANDLERS',
-'TK_FENCING',
-'TK_USE_BMBV',
-'TK_NO_DISK_BARRIER',
-'TK_NO_DISK_FLUSHES',
-'TK_NO_DISK_DRAIN',
-'TK_NO_MD_FLUSHES',
-'TK_MAX_BIO_BVECS',
-'TK_PINT_TIMEOUT',
-'TK_ALLOW_TWO_PRIMARIES',
-'TK_CRAM_HMAC_ALG',
-'TK_SHARED_SECRET',
-'TK_AFTER_SB_0PRI',
-'TK_AFTER_SB_1PRI',
-'TK_AFTER_SB_2PRI',
-'TK_DATA_INTEGRITY_ALG',
-'TK_RR_CONFLICT',
-'TK_NO_TCP_CORK',
-'TK_CPU_MASK',
-'TK_VERIFY_ALG',
-'TK_AFTER',
-'TK_FLEXIBLE_META_DISK',
-'TK_PRI_ON_INCON_DEGR',
-'TK_PRI_LOST_AFTER_SB',
-'TK_PRI_LOST',
-'TK_OUTDATE_PEER',
-'TK_LOCAL_IO_ERROR',
-'TK_SPLIT_BRAIN',
-'TK_BEFORE_RESYNC_TARGET',
-'TK_AFTER_RESYNC_TARGET',
-'TK_WAIT_AFTER_SB',
-'TK_BECOME_PRIMARY_ON',
-'TK_IPV6ADDR',
-'TK_IPV6',
 '"{"',
 '"}"',
 '";"',
@@ -602,23 +360,18 @@ Racc_token_to_s_table = [
 '$start',
 'config',
 'global_sec',
-'common_sec',
 'resources',
 'glob_stmts',
 'glob_stmt',
-'common_stmts',
-'common_stmt',
-'disk_stmts',
-'net_stmts',
-'sync_stmts',
-'startup_stmts',
-'handlers_stmts',
 'resource',
 'resource_name',
 'res_stmts',
 'res_stmt',
 'section',
-'meta_disk_and_index',
+'disk_stmts',
+'net_stmts',
+'sync_stmts',
+'startup_stmts',
 'hostname',
 'host_stmts',
 'disk_stmt',
@@ -626,8 +379,7 @@ Racc_token_to_s_table = [
 'sync_stmt',
 'host_stmt',
 'ip_and_port',
-'flexible_meta_disk',
-'handlers_stmt',
+'meta_disk_and_index',
 'startup_stmt']
 
 Racc_debug_parser = true
@@ -638,7 +390,7 @@ Racc_debug_parser = true
 
 module_eval <<'.,.,', 'drbd.rb.yy', 6
   def _reduce_1( val, _values, result )
- $drbd['global'] = val[0]; $drbd['common'] = val[1]; $drbd['resources'] = val[2]; return $drbd;
+ $drbd['global'] = val[0]; $drbd['resources'] = val[1]; return $drbd;
    result
   end
 .,.,
@@ -673,7 +425,7 @@ module_eval <<'.,.,', 'drbd.rb.yy', 11
 
 module_eval <<'.,.,', 'drbd.rb.yy', 12
   def _reduce_6( val, _values, result )
- return ["#{val[0]}", val[1]];
+ return ["#{val[0]}", true];
    result
   end
 .,.,
@@ -708,104 +460,41 @@ module_eval <<'.,.,', 'drbd.rb.yy', 17
 
 module_eval <<'.,.,', 'drbd.rb.yy', 18
   def _reduce_11( val, _values, result )
- return val[2];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 19
-  def _reduce_12( val, _values, result )
- return {};
+ nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'drbd.rb.yy', 20
-  def _reduce_13( val, _values, result )
- nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 22
-  def _reduce_14( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 23
-  def _reduce_15( val, _values, result )
- return ["#{val[0]}", val[2]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 24
-  def _reduce_16( val, _values, result )
- return ["#{val[0]}", val[2]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 25
-  def _reduce_17( val, _values, result )
- return ["#{val[0]}", val[2]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 26
-  def _reduce_18( val, _values, result )
- return ["#{val[0]}", val[2]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 28
-  def _reduce_19( val, _values, result )
- return {};
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 29
-  def _reduce_20( val, _values, result )
- nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 31
-  def _reduce_21( val, _values, result )
+  def _reduce_12( val, _values, result )
  return ["#{val[1]}", val[3]];
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 33
-  def _reduce_22( val, _values, result )
+module_eval <<'.,.,', 'drbd.rb.yy', 22
+  def _reduce_13( val, _values, result )
  return val[0];
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 35
-  def _reduce_23( val, _values, result )
+module_eval <<'.,.,', 'drbd.rb.yy', 24
+  def _reduce_14( val, _values, result )
  return {};
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 36
-  def _reduce_24( val, _values, result )
+module_eval <<'.,.,', 'drbd.rb.yy', 25
+  def _reduce_15( val, _values, result )
  nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 44
-  def _reduce_25( val, _values, result )
+module_eval <<'.,.,', 'drbd.rb.yy', 33
+  def _reduce_16( val, _values, result )
 nk = val[1][0]; 
                                   if nk == "on" then 
 				      if (!val[0]["on"]) then val[0]["on"] = {}; end
@@ -818,93 +507,156 @@ nk = val[1][0];
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 46
-  def _reduce_26( val, _values, result )
+module_eval <<'.,.,', 'drbd.rb.yy', 35
+  def _reduce_17( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
+module_eval <<'.,.,', 'drbd.rb.yy', 36
+  def _reduce_18( val, _values, result )
+ return ["#{val[0]}", val[1]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 38
+  def _reduce_19( val, _values, result )
+ return ["#{val[0]}", val[1]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 39
+  def _reduce_20( val, _values, result )
+ return ["#{val[0]}", val[2]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 40
+  def _reduce_21( val, _values, result )
+ return ["#{val[0]}", val[2]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 41
+  def _reduce_22( val, _values, result )
+ return ["#{val[0]}", val[2]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 42
+  def _reduce_23( val, _values, result )
+ return ["#{val[0]}", "#{val[1]}", val[3]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 44
+  def _reduce_24( val, _values, result )
+ return val[0];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 46
+  def _reduce_25( val, _values, result )
+ return {};
+   result
+  end
+.,.,
+
 module_eval <<'.,.,', 'drbd.rb.yy', 47
+  def _reduce_26( val, _values, result )
+ nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 49
   def _reduce_27( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 48
+module_eval <<'.,.,', 'drbd.rb.yy', 50
   def _reduce_28( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 49
-  def _reduce_29( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 51
-  def _reduce_30( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
 module_eval <<'.,.,', 'drbd.rb.yy', 52
-  def _reduce_31( val, _values, result )
- return ["#{val[0]}", val[2]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 53
-  def _reduce_32( val, _values, result )
- return ["#{val[0]}", val[2]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 54
-  def _reduce_33( val, _values, result )
- return ["#{val[0]}", val[2]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 55
-  def _reduce_34( val, _values, result )
- return ["#{val[0]}", val[2]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 56
-  def _reduce_35( val, _values, result )
- return ["#{val[0]}", "#{val[1]}", val[3]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 58
-  def _reduce_36( val, _values, result )
- return val[0];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 60
-  def _reduce_37( val, _values, result )
+  def _reduce_29( val, _values, result )
  return {};
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 61
-  def _reduce_38( val, _values, result )
+module_eval <<'.,.,', 'drbd.rb.yy', 53
+  def _reduce_30( val, _values, result )
  nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 55
+  def _reduce_31( val, _values, result )
+ return ["#{val[0]}", val[1]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 56
+  def _reduce_32( val, _values, result )
+ return ["#{val[0]}", val[1]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 57
+  def _reduce_33( val, _values, result )
+ return ["#{val[0]}", val[1]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 58
+  def _reduce_34( val, _values, result )
+ return ["#{val[0]}", val[1]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 59
+  def _reduce_35( val, _values, result )
+ return ["#{val[0]}", val[1]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 60
+  def _reduce_36( val, _values, result )
+ return ["#{val[0]}", val[1]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 61
+  def _reduce_37( val, _values, result )
+ return ["#{val[0]}", val[1]];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 62
+  def _reduce_38( val, _values, result )
+ return ["#{val[0]}", val[1]];
    result
   end
 .,.,
@@ -916,449 +668,141 @@ module_eval <<'.,.,', 'drbd.rb.yy', 63
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 64
-  def _reduce_40( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
 module_eval <<'.,.,', 'drbd.rb.yy', 65
-  def _reduce_41( val, _values, result )
- return ["#{val[0]}", val[1]];
+  def _reduce_40( val, _values, result )
+ return {};
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'drbd.rb.yy', 66
-  def _reduce_42( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 67
-  def _reduce_43( val, _values, result )
- return ["#{val[0]}", val[1]];
+  def _reduce_41( val, _values, result )
+ nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'drbd.rb.yy', 68
+  def _reduce_42( val, _values, result )
+ return ["#{val[0]}", true];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 69
+  def _reduce_43( val, _values, result )
+ return ["#{val[0]}", true];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 70
   def _reduce_44( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 69
+module_eval <<'.,.,', 'drbd.rb.yy', 71
   def _reduce_45( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 70
+module_eval <<'.,.,', 'drbd.rb.yy', 72
   def _reduce_46( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 71
+module_eval <<'.,.,', 'drbd.rb.yy', 74
   def _reduce_47( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 73
-  def _reduce_48( val, _values, result )
  return {};
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 74
-  def _reduce_49( val, _values, result )
+module_eval <<'.,.,', 'drbd.rb.yy', 75
+  def _reduce_48( val, _values, result )
  nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 76
-  def _reduce_50( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
 module_eval <<'.,.,', 'drbd.rb.yy', 77
-  def _reduce_51( val, _values, result )
+  def _reduce_49( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'drbd.rb.yy', 78
-  def _reduce_52( val, _values, result )
+  def _reduce_50( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'drbd.rb.yy', 79
-  def _reduce_53( val, _values, result )
+  def _reduce_51( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'drbd.rb.yy', 80
-  def _reduce_54( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 81
-  def _reduce_55( val, _values, result )
+  def _reduce_52( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'drbd.rb.yy', 82
-  def _reduce_56( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 83
-  def _reduce_57( val, _values, result )
- return ["#{val[0]}", val[1]];
+  def _reduce_53( val, _values, result )
+ return "#{val[0]}:#{val[2]}";
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'drbd.rb.yy', 84
+  def _reduce_54( val, _values, result )
+ return "#{val[0]} #{val[1]}";
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 85
+  def _reduce_55( val, _values, result )
+ return val[0];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 87
+  def _reduce_56( val, _values, result )
+ return {};
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 88
+  def _reduce_57( val, _values, result )
+ nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'drbd.rb.yy', 90
   def _reduce_58( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'drbd.rb.yy', 85
-  def _reduce_59( val, _values, result )
- return ["#{val[0]}", true];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 86
-  def _reduce_60( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 87
-  def _reduce_61( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 88
-  def _reduce_62( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 89
-  def _reduce_63( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 90
-  def _reduce_64( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
 module_eval <<'.,.,', 'drbd.rb.yy', 91
-  def _reduce_65( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 92
-  def _reduce_66( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 93
-  def _reduce_67( val, _values, result )
- return ["#{val[0]}", true];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 95
-  def _reduce_68( val, _values, result )
- return {};
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 96
-  def _reduce_69( val, _values, result )
- nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 98
-  def _reduce_70( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 99
-  def _reduce_71( val, _values, result )
- return ["#{val[0]}", vavl[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 100
-  def _reduce_72( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 101
-  def _reduce_73( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 102
-  def _reduce_74( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 104
-  def _reduce_75( val, _values, result )
- return {};
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 105
-  def _reduce_76( val, _values, result )
- nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 107
-  def _reduce_77( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 108
-  def _reduce_78( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 109
-  def _reduce_79( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 110
-  def _reduce_80( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 111
-  def _reduce_81( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 113
-  def _reduce_82( val, _values, result )
- return {};
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 114
-  def _reduce_83( val, _values, result )
- nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 116
-  def _reduce_84( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 117
-  def _reduce_85( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 118
-  def _reduce_86( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 119
-  def _reduce_87( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 120
-  def _reduce_88( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 121
-  def _reduce_89( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 122
-  def _reduce_90( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 123
-  def _reduce_91( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 125
-  def _reduce_92( val, _values, result )
- return "#{val[0]}:#{val[2]}";
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 126
-  def _reduce_93( val, _values, result )
- return "#{val[0]} #{val[1]}:#{val[3]}";
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 127
-  def _reduce_94( val, _values, result )
- return "#{val[0]} #{val[1]}:#{val[3]}";
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 129
-  def _reduce_95( val, _values, result )
- return "#{val[0]} #{val[1]}";
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 130
-  def _reduce_96( val, _values, result )
- return val[0];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 132
-  def _reduce_97( val, _values, result )
- return val[0];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 134
-  def _reduce_98( val, _values, result )
- return {};
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 135
-  def _reduce_99( val, _values, result )
- nk = val[1][0]; val[0][nk] = val[1][1]; return val[0];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 137
-  def _reduce_100( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 138
-  def _reduce_101( val, _values, result )
- return ["#{val[0]}", true];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 139
-  def _reduce_102( val, _values, result )
- return ["#{val[0]}", val[1]];
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'drbd.rb.yy', 140
-  def _reduce_103( val, _values, result )
+  def _reduce_59( val, _values, result )
  return ["#{val[0]}", val[1]];
    result
   end
@@ -1375,12 +819,6 @@ dp = DrbdParser.new
 $drbdcfg = "/etc/drbd.conf"
 $configstr = ""
 in_skip = false
-
-if !File.exist?($drbdcfg)
-	file = File.open($drbdcfg, "w")
-        file.close
-end
-
 
 File.open($drbdcfg, "r") do |file|
    file.each_line do |line| 
@@ -1413,7 +851,7 @@ end
 
 def doList (path)
   if path.length == 0 then
-    puts "[ \"global\", \"resources\", \"common\" ]"
+    puts "[ \"global\", \"resources\" ]"
     return
   end
 
@@ -1509,10 +947,6 @@ def doWrite(path, args)
 	  errlog path[it]+" is changed to "+path[it].chomp()[1..-2]
       path[it]=path[it].chomp()[1..-2]
     end
-	if path[it] != "" and path[it][0..1] == "\\\"" then
-		errlog path[it]+" is changed to "+path[it].chomp()[1..-3]+"\""
-		path[it]=path[it].chomp()[1..-3]+"\""
-	end
   end
 
   if args[0..1] == "\\\"" then
@@ -1613,7 +1047,7 @@ def writeFile()
     if $drbd.has_key?("global") then
       file.puts "global {"
       $drbd["global"].each_key do |key|
-	    if key == "disable-ip-verification" then
+	    if key == "disable-ip-verification" or key == "disable-io-hints" then
 		  if $drbd["global"][key] == "" or $drbd["global"][key] == "true" then
 		    file.puts "   "+key+";"
 		  end
@@ -1623,53 +1057,6 @@ def writeFile()
       end
       file.puts "}"
     end
-
-	if $drbd.has_key?("common") then
-		file.puts "common {"
-
-        if $drbd["common"].has_key?("disk_s") then
-          file.puts "   disk {"
-          $drbd["common"]["disk_s"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["common"]["disk_s"][key]+";"
-          end
-          file.puts "   }"
-        end
-
-        if $drbd["common"].has_key?("syncer") then
-          file.puts "   syncer {"
-          $drbd["common"]["syncer"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["common"]["syncer"][key]+";"
-          end
-          file.puts "   }"
-        end
-
-        if $drbd["common"].has_key?("net") then
-          file.puts "   net {"
-          $drbd["common"]["net"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["common"]["net"][key]+";"
-          end
-          file.puts "   }"
-        end
-
-        if $drbd["common"].has_key?("startup") then
-          file.puts "   startup {"
-          $drbd["common"]["startup"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["common"]["startup"][key]+";"
-          end
-          file.puts "   }"
-        end
-
-        if $drbd["common"].has_key?("handlers") then
-          file.puts "   handlers {"
-          $drbd["common"]["handlers"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["common"]["handlers"][key]+";"
-          end
-          file.puts "   }"
-        end
-
-		file.puts "}"
-	end
-
     if $drbd.has_key?("resources") then
       $drbd["resources"].each_key do |res_name|
         file.puts "resource "+res_name+" {"
@@ -1677,20 +1064,15 @@ def writeFile()
         if $drbd["resources"][res_name].has_key?("protocol") then
           file.puts "   protocol\t"+$drbd["resources"][res_name]["protocol"]+";"
         end
-		if $drbd["resources"][res_name].has_key?("device") then
-          file.puts "   device\t"+$drbd["resources"][res_name]["device"]+";"
-        end
-		if $drbd["resources"][res_name].has_key?("disk") then
-          file.puts "   disk\t"+$drbd["resources"][res_name]["disk"]+";"
-        end
-		if $drbd["resources"][res_name].has_key?("meta-disk") then
-          file.puts "   meta-disk\t"+$drbd["resources"][res_name]["meta-disk"]+";"
+
+        if $drbd["resources"][res_name].has_key?("incon-degr-cmd") then
+          file.puts "   incon-degr-cmd\t"+$drbd["resources"][res_name]["incon-degr-cmd"]+";"
         end
 
-        if $drbd["resources"][res_name].has_key?("disk_s") then
+        if $drbd["resources"][res_name].has_key?("disk") then
           file.puts "   disk {"
-          $drbd["resources"][res_name]["disk_s"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["resources"][res_name]["disk_s"][key]+";"
+          $drbd["resources"][res_name]["disk"].each_key do |key|
+            file.puts "      "+key+"\t"+$drbd["resources"][res_name]["disk"][key]+";"
           end
           file.puts "   }"
         end
@@ -1715,14 +1097,6 @@ def writeFile()
           file.puts "   startup {"
           $drbd["resources"][res_name]["startup"].each_key do |key|
             file.puts "      "+key+"\t"+$drbd["resources"][res_name]["startup"][key]+";"
-          end
-          file.puts "   }"
-        end
-
-        if $drbd["resources"][res_name].has_key?("handlers") then
-          file.puts "   handlers {"
-          $drbd["resources"][res_name]["handlers"].each_key do |key|
-            file.puts "      "+key+"\t"+$drbd["resources"][res_name]["handlers"][key]+";"
           end
           file.puts "   }"
         end
@@ -1754,12 +1128,10 @@ end
 
 # `Write (.drbd) means to write the file, other wise, the file is not written anyway
 
-errlog($drbd.to_s)
-
 $stdin.each do |line|
   errlog(line)
   line.chomp
-  cmd = line.gsub(/^`?([a-zA-Z]+)\s+$/, '\1')
+  cmd = line.gsub(/^`?([a-zA-Z]+)\s.*$/, '\1')
   path = line.gsub(/^`?([a-zA-Z]+)\s+\(([^,]*)(,.*)?\)$/, '\2').split('.')-[""]-["\n"]
   args = line.gsub(/^`?([a-zA-Z]+)\s+\(([^,]*)(,.*)?\)$/, '\3')
   if args.length != 0 then

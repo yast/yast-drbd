@@ -146,7 +146,7 @@ term res_basic_config_get_dialog(map<string, any> res_config)
 				`VStretch(),
 				`Bottom(
 					`HBox(
-						`PushButton(`id(`advance), "Advance Config"),
+						`PushButton(`id(`advance), "Advanced Config"),
 						`PushButton(`id(`cancel_inner),  "Cancel"),
 						`PushButton(`id(`ok), "OK")
 					)
@@ -261,7 +261,7 @@ map<string, any> save_advance_config(map<string, any> res_config)
 	];
 
 	res_config["net"] = $[
-		"ndbuf-size" : (string) UI::QueryWidget(`id(`sndbuf_size), `Value),
+		"sndbuf-size" : (string) UI::QueryWidget(`id(`sndbuf_size), `Value),
 		"timeout" : (string) UI::QueryWidget(`id(`timeout), `Value),
 		"connect-int" : (string) UI::QueryWidget(`id(`connect_int), `Value),
 		"ping-int" : (string) UI::QueryWidget(`id(`ping_int), `Value),
@@ -306,7 +306,8 @@ any ResDialog(string resname)
 	map<string, any> res_config = Drbd::resource_config[resname]:$[];
 	res_config["resname"] = resname;
 
-	my_SetContents("resource_conf", res_basic_config_get_dialog(res_config));
+	my_SetContents("basic_conf", res_basic_config_get_dialog(res_config));
+	//Popup::Warning(resname);
 
 	Wizard::DisableNextButton();
 	Wizard::DisableAbortButton();
@@ -319,7 +320,7 @@ any ResDialog(string resname)
 		y2debug("in ResDialog(), UserInput ret=%1", ret);
 
 		if (ret == `help) {
-			myHelp("global_conf");
+			//myHelp("basic_conf");
 			continue;
 		}
 
@@ -348,7 +349,7 @@ any ResDialog(string resname)
                 string str = (string) UI::QueryWidget(`id(the_id), `Value);
                 if (str == nil || size(str) == 0)
                 {
-                    Popup::Warning(_("Fill out all fields."));
+                    Popup::Warning(_("Please fill out all fields."));
 					ret = nil;
 					break;
                 }
@@ -364,7 +365,7 @@ any ResDialog(string resname)
 			res_config = save_basic_config(res_config);
 			y2debug("res_config = %1", res_config);
 
-			my_SetContents("resource_conf", res_advance_config_get_dialog(res_config));
+			my_SetContents("advance_conf", res_advance_config_get_dialog(res_config));
 
 			UI::ChangeWidget(`id(`protocol), `Value, res_config["protocol"]:"C");
 			UI::ChangeWidget(`id(`on_io_error), `Value, res_config["disk_s", "on-io-error"]:"pass_on");
@@ -380,7 +381,7 @@ any ResDialog(string resname)
 			cur_page = `basic;
 
 			res_config = save_advance_config(res_config);
-			my_SetContents("resource_conf", res_basic_config_get_dialog(res_config));
+			my_SetContents("basic_conf", res_basic_config_get_dialog(res_config));
 
 			Wizard::DisableNextButton();
 			Wizard::DisableAbortButton();
