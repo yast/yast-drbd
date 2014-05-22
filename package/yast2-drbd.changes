@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Fri May  9 04:24:44 UTC 2014 - nwang@suse.com
+
+- BNC#875677. Change desktop file,move DRBD from Misc to 
+  High_Availability categorie. 
+
+-------------------------------------------------------------------
+Wed Sep 18 15:56:35 UTC 2013 - lslezak@suse.cz
+
+- do not use *.spec.in template, use *.spec file with RPM macros
+  instead
+- 3.1.0
+
+-------------------------------------------------------------------
+Wed Jul 31 08:28:43 UTC 2013 - yast-devel@opensuse.org
+
+- converted from YCP to Ruby by YCP Killer
+  (https://github.com/yast/ycp-killer)
+- version 3.0.0
+
+-------------------------------------------------------------------
 Thu May  9 09:39:36 UTC 2013 - lslezak@suse.cz
 
 - added *.spec.in as in all other YaST modules
