@@ -1,5 +1,7 @@
 # Sources for drbd
 
+SUBDIRS = servers_non_y2
+
 module_DATA = \
   modules/Drbd.rb
 
