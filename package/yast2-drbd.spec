@@ -1,7 +1,7 @@
 #
 # spec file for package yast2-drbd
 #
-# Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -15,6 +15,7 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
+
 Name:           yast2-drbd
 Version:        3.1.0
 Release:        0
@@ -22,15 +23,20 @@ Release:        0
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 
-License:        GPL v2 or later
-Group:          System/YaST
-BuildRequires:  perl-XML-Writer ruby rubygem-racc update-desktop-files yast2 yast2-devtools yast2-testsuite
+BuildRequires:  perl-XML-Writer
+BuildRequires:  ruby
+BuildRequires:  update-desktop-files
+BuildRequires:  yast2
+BuildRequires:  yast2-devtools
 BuildRequires:  yast2-devtools >= 3.1.10
-Requires:       yast2 
+BuildRequires:  yast2-testsuite
+Requires:       yast2
 BuildArch:      noarch
 Requires:       yast2-ruby-bindings >= 1.0.0
 
 Summary:        YaST2 - DRBD Configuration
+License:        GPL-2.0+
+Group:          System/YaST
 
 %description
 YaST2 - Configuration of Distributed Replicated Block Devices. With
@@ -51,14 +57,16 @@ Authors:
 %install
 %yast_install
 
-
 %files
 %defattr(-,root,root)
 %{yast_yncludedir}/drbd/
 %{yast_clientdir}/drbd.rb
+%{yast_clientdir}/drbd_*.rb
 %{yast_moduledir}/Drbd.*
 %{yast_desktopdir}/drbd.desktop
 %{yast_scrconfdir}/*.scr
 %{yast_agentdir}/ag_drbd
+%{yast_agentdir}/drbd.rb.yy
 %doc %{yast_docdir}
 
+%changelog
