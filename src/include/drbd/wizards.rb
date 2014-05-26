@@ -77,6 +77,7 @@ module Yast
       end
 
       Wizard.CreateTree(tree, "DRBD")
+      Wizard.SetDesktopTitleAndIcon("drbd")
 
       # Buttons redefinition
       Wizard.SetNextButton(:next, Label.FinishButton)
@@ -116,7 +117,7 @@ module Yast
         "ws_start" => "read",
         "read"     => { :abort => :abort, :next => "main" },
         "main"     => { :abort => :abort, :next => "write" },
-        "write"    => { :abort => :abort, :main => "main", :next => :next }
+        "write"    => { :abort => :abort, :next => :next }
       }
 
       Wizard.CreateDialog

@@ -485,7 +485,7 @@ def doWrite(path, args)
 
   path.each_index do |it|
     errlog "found "+path[it]
-    if path[it] != "" and path[it][0] == 34 then
+    if path[it] != "" and path[it][0] == '"' then
 	  errlog path[it]+" is changed to "+path[it].chomp()[1..-2]
       path[it]=path[it].chomp()[1..-2]
     end
@@ -787,7 +787,7 @@ $stdin.each do |line|
   if args.length != 0 then
     args[0] = ' '
     args = args.lstrip().rstrip()
-    if args[0] == 34 then
+    if args[0] == '"' then
       args = args[1..-2]
     end
   end
