@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon May 26 02:53:59 UTC 2014 - nwang@suse.com
+
+- BNC#876536. Convert Ycp to Ruby based on sle11sp3(sp1). 
+  Merge sle12 master code to convert branch then merge back
+  to master. Did some basic test.
+- version 3.1.1
+
+-------------------------------------------------------------------
 Fri May  9 04:24:44 UTC 2014 - nwang@suse.com
 
 - BNC#875677. Change desktop file,move DRBD from Misc to 
