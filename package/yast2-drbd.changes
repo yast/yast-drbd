@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May 27 02:38:21 UTC 2014 - nwang@suse.com
+
+- Temporarily comment "racc" in Makefile.am.Due to buildrequires: 
+  rubygem-racc is necessary in yast ci but invalid in ibs.
+- version 3.1.2
+
+-------------------------------------------------------------------
 Mon May 26 02:53:59 UTC 2014 - nwang@suse.com
 
 - BNC#876536. Convert Ycp to Ruby based on sle11sp3(sp1). 
