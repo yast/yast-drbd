@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May 30 13:47:32 UTC 2014 - nwang@suse.com
+
+- Only change the spec and log. Since merge commit from dongmao.
+  "let drbd support autoyast"
+- Version 3.1.3
+
+-------------------------------------------------------------------
 Tue May 27 02:38:21 UTC 2014 - nwang@suse.com
 
 - Temporarily comment "racc" in Makefile.am.Due to buildrequires: 
