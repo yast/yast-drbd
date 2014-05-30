@@ -94,6 +94,7 @@ module Yast
       Wizard.SelectTreeItem(Ops.get_string(sequence, "ws_start", ""))
 
       ret = Sequencer.Run(_Aliases, sequence)
+      Wizard.CloseDialog
       deep_copy(ret)
     end
 
