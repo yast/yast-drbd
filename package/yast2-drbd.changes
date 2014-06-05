@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  5 09:49:24 UTC 2014 - nwang@suse.com
+
+- BNC#881500. /sbin/drbdadm change to /usr/sbin/drbdadm.
+- Version 3.1.4
+
+-------------------------------------------------------------------
 Fri May 30 13:47:32 UTC 2014 - nwang@suse.com
 
 - Merge from dongmao. Fate#315128: let drbd support autoyast"

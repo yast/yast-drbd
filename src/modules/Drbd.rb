@@ -434,7 +434,7 @@ module Yast
           SCR.Execute(
             path(".target.bash_output"),
             Ops.add(
-              Ops.add("/sbin/drbdadm -t /etc/drbd.d/", key),
+              Ops.add("/usr/sbin/drbdadm -t /etc/drbd.d/", key),
               ".res sh-nop"
             )
           )
