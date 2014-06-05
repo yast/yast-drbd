@@ -1,8 +1,7 @@
 -------------------------------------------------------------------
 Fri May 30 13:47:32 UTC 2014 - nwang@suse.com
 
-- Only change the spec and log. Since merge commit from dongmao.
-  "let drbd support autoyast"
+- Merge from dongmao. Fate#315128: let drbd support autoyast"
 - Version 3.1.3
 
 -------------------------------------------------------------------
