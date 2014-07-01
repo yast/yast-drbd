@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul  1 07:32:09 UTC 2014 - nwang@suse.com
+
+- BNC#884689 and BNC#812061. Enhance the help text.
+- Version 3.1.5
+
+-------------------------------------------------------------------
 Tue Jul  1 07:19:50 UTC 2014 - nwang@suse.com
 
 - BNC#885112. Fix finish progress message.
