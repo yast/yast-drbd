@@ -334,6 +334,7 @@ module Yast
 
       Progress.NextStage
 
+      Progress.Finish
       @modified = false
       true
     end
@@ -557,6 +558,7 @@ module Yast
       end
       Progress.NextStage
 
+      Progress.Finish
       true
     end
 
