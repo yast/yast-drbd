@@ -110,6 +110,7 @@ module Yast
 
         if ret == "DialogRefresh" || ret == "MinorCount" ||
             ret == "DisableIpVerification"
+          Drbd.modified = true
           next
         end
 

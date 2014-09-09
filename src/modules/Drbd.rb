@@ -473,7 +473,9 @@ module Yast
       # DRBD write dialog caption
       caption = _("Writing DRBD Configuration")
 
-      #if (!modified) return true;
+      # Comment code below due to change the "booting" status
+      # won't change modified flag
+      #return true if !@modified
 
       # We do not set help text here, because it was set outside
       Progress.New(

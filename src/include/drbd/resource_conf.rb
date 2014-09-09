@@ -548,6 +548,8 @@ module Yast
             next
           end
 
+          Drbd.modified = true
+
           Builtins.foreach(
             [
               :resname,

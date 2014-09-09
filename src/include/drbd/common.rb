@@ -53,9 +53,13 @@ module Yast
       UI.PollInput == :abort
     end
 
+    def Modified
+      Drbd.modified
+    end
+
     def ReallyAbort
       #	    return !Heartbeat::Modified() || Popup::ReallyAbort(true);
-      Popup.ReallyAbort(true)
+      !Modified() || Popup.ReallyAbort(true)
     end
 
     def my_SetContents(conf, contents)
