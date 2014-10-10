@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct 10 11:25:57 UTC 2014 - nwang@suse.com
+
+- BNC#898448. Add validation check of node name.
+- Add in Maintenance update.
+- Version 3.1.7
+
+-------------------------------------------------------------------
 Tue Sep  9 08:58:07 UTC 2014 - nwang@suse.com
 
 - BNC#460178. Exit directly if no any modification.

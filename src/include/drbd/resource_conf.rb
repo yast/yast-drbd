@@ -548,6 +548,18 @@ module Yast
             next
           end
 
+          if UI.QueryWidget(Id(:n1_name), :Value).to_s.include?(".") || UI.QueryWidget(Id(:n2_name), :Value).to_s.include?(".")
+            Popup.Warning(_('Node names must not include "." , using the local hostname.'))
+
+            if UI.QueryWidget(Id(:n1_name), :Value).to_s.include?(".")
+              UI.SetFocus(Id(:n1_name))
+            else
+              UI.SetFocus(Id(:n2_name))
+            end
+            ret = nil
+            next
+          end
+
           Drbd.modified = true
 
           Builtins.foreach(

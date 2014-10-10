@@ -74,10 +74,10 @@ module Yast
         ) +
           _(
             "\n" +
-              "\t\t<p>\"Name\" is mandatory and must match the Linux host name (uname -n) of one of the nodes</p>\n" +
+              "\t\t<p>\"Name\" is mandatory and must match the Linux host name (uname -n) of one of the nodes. Should not include \".\" in hostname.</p>\n" +
               "\t\t<p>\"Address:Port\": A resource needs one IP address per device, which is used to wait for incoming connections from the partner device to reach the device. Each DRBD resource needs a TCP port which is used to connect to the node's partner device.</p>\n" +
-              "\t\t<p>\"Device\": The  name of the block device node of the resource being described.  You must use this device with your application (file system) and you must not use the low level block device which is specified with the disk parameter,following its minor number.\n" +
-              "\t\tLike: '/dev/drbd_r0 minor 0\'</p>\n" +
+              "\t\t<p>\"Device\": The name of the block device node of the resource being described.  You must use this device with your application (file system) and you must not use the low level block device which is specified with the disk parameter,following its minor number. Or either omit the name or minor and the minor number. If you omit the name a default of /dev/drbdminor will be used.\n" +
+              "\t\tLike: '/dev/drbd{service} minor {minor drbd number [0...255]}' or '/dev/drbd{minor drbd number [0...255]}'</p>\n" +
               "\t\t<p>\"Disk\":  DRBD uses this block device to actually store and retrieve the data.  Never access such a device while DRBD is running on top of  it.</p>\n" +
               "\t\t<p>\"Meta-disk\": internal. Internal means that the last part of the backing device is used to store the meta-data.</p>\n" +
               "\t\t"
