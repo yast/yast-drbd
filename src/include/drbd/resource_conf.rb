@@ -306,12 +306,12 @@ module Yast
             TextEntry(
               Id(:wfc_timeout),
               "wfc-timeout",
-              Ops.get_string(res_config, "wfc-timeout", "")
+              Ops.get_string(res_config, ["startup", "wfc-timeout"], "")
             ),
             TextEntry(
               Id(:degr_wfc_timeout),
               "degr-wfc-timeout",
-              Ops.get_string(res_config, "degr-wfc-timeout", "")
+              Ops.get_string(res_config, ["startup", "degr-wfc-timeout"], "")
             )
           )
         ),

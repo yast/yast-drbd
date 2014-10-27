@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Oct 27 06:03:25 UTC 2014 - nwang@suse.com
+
+- BNC#901833. Fix value of "wfc-timeout" and "degr-wfc-timeout"
+  can not be shown in GUI.
+- Add in Maintenance update.
+- Version 3.1.8
+
+-------------------------------------------------------------------
 Fri Oct 10 11:25:57 UTC 2014 - nwang@suse.com
 
 - BNC#898448. Add validation check of node name.
