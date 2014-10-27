@@ -306,12 +306,12 @@ module Yast
             TextEntry(
               Id(:wfc_timeout),
               "wfc-timeout",
-              Ops.get_string(res_config, "wfc-timeout", "")
+              Ops.get_string(res_config, ["startup", "wfc-timeout"], "")
             ),
             TextEntry(
               Id(:degr_wfc_timeout),
               "degr-wfc-timeout",
-              Ops.get_string(res_config, "degr-wfc-timeout", "")
+              Ops.get_string(res_config, ["startup", "degr-wfc-timeout"], "")
             )
           )
         ),
@@ -544,6 +544,18 @@ module Yast
           if Convert.to_string(UI.QueryWidget(Id(:n1_name), :Value)) ==
               Convert.to_string(UI.QueryWidget(Id(:n2_name), :Value))
             Popup.Warning(_("Node names must be different."))
+            ret = nil
+            next
+          end
+
+          if UI.QueryWidget(Id(:n1_name), :Value).to_s.include?(".") || UI.QueryWidget(Id(:n2_name), :Value).to_s.include?(".")
+            Popup.Warning(_('Node names must not include "." , using the local hostname.'))
+
+            if UI.QueryWidget(Id(:n1_name), :Value).to_s.include?(".")
+              UI.SetFocus(Id(:n1_name))
+            else
+              UI.SetFocus(Id(:n2_name))
+            end
             ret = nil
             next
           end
