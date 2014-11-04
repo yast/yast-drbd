@@ -90,8 +90,8 @@ module_eval <<'..end drbd.rb.yy modeval..id549532a17a', 'drbd.rb.yy', 184
 				@q.push [:TK_PRI_LOST_AFTER_SB, 'pri-lost-after-sb']
 			when /\Apri-lost/
 				@q.push [:TK_PRI_LOST, 'pri-lost']	
-			when /\Aoutdate-peer/
-				@q.push [:TK_OUTDATE_PEER, 'outdate-peer']
+			when /\Afence-peer/
+				@q.push [:TK_FENCE_PEER, 'fence-peer']
 			when /\Alocal-io-error/
 				@q.push [:TK_LOCAL_IO_ERROR, 'local-io-error']
 			when /\Asplit-brain/
@@ -528,7 +528,7 @@ racc_token_table = {
  :TK_PRI_ON_INCON_DEGR => 59,
  :TK_PRI_LOST_AFTER_SB => 60,
  :TK_PRI_LOST => 61,
- :TK_OUTDATE_PEER => 62,
+ :TK_FENCE_PEER => 62,
  :TK_LOCAL_IO_ERROR => 63,
  :TK_SPLIT_BRAIN => 64,
  :TK_BEFORE_RESYNC_TARGET => 65,
@@ -628,7 +628,7 @@ Racc_token_to_s_table = [
 'TK_PRI_ON_INCON_DEGR',
 'TK_PRI_LOST_AFTER_SB',
 'TK_PRI_LOST',
-'TK_OUTDATE_PEER',
+'TK_FENCE_PEER',
 'TK_LOCAL_IO_ERROR',
 'TK_SPLIT_BRAIN',
 'TK_BEFORE_RESYNC_TARGET',

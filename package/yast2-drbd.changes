@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Tue Nov  4 07:32:41 UTC 2014 - nwang@suse.com
+
+- BNC#903514. Modify the wrong help text.
+- Add in Maintenance update.
+- Version 3.1.9
+
+-------------------------------------------------------------------
+Tue Nov  4 07:29:42 UTC 2014 - nwang@suse.com
+
+- BNC#901554. Change outdate-peer to fence-peer.
+
+-------------------------------------------------------------------
 Mon Oct 27 06:03:25 UTC 2014 - nwang@suse.com
 
 - BNC#901833. Fix value of "wfc-timeout" and "degr-wfc-timeout"
