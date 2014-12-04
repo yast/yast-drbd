@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Dec  4 09:50:08 UTC 2014 - jreidinger@suse.com
+
+- remove X-KDE-Library from desktop file (bnc#899104)
+
+-------------------------------------------------------------------
 Tue Nov  4 07:32:41 UTC 2014 - nwang@suse.com
 
 - BNC#903514. Modify the wrong help text.
