@@ -153,21 +153,37 @@ module Yast
 
       Progress.NextStage
 
-      # check installed packages
-      # find out which krbd-kmp-<arch> to be installed
-      out = Convert.to_map(
-        SCR.Execute(
-          path(".target.bash_output"),
-          "echo -n `uname -r|grep -Eo \"default|smp|bigsmp|desktop|pae|xen|xenpae|debug|ppc64|iseries64\"`"
-        )
-      )
-      krbd_kmp_arch = Ops.get_string(out, "stdout", "default")
-
-      if !Mode.test &&
-          !PackageSystem.CheckAndInstallPackagesInteractive(
-            ["drbd", Ops.add("drbd-kmp-", krbd_kmp_arch)]
+      if SCR.Execute( path(".target.bash"),
+        "modinfo drbd >/dev/null 2>&1" ) != 0
+        # If no drbd module installed in kernel, should install drbd-kmp-<arch>
+        # Should work in SLE11SP3/12 or openSUSE12.3. May obsolete in future.
+        # check installed packages
+        # find out which krbd-kmp-<arch> to be installed
+        out = Convert.to_map(
+          SCR.Execute(
+            path(".target.bash_output"),
+            "echo -n `uname -r|grep -Eo \"default|smp|bigsmp|desktop|pae|xen|xenpae|debug|ppc64|iseries64\"`"
           )
-        return false
+        )
+        krbd_kmp_arch = Ops.get_string(out, "stdout", "default")
+
+        if !Mode.test &&
+            !PackageSystem.CheckAndInstallPackagesInteractive(
+              ["drbd", Ops.add("drbd-kmp-", krbd_kmp_arch)]
+            )
+          return false
+        end
+      else
+        # In openSUSE13.1/13.2, no package named drbd-utils.
+        # It's an issue of drbd/drbd-utils.
+        # drbd-utils only needed when openSUSE>13.2
+        # see BNC#900818 for more information.
+        if !Mode.test &&
+            !PackageSystem.CheckAndInstallPackagesInteractive(
+              ["drbd-utils"]
+            )
+          return false
+        end
       end
 
       if Ops.greater_than(
