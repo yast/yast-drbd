@@ -47,6 +47,8 @@ module Yast
       @proposal_valid = false
       @modified = false
       @global_config = {}
+      @lvm_config = {}
+      @auto_lvm_filter = true
       @resource_config = {}
       @drbd_dir = "/etc"
       @start_daemon = false
@@ -65,6 +67,10 @@ module Yast
         ],
         "startup" => ["wfc-timeout", "degr-wfc-timeout"]
       }
+      @local_hostname = ""
+      @local_ports = []
+      @local_disks_ori = []
+      @local_disks_added = []
 
       @global_error = ""
     end
@@ -128,6 +134,48 @@ module Yast
       true
     end
 
+    def finding_local()
+      # Get hostname to find out the local disk/port/IP
+      out = Convert.to_map(
+        SCR.Execute(
+          path(".target.bash_output"),
+          "echo -n `uname -n`"
+        )
+      )
+      # strip is necessary
+      @local_hostname = Ops.get_string(out, "stdout", "")
+      Builtins.y2milestone("Local hostname is %1", @local_hostname)
+
+      # Find all disks and ports of local node
+      @resource_config.each do |resname, resconfig|
+        Builtins.y2debug("Resconf %1 has config %2 ",
+          resname, resconfig)
+
+        resconfig["on"].each do |nodename, conf|
+          if @local_hostname == nodename
+            disk = conf["disk"]
+            Builtins.y2debug("Using local disk %1 for DRBD.", disk)
+            if !@local_disks_ori.include?(disk)
+              @local_disks_ori.push(disk)
+            end
+
+            port = conf["address"].split(":")[1]
+            Builtins.y2debug("Using port %1 for disk %2 for DRBD.", port, disk)
+            if !@local_ports.include?(port)
+              @local_ports.push(port)
+            end
+
+            break
+          end
+        end
+
+        Builtins.y2debug("Local disks list is %1.", @local_disks_ori)
+        Builtins.y2debug("TCP ports list is %1.", @local_ports)
+      end
+
+      nil
+    end
+
     def Read
       # DRBD read dialog caption
       caption = _("Initializing DRBD Configuration")
@@ -140,11 +188,13 @@ module Yast
         [
           _("Read global settings"),
           _("Read resources"),
+          _("Read LVM configurations"),
           _("Read daemon status")
         ],
         [
           _("Reading global settings..."),
           _("Reading resources..."),
+          _("Reading LVM configurations..."),
           _("Reading daemon status..."),
           _("Finished")
         ],
@@ -256,6 +306,27 @@ module Yast
           Ops.set(@global_config, "dialog-refresh", "1")
         end
 
+        #read LVM configs via /etc/lvm/lvm.conf
+        #All of them under "devices" section
+        ["filter", "write_cache_state", "cache_dir"].each do |key|
+          val = Convert.to_string(
+            SCR.Read(Builtins.topath(Builtins.sformat(".drbd_lvm.value.devices.%1", key)))
+          )
+          Ops.set(@lvm_config, key, val)
+          Builtins.y2debug("drbd_lvm.devices.%1 is %2", key, val)
+        end
+
+        if Ops.get(@lvm_config, "filter") == nil
+          # The default value is get from HA doc
+          Ops.set(@lvm_config, "filter", "[ \"r|/dev/sda.*|\" ]")
+        end
+        if Ops.get(@lvm_config, "write_cache_state") == nil
+          Ops.set(@lvm_config, "write_cache_state", "0")
+        end
+        if Ops.get(@lvm_config, "cache_dir") == nil
+          Ops.set(@lvm_config, "cache_dir", "/etc/lvm/cache")
+        end
+
         #read resources configs
         res_names = SCR.Dir(Builtins.topath(".drbd.resources"))
         Builtins.foreach(res_names) do |resname|
@@ -344,6 +415,9 @@ module Yast
       end
 
       Builtins.y2milestone("read resource_config=%1", @resource_config)
+
+      # Find all info like disks/ports belong to local node
+      finding_local
 
       Progress.NextStage
       @start_daemon = Service.Enabled("drbd")
@@ -485,6 +559,52 @@ module Yast
       true
     end
 
+    def format_lvm_filter()
+      Builtins.y2milestone("Change LVM filter automatically.")
+
+      filter_list = []
+      r_format = "\"r|%s|\""
+      reject_list = [ "\"r|/dev/block/.*|\"", "\"r|/dev/.*/by-path/.*|\"",
+                      "\"r|/dev/.*/by-id/.*|\"" ]
+      filter_ori = Ops.get(@lvm_config, "filter").to_s.strip()
+      Builtins.y2debug("Original filter is %1", filter_ori)
+
+      # Remove the [] and convert string to list to check
+      temp_length = filter_ori.length - 2
+      if temp_length < 1
+        # Should at least including "[]"
+        filter_str = ""
+      else
+        filter_str = filter_ori[1,temp_length]
+      end
+
+      filter_list_tmp = filter_str.split(",")
+
+      # Remove the extra space in filter field
+      # [].push is FIFO, insert(0,x) is stack
+      filter_list_tmp.each do |field|
+        filter_list.push(field.strip())
+      end
+
+      reject_list.each do |regular|
+        if !filter_list.include?(regular)
+          filter_list.insert( 0, regular )
+        end
+      end
+      Builtins.y2debug("Temp filter list is %1", filter_list)
+
+      @local_disks_added.each do |newdisk|
+        # Reject always need to be added in the first
+        filter_list.insert( 0, r_format % newdisk )
+      end
+
+      filters = "[ " + filter_list.join(", ") + " ]"
+      Builtins.y2debug("Modified filter is %1", filters)
+      Ops.set(@lvm_config, "filter", filters)
+
+      nil
+    end
+
     def Write
       # DRBD write dialog caption
       caption = _("Writing DRBD Configuration")
@@ -501,11 +621,13 @@ module Yast
         [
           _("Write global settings"),
           _("Write resources"),
+          _("Write LVM configurations"),
           _("Set daemon status")
         ],
         [
           _("Writing global settings..."),
           _("Writing resources..."),
+          _("Writing LVM configurations..."),
           _("Setting daemon status..."),
           _("Finished")
         ],
@@ -537,6 +659,37 @@ module Yast
             Ops.get(@global_config, key)
           )
         end
+      end
+
+      #LVM config here
+      #http://docserv.suse.de/documents/SLE-HA11/SLE-ha-nfs-quick/html/
+      #art_ha_quick_nfs.html#sec_ha_quick_nfs_initial_lvm_config
+      Progress.NextStage
+      Builtins.y2debug(
+        "to write lvm config: lvm_config=%1",
+        @lvm_config
+      )
+
+      # Change(add reject rules) filter automatically
+      if @auto_lvm_filter && !@local_disks_added.empty?
+        format_lvm_filter
+      end
+
+      ["filter", "write_cache_state"].each do |key|
+        if Ops.get(@lvm_config, key) != nil
+          SCR.Write(
+            Builtins.topath(Builtins.sformat(".drbd_lvm.value.devices.%1", key)),
+            Ops.get(@lvm_config, key)
+          )
+        end
+      end
+
+      if Ops.get(@lvm_config, "write_cache_state") == "0"
+        SCR.Execute(
+          path(".target.bash"),
+          Builtins.sformat("/bin/rm -r %1/.cache >/dev/null 2>&1",
+          Ops.get(@lvm_config, "cache_dir"))
+        )
       end
 
       #resource config here
@@ -583,10 +736,16 @@ module Yast
     publish :variable => :proposal_valid, :type => "boolean"
     publish :variable => :modified, :type => "boolean"
     publish :variable => :global_config, :type => "map"
+    publish :variable => :lvm_config, :type => "map"
+    publish :variable => :auto_lvm_filter, :type => "boolean"
     publish :variable => :resource_config, :type => "map"
     publish :variable => :drbd_dir, :type => "string"
     publish :variable => :start_daemon, :type => "boolean"
     publish :variable => :config_name, :type => "map <string, list <string>>"
+    publish :variable => :local_hostname, :type => "string"
+    publish :variable => :local_ports, :type => "list <string>"
+    publish :variable => :local_disks_ori, :type => "list <string>"
+    publish :variable => :local_disks_added, :type => "list <string>"
     publish :variable => :global_error, :type => "string"
     publish :function => :Read, :type => "boolean ()"
     publish :function => :Write, :type => "boolean ()"

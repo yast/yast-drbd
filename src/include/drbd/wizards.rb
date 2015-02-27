@@ -39,6 +39,7 @@ module Yast
       Yast.include include_target, "drbd/dialogs.rb"
       Yast.include include_target, "drbd/startup_conf.rb"
       Yast.include include_target, "drbd/global_conf.rb"
+      Yast.include include_target, "drbd/lvm_conf.rb"
       Yast.include include_target, "drbd/resource_conf.rb"
     end
 
@@ -46,7 +47,8 @@ module Yast
       _Aliases = {
         "startup_conf"  => lambda { ConfigureStartUpDialog() },
         "global_conf"   => lambda { ConfigureGlobalDialog() },
-        "resource_conf" => lambda { ResourceSequence() }
+        "resource_conf" => lambda { ResourceSequence() },
+        "lvm_conf" => lambda { ConfigureLVMDialog() }
       }
 
       anywhere = { :abort => :abort, :next => :next }

@@ -19,10 +19,12 @@ ynclude_DATA = \
   include/drbd/resource_conf.rb \
   include/drbd/helps.rb \
   include/drbd/global_conf.rb \
+  include/drbd/lvm_conf.rb \
   include/drbd/wizards.rb
 
 scrconf_DATA = \
-  scrconf/drbd.scr
+  scrconf/drbd.scr \
+  scrconf/drbd_lvm.scr
 
 desktop_DATA = \
   desktop/drbd.desktop

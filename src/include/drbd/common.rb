@@ -36,7 +36,7 @@ module Yast
       Yast.import "Popup"
       Yast.import "CWM"
 
-      @DIALOG = ["startup_conf", "global_conf", "resource_conf"]
+      @DIALOG = ["startup_conf", "global_conf", "resource_conf","lvm_conf"]
 
       @PARENT = {}
 
@@ -44,6 +44,7 @@ module Yast
         "startup_conf"  => _("Start-up Configuration"),
         "global_conf"   => _("Global Configuration"),
         "resource_conf" => _("Resource Configuration"),
+        "lvm_conf"      => _("LVM Configuration"),
         "basic_conf"    => _("Resource Basic Configuration"),
         "advance_conf"  => _("Resource Advanced Configuration")
       }

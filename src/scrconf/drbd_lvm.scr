@@ -1,0 +1,29 @@
+/**
+ * File:
+ *   drbd_lvm.scr
+ * Summary:
+ *   Limited reading/writing /etc/lvm/lvm.conf
+ *   using the ini-agent.
+ *   Refer to 'man lvm.conf' for further information
+ *   including the file layout.
+ */
+
+.drbd_lvm
+
+`ag_ini(
+	`IniAgent(
+		"/etc/lvm/lvm.conf",
+	    $[
+			"options" : ["line_can_continue"],
+			"comments": ["^[ \t]*#.*", "#.*", "^[ \t]*$"],
+			"sections": [
+				$[
+					"begin" : ["^[ \t]*(.*[^ \t])[ \t]*\\{[ \t]*","%s {"] ,
+					"end"   : ["^[ \t]*\\}[ \t]*", "}"]
+				 ]
+			],
+			"params"  : [$["match" : ["^[ \t]*([a-zA-Z0-9_]+)[ \t]*=[ \t]*(.+)[ \t]*$", "%s = %s"]]],
+			"subindent" : "\t"
+		]
+  )
+)

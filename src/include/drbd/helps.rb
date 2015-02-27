@@ -109,6 +109,24 @@ module Yast
               "\t\t<p><b>al-extents</b>: parameter  you control how big the hot area (= active set) can get. The default number of extents is 127. (Minimum: 7, Maximum: 3843)</p>\n" +
               "\t\t"
           ),
+         "lvm_conf"  => _(
+          "<p><b><big>LVM Configuration</big></b></p>"
+        ) +
+          _(
+            "\n" +
+              "\t\t<p><b>LVM configuration file /etc/lvm/lvm.conf</b></p>\n" +
+              "\t\t<p>To use LVM with DRBD, it is necessary to change some options in the LVM configuration file and to remove stale cache entries on the nodes.</p>" +
+              "\t\t<p>Refer to 'man lvm.conf' for further information including the file layout.</p>\n" +
+              "\t\t\t\t\t\t\t\t\t\t  \n" +
+              "\t\t<p><b>Device Filter</b>: This masks the underlying block device from the list of devices LVM scans for Physical Volume signatures. This way, LVM is instructed to read Physical Volume signatures from DRBD devices, rather than from the underlying backing block devices.</p>" +
+              "\t\t<p><b>AutoFilter</b>: According to the configuration of drbd, LVM filter will always be changed automatically. To change it manually, disable the checkbox of AutoFilter.</p>\n" +
+              "\t\t<p>The filter consists of an array of regular expressions. These expressions can be delimited by a character of your choice, and prefixed with either an 'a' (for accept) or 'r' (for reject).</p>" +
+              "\t\t<p>For example, setting filter as [\"r|/dev/sda.*|\"]</p>\n" +
+              "\n" +
+              "\t\t<p><b>LVM cache</b>: Enable/turn on writing the LVM cache is default. Disable cache when for network storage, like nfs. </p>\n" +
+              "\n" +
+              "\t\t"
+          ),
         "global_conf"   => _(
           "<p><b><big>Global Configuration of DRBD</big></b></p>"
         ) +

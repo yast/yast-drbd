@@ -242,6 +242,32 @@ module Yast
       )
     end
 
+    def update_add_disk_list
+      # Update new add disk used of drbd res for LVM filter
+      # Ignore the removed disk
+      local_hname = Drbd.local_hostname
+
+      node1 = UI.QueryWidget(Id(:n1_name), :Value).to_s.strip()
+      node2 = UI.QueryWidget(Id(:n2_name), :Value).to_s.strip()
+
+      if local_hname == node1
+        disk = UI.QueryWidget(Id(:n1_disk), :Value).to_s.strip()
+      elsif local_hname == node2
+        disk = UI.QueryWidget(Id(:n2_disk), :Value).to_s.strip()
+      else
+        disk = nil
+        Builtins.y2error("Disk is not belong to local. localhost is %1,
+          node1 is %2, node2 is %3.", local_hname, node1, node2)
+      end
+      Builtins.y2debug("Add %1 to add disk list.", disk)
+
+      if disk && !Drbd.local_disks_ori.include?(disk) &&
+        !Drbd.local_disks_added.include?(disk)
+        Drbd.local_disks_added.push(disk)
+      end
+
+      nil
+    end
 
     def save_basic_config(res_config)
       res_config = deep_copy(res_config)
@@ -593,6 +619,9 @@ module Yast
           res_config = save_basic_config(res_config)
           Builtins.y2debug("res_config = %1", res_config)
 
+          # For change LVM filter automatically
+          update_add_disk_list
+
           my_SetContents(
             "advance_conf",
             res_advance_config_get_dialog(res_config)
@@ -634,6 +663,9 @@ module Yast
           res_config = save_advance_config(res_config)
 
           Builtins.y2debug("res_config=%1", res_config)
+
+          # For change LVM filter automatically
+          update_add_disk_list
 
           if Ops.greater_than(Builtins.size(resname), 0)
             Drbd.resource_config = Builtins.remove(
@@ -701,6 +733,7 @@ module Yast
         "list"     => {
           :startup_conf => :startup_conf,
           :global_conf  => :global_conf,
+          :lvm_conf     => :lvm_conf,
           :add          => "add",
           :edit         => "edit",
           :list         => "list",
