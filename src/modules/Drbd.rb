@@ -40,6 +40,8 @@ module Yast
       Yast.import "Report"
       Yast.import "Summary"
       Yast.import "Service"
+      Yast.import "SuSEFirewall"
+      Yast.import "SuSEFirewallServices"
 
       Yast.import "Mode"
       Yast.import "PackageSystem"
@@ -134,7 +136,7 @@ module Yast
       true
     end
 
-    def finding_local()
+    def finding_local(section)
       # Get hostname to find out the local disk/port/IP
       out = Convert.to_map(
         SCR.Execute(
@@ -153,24 +155,25 @@ module Yast
 
         resconfig["on"].each do |nodename, conf|
           if @local_hostname == nodename
-            disk = conf["disk"]
-            Builtins.y2debug("Using local disk %1 for DRBD.", disk)
-            if !@local_disks_ori.include?(disk)
-              @local_disks_ori.push(disk)
-            end
+            if section == "disk"
+              disk = conf["disk"]
+              Builtins.y2debug("Using local disk %1 for DRBD.", disk)
+              if !@local_disks_ori.include?(disk)
+                @local_disks_ori.push(disk)
+              end
 
-            port = conf["address"].split(":")[1]
-            Builtins.y2debug("Using port %1 for disk %2 for DRBD.", port, disk)
-            if !@local_ports.include?(port)
-              @local_ports.push(port)
+            elsif section == "port"
+              port = conf["address"].split(":")[1]
+              Builtins.y2debug("Using port %1 for DRBD.", port)
+              if !@local_ports.include?(port)
+                @local_ports.push(port)
+              end
             end
 
             break
           end
         end
 
-        Builtins.y2debug("Local disks list is %1.", @local_disks_ori)
-        Builtins.y2debug("TCP ports list is %1.", @local_ports)
       end
 
       nil
@@ -184,18 +187,20 @@ module Yast
       Progress.New(
         caption,
         " ",
-        4,
+        5,
         [
           _("Read global settings"),
           _("Read resources"),
           _("Read LVM configurations"),
-          _("Read daemon status")
+          _("Read daemon status"),
+          _("Read SuSEFirewall Settings")
         ],
         [
           _("Reading global settings..."),
           _("Reading resources..."),
           _("Reading LVM configurations..."),
           _("Reading daemon status..."),
+          _("Read SuSEFirewall Settings"),
           _("Finished")
         ],
         ""
@@ -416,12 +421,18 @@ module Yast
 
       Builtins.y2milestone("read resource_config=%1", @resource_config)
 
-      # Find all info like disks/ports belong to local node
-      finding_local
+      # Find all info like disks belong to local node
+      finding_local("disk")
 
       Progress.NextStage
       @start_daemon = Service.Enabled("drbd")
 
+      Progress.NextStage
+
+      # read the SuSEfirewall2
+      SuSEFirewall.Read
+
+      # Progress finished
       Progress.NextStage
 
       Progress.Finish
@@ -617,18 +628,20 @@ module Yast
       Progress.New(
         caption,
         " ",
-        4,
+        5,
         [
           _("Write global settings"),
           _("Write resources"),
           _("Write LVM configurations"),
-          _("Set daemon status")
+          _("Set daemon status"),
+          _("Write the SuSEfirewall settings")
         ],
         [
           _("Writing global settings..."),
           _("Writing resources..."),
           _("Writing LVM configurations..."),
           _("Setting daemon status..."),
+          _("Writing the SuSEFirewall settings"),
           _("Finished")
         ],
         ""
@@ -729,6 +742,19 @@ module Yast
       end
       Progress.NextStage
 
+      # open all local ports
+      finding_local("port")
+
+      # DRBD only use TCP port
+      SuSEFirewallServices.SetNeededPortsAndProtocols(
+        "service:drbd",
+        { "tcp_ports" => @local_ports }
+      )
+
+      SuSEFirewall.Write
+
+      # Progress finished
+      Progress.NextStage
       Progress.Finish
       true
     end

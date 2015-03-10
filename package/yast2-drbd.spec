@@ -20,8 +20,10 @@ Name:           yast2-drbd
 Version:        3.1.11
 Release:        0
 
+%define _fwdefdir /etc/sysconfig/SuSEfirewall2.d/services
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
+Source1:        drbd-cluster.fwd
 
 BuildRequires:  perl-XML-Writer
 BuildRequires:  ruby
@@ -57,6 +59,9 @@ Authors:
 %install
 %yast_install
 
+mkdir -p $RPM_BUILD_ROOT/%{_fwdefdir}
+install -m 644 %{S:1} $RPM_BUILD_ROOT/%{_fwdefdir}/drbd
+
 %files
 %defattr(-,root,root)
 %{yast_yncludedir}/drbd/
@@ -68,5 +73,6 @@ Authors:
 %{yast_agentdir}/ag_drbd
 %{yast_agentdir}/drbd.rb.yy
 %doc %{yast_docdir}
+%config %{_fwdefdir}/drbd
 
 %changelog

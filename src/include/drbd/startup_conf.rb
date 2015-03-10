@@ -16,6 +16,7 @@ module Yast
       Yast.import "Wizard"
       Yast.import "Service"
       Yast.import "Drbd"
+      Yast.import "CWMFirewallInterfaces"
 
       Yast.include include_target, "drbd/helps.rb"
       Yast.include include_target, "drbd/common.rb"
@@ -33,7 +34,7 @@ module Yast
               Left(
                 RadioButton(
                   Id("on"),
-                  _("On -- Start DRBD Server Now and when Booting")
+                  _("On -- Start DRBD Server when Booting")
                 )
               ),
               Left(
@@ -70,6 +71,20 @@ module Yast
         )
       )
 
+      # Just a dialog
+      firewall_widget = CWMFirewallInterfaces.CreateOpenFirewallWidget(
+        {
+          #servie:drbd is the  name of /etc/sysconfig/SuSEfirewall2.d/services/drbd
+          "services"        => [
+            "service:drbd"
+          ],
+          "display_details" => true
+        }
+      )
+      Builtins.y2milestone("%1", firewall_widget)
+      # firewall_layout is just a dialog
+      firewall_layout = Ops.get_term(firewall_widget, "custom_widget", VBox())
+
       _Tpropagate = Frame(
         _("Propagate Configuration"),
         Left(
@@ -98,6 +113,8 @@ module Yast
         VSpacing(1),
         _Tonoff,
         VSpacing(1),
+        firewall_layout,
+        VSpacing(1),
         _Tpropagate,
         VStretch()
       )
@@ -107,6 +124,8 @@ module Yast
       my_SetContents("startup_conf", contents)
 
       UI.ChangeWidget(Id("server_type"), :CurrentButton, boot ? "on" : "off")
+      CWMFirewallInterfaces.OpenFirewallInit(firewall_widget, "")
+      event = {}
 
       ret = nil
       while true
@@ -124,7 +143,9 @@ module Yast
           )
         )
 
-        ret = UI.UserInput
+        # add event
+        event = UI.WaitForEvent
+        ret = Ops.get(event, "ID")
 
         if ret == :abort || ret == :cancel
           if ReallyAbort()
@@ -134,7 +155,10 @@ module Yast
           end
         end
 
-        break if ret == :next || ret == :back
+        if ret == :next || ret == :back
+          CWMFirewallInterfaces.OpenFirewallStore(firewall_widget, "", event)
+          break
+        end
 
         if ret == "start_now"
           if !Service.Start("drbd")
@@ -152,10 +176,10 @@ module Yast
           next
         end
 
-        if ret == :help
-          myHelp("startup_conf")
-          next
-        end
+        #if ret == :help
+        #  myHelp("startup_conf")
+        #  next
+        #end
 
         if ret == :wizardTree
           ret = Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem))
@@ -165,6 +189,8 @@ module Yast
           ret = Builtins.symbolof(Builtins.toterm(ret))
           break
         end
+
+        CWMFirewallInterfaces.OpenFirewallHandle(firewall_widget, "", event)
 
         Builtins.y2error("unexpected retcode: %1", ret)
       end
