@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May 15 06:44:30 UTC 2015 - nwang@suse.com
+
+- Feature implementation for SLE12SP1
+- Fate#317957, Fate#318555, Fate#318391
+- Version 3.1.12
+
+-------------------------------------------------------------------
 Mon Dec 22 03:08:39 UTC 2014 - nwang@suse.com
 
 - BNC#900818. Corresponding change of modification of drbd-utils.
