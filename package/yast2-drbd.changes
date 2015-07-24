@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 24 07:07:12 UTC 2015 - nwang@suse.com
+
+- BSC#939338, using kmp package for drbd8.4.6 
+- Require drbd-utils for user space.
+
+-------------------------------------------------------------------
 Fri May 15 06:44:30 UTC 2015 - nwang@suse.com
 
 - Feature implementation for SLE12SP1
