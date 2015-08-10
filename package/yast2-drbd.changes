@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 10 09:23:32 UTC 2015 - nwang@suse.com
+
+- BSC#941094. Change from /usr/sbin/drbd* to /sbin/drbd*
+- Version 3.1.14
+
+-------------------------------------------------------------------
 Fri Jul 24 07:07:12 UTC 2015 - nwang@suse.com
 
 - BSC#939338, using kmp package for drbd8.4.6 
