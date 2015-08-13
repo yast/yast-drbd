@@ -84,7 +84,8 @@ module Yast
           "\t\tcat drbd.conf | while read line; do\n" +
           "\t\t\ts=`echo $line | awk '{print $1}'`;\n" +
           "\t\t\tif [[ x$s =~ xinclude ]]; then\n" +
-          "\t\t\t\tcat `echo $line | sed 's/include//' | sed 's/;//g' | sed 's/\"//g'`;\n" +
+          "\t\t\t\tFNAME=`echo $line | sed 's/include//; s/;//g; s/\"//g'`;\n" +
+          "\t\t\t\tls $FNAME >/dev/null 2>&1 && cat $FNAME;\n " +
           "\t\t\telse\n" +
           "\t\t\t\techo $line;\n" +
           "\t\t\tfi\n" +

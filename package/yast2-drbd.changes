@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug 13 08:48:31 UTC 2015 - nwang@suse.com
+
+- BSC#941567. Fix error message pop up when no res conf in
+  fisrt launch.
+- Version 3.1.15
+
+-------------------------------------------------------------------
 Mon Aug 10 09:23:32 UTC 2015 - nwang@suse.com
 
 - BSC#941094. Change from /usr/sbin/drbd* to /sbin/drbd*
