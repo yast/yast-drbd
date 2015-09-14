@@ -90,8 +90,8 @@ module Yast
       else
         UI.WizardCommand(term(:SetNextButtonLabel, Label.FinishButton))
         UI.WizardCommand(term(:SetAbortButtonLabel, Label.CancelButton))
-        Wizard.HideBackButton
       end
+      Wizard.HideBackButton
 
       Wizard.SelectTreeItem(Ops.get_string(sequence, "ws_start", ""))
 

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 14 05:48:36 UTC 2015 - nwang@suse.com
+
+- BSC#945618. Remove the second dummy help button when
+  running as ncurses.
+- Version 3.1.16
+
+-------------------------------------------------------------------
 Thu Aug 13 08:48:31 UTC 2015 - nwang@suse.com
 
 - BSC#941567. Fix error message pop up when no res conf in
