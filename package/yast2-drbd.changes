@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 21 05:13:56 UTC 2015 - nwang@suse.com
+
+- BSC#946596. Support both hostname and hostname+domain
+- Version 3.1.17
+
+-------------------------------------------------------------------
 Mon Sep 14 05:48:36 UTC 2015 - nwang@suse.com
 
 - BSC#945618. Remove the second dummy help button when

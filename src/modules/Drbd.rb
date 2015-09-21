@@ -142,7 +142,7 @@ module Yast
       out = Convert.to_map(
         SCR.Execute(
           path(".target.bash_output"),
-          "echo -n `uname -n`"
+          "echo -n `uname -n|cut -d "." -f 1`"
         )
       )
       # strip is necessary
