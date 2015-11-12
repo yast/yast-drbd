@@ -154,6 +154,8 @@ module Yast
         Builtins.y2debug("Resconf %1 has config %2 ",
           resname, resconfig)
 
+        next if resconfig == nil || resconfig == {}
+
         resconfig["on"].each do |nodename, conf|
           if @local_hostname == nodename
             if section == "disk"

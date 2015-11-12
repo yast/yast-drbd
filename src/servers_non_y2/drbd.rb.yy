@@ -1,7 +1,7 @@
 
 class DrbdParser
 
-token TK_GLOBAL TK_RESOURCE TK_ON TK_NET TK_DISK_S TK_SYNCER TK_STARTUP TK_DISABLE_IP_VERIFICATION TK_PROTOCOL TK_ADDRESS TK_DISK TK_DEVICE TK_META_DISK TK_MINOR_COUNT TK_INTEGER TK_STRING TK_ON_IO_ERROR TK_SIZE TK_TIMEOUT TK_CONNECT_INT TK_PING_INT TK_MAX_BUFFERS TK_IPADDR TK_UNPLUG_WATERMARK TK_MAX_EPOCH_SIZE TK_SNDBUF_SIZE TK_RATE TK_AL_EXTENTS TK_WFC_TIMEOUT TK_DEGR_WFC_TIMEOUT TK_KO_COUNT TK_ON_DISCONNECT TK_DIALOG_REFRESH TK_USAGE_COUNT TK_COMMON TK_HANDLERS TK_FENCING TK_USE_BMBV TK_NO_DISK_BARRIER TK_NO_DISK_FLUSHES TK_NO_DISK_DRAIN TK_NO_MD_FLUSHES TK_MAX_BIO_BVECS TK_PINT_TIMEOUT TK_ALLOW_TWO_PRIMARIES TK_CRAM_HMAC_ALG TK_SHARED_SECRET TK_AFTER_SB_0PRI TK_AFTER_SB_1PRI TK_AFTER_SB_2PRI TK_DATA_INTEGRITY_ALG TK_RR_CONFLICT TK_NO_TCP_CORK TK_CPU_MASK TK_VERIFY_ALG TK_AFTER TK_FLEXIBLE_META_DISK TK_PRI_ON_INCON_DEGR TK_PRI_LOST_AFTER_SB TK_PRI_LOST TK_FENCE_PEER TK_LOCAL_IO_ERROR TK_SPLIT_BRAIN TK_BEFORE_RESYNC_TARGET TK_AFTER_RESYNC_TARGET TK_WAIT_AFTER_SB TK_BECOME_PRIMARY_ON TK_IPV6ADDR TK_IPV6 TK_FLOATING TK_STACK_ON_TOP_OF TK_MINOR
+token TK_GLOBAL TK_RESOURCE TK_ON TK_NET TK_DISK_S TK_SYNCER TK_STARTUP TK_DISABLE_IP_VERIFICATION TK_PROTOCOL TK_ADDRESS TK_DISK TK_DEVICE TK_META_DISK TK_MINOR_COUNT TK_INTEGER TK_STRING TK_ON_IO_ERROR TK_SIZE TK_TIMEOUT TK_CONNECT_INT TK_PING_INT TK_MAX_BUFFERS TK_IPADDR TK_UNPLUG_WATERMARK TK_MAX_EPOCH_SIZE TK_SNDBUF_SIZE TK_RATE TK_AL_EXTENTS TK_WFC_TIMEOUT TK_DEGR_WFC_TIMEOUT TK_KO_COUNT TK_ON_DISCONNECT TK_DIALOG_REFRESH TK_USAGE_COUNT TK_COMMON TK_HANDLERS TK_FENCING TK_USE_BMBV TK_NO_DISK_BARRIER TK_NO_DISK_FLUSHES TK_NO_DISK_DRAIN TK_NO_MD_FLUSHES TK_MAX_BIO_BVECS TK_PINT_TIMEOUT TK_ALLOW_TWO_PRIMARIES TK_CRAM_HMAC_ALG TK_SHARED_SECRET TK_AFTER_SB_0PRI TK_AFTER_SB_1PRI TK_AFTER_SB_2PRI TK_DATA_INTEGRITY_ALG TK_RR_CONFLICT TK_NO_TCP_CORK TK_CPU_MASK TK_VERIFY_ALG TK_AFTER TK_FLEXIBLE_META_DISK TK_PRI_ON_INCON_DEGR TK_PRI_LOST_AFTER_SB TK_PRI_LOST TK_FENCE_PEER TK_LOCAL_IO_ERROR TK_SPLIT_BRAIN TK_BEFORE_RESYNC_TARGET TK_AFTER_RESYNC_TARGET TK_WAIT_AFTER_SB TK_BECOME_PRIMARY_ON TK_IPV6ADDR TK_IPV6 TK_FLOATING TK_STACK_ON_TOP_OF TK_MINOR TK_OPTIONS TK_NO_DATA_ACCESSIBLE
 
 rule
 	config: global_sec common_sec resources { $drbd['global'] = val[0]; $drbd['common'] = val[1]; $drbd['resources'] = val[2]; return $drbd; }
@@ -24,6 +24,7 @@ rule
 			| TK_NET '{' net_stmts '}' { return ["#{val[0]}", val[2]]; }
 			| TK_SYNCER '{' sync_stmts '}' { return ["#{val[0]}", val[2]]; }
 			| TK_STARTUP '{' startup_stmts '}' { return ["#{val[0]}", val[2]]; }
+			| TK_OPTIONS '{' options_stmts '}' { return ["#{val[0]}", val[2]]; }
 			| TK_HANDLERS '{' handlers_stmts '}' { return ["#{val[0]}", val[2]]; }
 			| TK_PROTOCOL TK_STRING ';' { return ["#{val[0]}", val[1]]; }
 
@@ -71,6 +72,7 @@ rule
 		   | TK_NET '{' net_stmts '}' { return ["#{val[0]}", val[2]]; }
 		   | TK_SYNCER '{' sync_stmts '}' { return ["#{val[0]}", val[2]]; }
 		   | TK_STARTUP '{' startup_stmts '}' { return ["#{val[0]}", val[2]]; }
+		   | TK_OPTIONS '{' options_stmts '}' { return ["#{val[0]}", val[2]]; }
 		   | TK_HANDLERS '{' handlers_stmts '}' { return ["#{val[0]}", val[2]]; }
 		   | TK_ON hostname '{' host_stmts '}' { return ["#{val[0]}", "#{val[1]}", val[3]]; }
 		   | TK_FLOATING ip_and_port '{' floating_stmts '}' { return ["#{val[0]}", "#{val[1]}", val[3]]; }
@@ -103,7 +105,7 @@ rule
 			| TK_MAX_EPOCH_SIZE TK_STRING { return ["#{val[0]}", val[1]]; }
 			| TK_SNDBUF_SIZE TK_STRING { return ["#{val[0]}", val[1]]; }
 			| TK_KO_COUNT TK_STRING { return ["#{val[0]}", val[1]]; }
-			| TK_ALLOW_TWO_PRIMARIES { return ["#{val[0]}", true]; }
+			| TK_ALLOW_TWO_PRIMARIES TK_STRING { return ["#{val[0]}", val[1]]; }
 			| TK_CRAM_HMAC_ALG TK_STRING { return ["#{val[0]}", val[1]]; }
 			| TK_SHARED_SECRET TK_STRING { return ["#{val[0]}", val[1]]; }
 			| TK_AFTER_SB_0PRI TK_STRING { return ["#{val[0]}", val[1]]; }
@@ -112,6 +114,7 @@ rule
 			| TK_DATA_INTEGRITY_ALG TK_STRING { return ["#{val[0]}", val[1]]; }
 			| TK_RR_CONFLICT TK_STRING { return ["#{val[0]}", val[1]]; }
 			| TK_NO_TCP_CORK { return ["#{val[0]}", true]; }
+			| TK_PROTOCOL TK_STRING { return ["#{val[0]}", val[1]]; }
 
 	sync_stmts: /* none */  { return {}; }
 	          | sync_stmts sync_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
@@ -175,6 +178,12 @@ rule
 				| TK_BECOME_PRIMARY_ON TK_STRING { return ["#{val[0]}", val[1]]; }
 		        | TK_DEGR_WFC_TIMEOUT TK_STRING { return ["#{val[0]}", val[1]]; }
 
+	options_stmts: /* */ { return {}; }
+	             | options_stmts options_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
+
+	options_stmt: TK_CPU_MASK TK_STRING { return ["#{val[0]}", val[1]]; }
+		        | TK_NO_DATA_ACCESSIBLE TK_STRING { return ["#{val[0]}", val[1]]; }
+
 end			 
 
 ---- header
@@ -217,6 +226,8 @@ $drbd = Hash.new()
 				@q.push [:TK_SYNCER, 'syncer']
 			when /\Astartup/
 				@q.push [:TK_STARTUP, 'startup']
+			when /\Aoptions/
+				@q.push [:TK_OPTIONS, 'options']
 			when /\Ahandlers/
 				@q.push [:TK_HANDLERS, 'handlers']	
 			when /\Afencing/
@@ -323,6 +334,8 @@ $drbd = Hash.new()
 				@q.push [:TK_FLEXIBLE_META_DISK, 'flexible-meta-disk']	
 			when /\Adegr-wfc-timeout/
 				@q.push [:TK_DEGR_WFC_TIMEOUT, 'degr-wfc-timeout']
+			when /\Aon-no-data-accessible/
+				@q.push [:TK_NO_DATA_ACCESSIBLE, 'on-no-data-accessible']
 			when /\Awfc-timeout/
 				@q.push [:TK_WFC_TIMEOUT, 'wfc-timeout']
 			when /\Aipv6/
@@ -643,6 +656,14 @@ def writeFile()
           gccfile.puts "   }"
         end
 
+        if $drbd["common"].has_key?("options") then
+          gccfile.puts "   options {"
+          $drbd["common"]["options"].each_key do |key|
+            gccfile.puts "      "+key+"\t"+$drbd["common"]["options"][key]+";"
+          end
+          gccfile.puts "   }"
+        end
+
         if $drbd["common"].has_key?("handlers") then
           gccfile.puts "   handlers {"
           $drbd["common"]["handlers"].each_key do |key|
@@ -706,6 +727,14 @@ def writeFile()
           resfile.puts "   startup {"
           $drbd["resources"][res_name]["startup"].each_key do |key|
             resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["startup"][key]+";"
+          end
+          resfile.puts "   }"
+        end
+
+        if $drbd["resources"][res_name].has_key?("options") then
+          resfile.puts "   options {"
+          $drbd["resources"][res_name]["options"].each_key do |key|
+            resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["options"][key]+";"
           end
           resfile.puts "   }"
         end

@@ -70,6 +70,17 @@ module Yast
       while true
         Wizard.SelectTreeItem("resource_conf")
 
+        hasRes = false
+
+        Drbd.resource_config.each do |resname, conf|
+          next if Ops.get(Drbd.resource_config, resname) == nil
+          hasRes = true
+          break
+        end
+
+        UI.ChangeWidget(Id(:edit), :Enabled, hasRes)
+        UI.ChangeWidget(Id(:delete), :Enabled, hasRes)
+
         ret = UI.UserInput
 
         Builtins.y2debug("on ResListDialog(), UserInput ret=%1", ret)

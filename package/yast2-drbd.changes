@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Nov 12 08:03:39 UTC 2015 - nwang@suse.com
+
+- BSC#954393. Support "options" section in global_common.conf
+- BSC#954724. Disable "edit/delete" button when no resource.
+- BSC#954729. Error message pop up when save configuration after
+              edit or delete resource.
+- Version 3.1.18
+
+-------------------------------------------------------------------
 Mon Sep 21 05:13:56 UTC 2015 - nwang@suse.com
 
 - BSC#946596. Support both hostname and hostname+domain
