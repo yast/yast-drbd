@@ -14,14 +14,22 @@ module Yast
 
       @filter = ""
       @cache = true
+      @lvmetad = false
+
       # Default is always true (auto)
       @auto_lvm_filter = true
     end
 
     def lvm_conf_Read
       @filter = Ops.get_string( Drbd.lvm_config, "filter", "" )
-      cache_str = Ops.get_string( Drbd.lvm_config, "write_cache_state", "1" )
+      lvmetad_str = Ops.get_string( Drbd.lvm_config, "use_lvmetad", "0" )
+      if lvmetad_str == "0"
+        @lvmetad = false
+      else
+        @lvmetad = true
+      end
 
+      cache_str = Ops.get_string( Drbd.lvm_config, "write_cache_state", "1" )
       if cache_str == "0"
         @cache = false
       else
@@ -80,10 +88,37 @@ module Yast
         )
       )
 
+      _Tlvmetad = Frame(
+        _("Use lvmetad for LVM"),
+        Left(
+          HSquash(
+            VBox(
+              VBox(
+                Left(
+                  CheckBox(
+                    Id(:LVMetad),
+                    Opt(:notify),
+                    _("Use LVM metad"),
+                    @lvmetad
+                  )
+                ),
+                Left(Label(
+                  _(
+                    "Warning!  Should not use lvmetad for cluster."
+                  )
+                )),
+              ),
+            )
+          )
+        )
+      )
+
       VBox(
         _Tfilter,
         VSpacing(1),
         _Tcache,
+        VSpacing(1),
+        _Tlvmetad,
         VStretch()
       )
     end
@@ -93,15 +128,22 @@ module Yast
       @auto_lvm_filter = UI.QueryWidget(Id(:AutoFilter), :Value)
 
       @cache = UI.QueryWidget(Id(:LVMCache), :Value)
-
       if @cache
         cache_str = "1"
       else
         cache_str = "0"
       end
 
+      @lvmetad = UI.QueryWidget(Id(:LVMetad), :Value)
+      if @lvmetad
+        lvmetad_str = "1"
+      else
+        lvmetad_str = "0"
+      end
+
       Drbd.auto_lvm_filter = @auto_lvm_filter
       Ops.set(Drbd.lvm_config, "write_cache_state", cache_str)
+      Ops.set(Drbd.lvm_config, "use_lvmetad", lvmetad_str)
 
       if !@auto_lvm_filter
         Ops.set(Drbd.lvm_config, "filter", @filter)

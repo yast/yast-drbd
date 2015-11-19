@@ -125,6 +125,8 @@ module Yast
               "\n" +
               "\t\t<p><b>LVM cache</b>: Enable/turn on writing the LVM cache is default. Disable cache when for network storage, like nfs. </p>\n" +
               "\n" +
+              "\t\t<p><b>LVMetad</b>: When lvmetad is enable, the volume group metadata and PV state flags are obtained from the lvmetad instance and no scanning is done by the individual commands. Since cache of lvmetad can not sync between nodes, should not use lvmetad(disable) when working in cluster environment.</p>\n" +
+              "\n" +
               "\t\t"
           ),
         "global_conf"   => _(

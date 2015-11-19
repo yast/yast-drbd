@@ -298,6 +298,16 @@ module Yast
         end
 
         #read LVM configs via /etc/lvm/lvm.conf
+        #Disable use_lvmetad when using yast drbd to avoid lvmetad
+        #in cluster environment, but it may also effect regular usage
+        #Manually enable use_lvmetad in this case
+        val = Convert.to_string(
+            SCR.Read(Builtins.topath(Builtins.sformat(".drbd_lvm.value.global.%1",
+                     "use_lvmetad")))
+          )
+        Ops.set(@lvm_config, "use_lvmetad", val)
+        y2debug("drbd_lvm.global.%1 is %2", "use_lvmetad", val)
+
         #All of them under "devices" section
         ["filter", "write_cache_state", "cache_dir"].each do |key|
           val = Convert.to_string(
@@ -681,6 +691,13 @@ module Yast
             Ops.get(@lvm_config, key)
           )
         end
+      end
+
+      if Ops.get(@lvm_config, "use_lvmetad") != nil
+        SCR.Write(
+          Builtins.topath(Builtins.sformat(".drbd_lvm.value.global.%1", "use_lvmetad")),
+          Ops.get(@lvm_config, "use_lvmetad")
+        )
       end
 
       if Ops.get(@lvm_config, "write_cache_state") == "0"

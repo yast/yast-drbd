@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 19 09:03:24 UTC 2015 - nwang@suse.com
+
+- BSC#955564. Allow user to configure "use_lvmetad" for lvm.
+- Version 3.1.19
+
+-------------------------------------------------------------------
 Thu Nov 12 08:03:39 UTC 2015 - nwang@suse.com
 
 - BSC#954393. Support "options" section in global_common.conf
