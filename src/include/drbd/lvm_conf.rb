@@ -29,7 +29,7 @@ module Yast
         @lvmetad = true
       end
 
-      cache_str = Ops.get_string( Drbd.lvm_config, "write_cache_state", "1" )
+      cache_str = Ops.get_string( Drbd.lvm_config, "write_cache_state", "0" )
       if cache_str == "0"
         @cache = false
       else
@@ -81,7 +81,12 @@ module Yast
                     _("Enable LVM Cache"),
                     @cache
                   )
-                )
+                ),
+                Left(Label(
+                  _(
+                    "Warning!  Should disable LVM cache for using drbd."
+                  )
+                )),
               ),
             )
           )
