@@ -2076,7 +2076,7 @@ errlog($drbd.to_s)
 $stdin.each do |line|
   errlog(line)
   line.chomp
-  cmd = line.gsub(/^`?([a-zA-Z]+)\s+$/, '\1')
+  cmd = line.gsub(/^`?([a-zA-Z]+)\s+.*$/, '\1')
   path = line.gsub(/^`?([a-zA-Z]+)\s+\(([^,]*)(,.*)?\)$/, '\2').split('.')-[""]-["\n"]
   args = line.gsub(/^`?([a-zA-Z]+)\s+\(([^,]*)(,.*)?\)$/, '\3')
   if args.length != 0 then
