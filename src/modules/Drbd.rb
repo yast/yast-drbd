@@ -65,7 +65,8 @@ module Yast
           "unplug-watermark",
           "max-epoch-size",
           "sndbuf-size",
-          "ko-count"
+          "ko-count",
+          "protocol"
         ],
         "startup" => ["wfc-timeout", "degr-wfc-timeout"]
       }
@@ -335,6 +336,7 @@ module Yast
           res_configs = SCR.Dir(
             Builtins.topath(Builtins.sformat(".drbd.resources.%1", resname))
           )
+          # "protocol" should outdate since it move to net section
           Builtins.foreach(["protocol"]) do |resconf|
             if Builtins.contains(res_configs, resconf)
               val = Convert.to_string(

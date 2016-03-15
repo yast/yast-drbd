@@ -333,10 +333,6 @@ module Yast
     def res_advance_config_get_dialog(res_config)
       res_config = deep_copy(res_config)
       VBox(
-        HBox(
-          ComboBox(Id(:protocol), _("Protocol"), ["A", "B", "C"]),
-          HSpacing()
-        ),
         Frame(
           "Startup",
           HBox(
@@ -384,6 +380,7 @@ module Yast
               )
             ),
             HBox(
+              ComboBox(Id(:protocol), _("Protocol"), ["A", "B", "C"]),
               TextEntry(
                 Id(:timeout),
                 "timeout",
@@ -442,22 +439,33 @@ module Yast
 
     def save_advance_config(res_config)
       res_config = deep_copy(res_config)
+
+      # If don't click the advance button
       if UI.QueryWidget(Id(:protocol), :Value) == nil
-        if Ops.get(res_config, "protocol") == nil
-          Ops.set(res_config, "protocol", "C")
+        # Move "protocol" to the "net" section
+        if Ops.get(res_config, ["net", "protocol"]) == nil
+          if Ops.get(res_config, "protocol") == nil
+            Ops.set(
+              res_config, "net", { "protocol" => "C" }
+            )
+          else
+            Ops.set(
+              res_config, "net", { "protocol" => Ops.get(
+               res_config, "protocol") }
+            )
+          end
         end
+
+        Ops.set(res_config, "protocol", nil)
         if Ops.get(res_config, ["disk_s", "on-io-error"]) == nil
           Ops.set(res_config, "disk_s", { "on-io-error" => "pass_on" })
         end
         return deep_copy(res_config)
       end
 
-
-      Ops.set(
-        res_config,
-        "protocol",
-        Convert.to_string(UI.QueryWidget(Id(:protocol), :Value))
-      )
+      # "protocol" option within net section
+      # reset the protocol in resource section
+      Ops.set(res_config, "protocol", nil)
 
       Ops.set(
         res_config,
@@ -507,6 +515,9 @@ module Yast
           ),
           "ko-count"       => Convert.to_string(
             UI.QueryWidget(Id(:ko_count), :Value)
+          ),
+          "protocol"       => Convert.to_string(
+            UI.QueryWidget(Id(:protocol), :Value)
           )
         }
       )
@@ -641,6 +652,11 @@ module Yast
           UI.ChangeWidget(
             Id(:protocol),
             :Value,
+            #Ops.get() including the logical of has_key, otherwise will use like
+            # (res_config.has_key?("net") &&
+            # res_config["net"].has_key?("protocol") &&
+            # Ops.get_string(res_config["net"], "protocol", "C")) ||
+            Ops.get_string(res_config, ["net", "protocol"]) ||
             Ops.get_string(res_config, "protocol", "C")
           )
           UI.ChangeWidget(
