@@ -55,7 +55,7 @@ module Yast
       @drbd_dir = "/etc"
       @start_daemon = false
       @config_name = {
-        "disk_s"  => ["on-io-error", "size"],
+        "disk_s"  => ["on-io-error", "size", "md-flushes"],
         "syncer"  => ["rate", "al-extents"],
         "net"     => [
           "timeout",
