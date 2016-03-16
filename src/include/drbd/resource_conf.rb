@@ -361,6 +361,13 @@ module Yast
               Id(:size),
               "size",
               Ops.get_string(res_config, ["disk_s", "size"], "")
+            ),
+            HSpacing(),
+            TextEntry(
+              Id(:al_extents),
+              "al-extents",
+              Ops.get_string(res_config, ["disk_s", "al-extents"]) ||
+              Ops.get_string(res_config, ["syncer", "al-extents"], "")
             )
           )
         ),
@@ -416,13 +423,8 @@ module Yast
           HBox(
             TextEntry(
               Id(:rate),
-              "Rate",
+              "rate",
               Ops.get_string(res_config, ["syncer", "rate"], "")
-            ),
-            TextEntry(
-              Id(:al_extents),
-              "Al-extents",
-              Ops.get_string(res_config, ["syncer", "al-extents"], "")
             )
           )
         ),
@@ -455,10 +457,20 @@ module Yast
             )
           end
         end
-
         Ops.set(res_config, "protocol", nil)
+
+        # Move "al-extents" to the "disk" section
+        if Ops.get(res_config, ["disk_s", "al-extents"]) == nil
+          Ops.set(res_config, "disk_s", {"al-extents" => Ops.get_string(
+           res_config, ["syncer", "al-extents"])})
+        end
+        Ops.set(res_config, ["syncer", "al-extents"], nil)
+
         if Ops.get(res_config, ["disk_s", "on-io-error"]) == nil
-          Ops.set(res_config, "disk_s", { "on-io-error" => "pass_on" })
+          Ops.set(res_config, "disk_s", {
+                 "on-io-error" => "pass_on" ,
+                 "al-extents" => Ops.get_string(res_config, ["disk_s", "al-extents"])
+                 })
         end
         return deep_copy(res_config)
       end
@@ -486,6 +498,9 @@ module Yast
         {
           "on-io-error" => Convert.to_string(
             UI.QueryWidget(Id(:on_io_error), :Value)
+          ),
+          "al-extents" => Convert.to_string(
+            UI.QueryWidget(Id(:al_extents), :Value)
           ),
           "size"        => Convert.to_string(UI.QueryWidget(Id(:size), :Value))
         }
@@ -518,7 +533,9 @@ module Yast
           ),
           "protocol"       => Convert.to_string(
             UI.QueryWidget(Id(:protocol), :Value)
-          )
+          ),
+          "verify-alg"     => Ops.get_string(
+            res_config, ["net", "verify-alg"], "")
         }
       )
 
@@ -526,9 +543,6 @@ module Yast
         res_config,
         "syncer",
         {
-          "al-extents" => Convert.to_string(
-            UI.QueryWidget(Id(:al_extents), :Value)
-          ),
           "rate"       => Convert.to_string(UI.QueryWidget(Id(:rate), :Value))
         }
       )

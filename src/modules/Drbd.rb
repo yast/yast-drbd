@@ -55,7 +55,7 @@ module Yast
       @drbd_dir = "/etc"
       @start_daemon = false
       @config_name = {
-        "disk_s"  => ["on-io-error", "size", "md-flushes"],
+        "disk_s"  => ["on-io-error", "size", "md-flushes", "al-extents"],
         "syncer"  => ["rate", "al-extents"],
         "net"     => [
           "timeout",
@@ -66,7 +66,8 @@ module Yast
           "max-epoch-size",
           "sndbuf-size",
           "ko-count",
-          "protocol"
+          "protocol",
+          "verify-alg"
         ],
         "startup" => ["wfc-timeout", "degr-wfc-timeout"]
       }

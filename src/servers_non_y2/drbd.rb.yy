@@ -92,6 +92,7 @@ rule
 			 | TK_NO_DISK_DRAIN  TK_STRING { return ["#{val[0]}", val[1]]; }
 			 | TK_MD_FLUSHES TK_STRING { return ["#{val[0]}", val[1]]; }
 			 | TK_MAX_BIO_BVECS TK_STRING { return ["#{val[0]}", val[1]]; }
+			 | TK_AL_EXTENTS TK_STRING { return ["#{val[0]}", val[1]]; }
 
 	net_stmts: /* none */ { return {}; }
              | net_stmts net_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; } 
@@ -115,6 +116,7 @@ rule
 			| TK_RR_CONFLICT TK_STRING { return ["#{val[0]}", val[1]]; }
 			| TK_NO_TCP_CORK { return ["#{val[0]}", true]; }
 			| TK_PROTOCOL TK_STRING { return ["#{val[0]}", val[1]]; }
+			| TK_VERIFY_ALG TK_STRING { return ["#{val[0]}", val[1]]; }
 
 	sync_stmts: /* none */  { return {}; }
 	          | sync_stmts sync_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
