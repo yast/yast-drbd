@@ -69,7 +69,8 @@ module Yast
           "protocol",
           "verify-alg"
         ],
-        "startup" => ["wfc-timeout", "degr-wfc-timeout"]
+        "startup" => ["wfc-timeout", "degr-wfc-timeout"],
+        "options" => ["cpu-mask", "on-no-data-accessible"]
       }
       @local_hostname = ""
       @local_ports = []
