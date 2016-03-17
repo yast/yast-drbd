@@ -1,12 +1,13 @@
 -------------------------------------------------------------------
 Thu Mar 17 01:59:37 UTC 2016 - nwang@suse.com
 
-- Fix gsub search in in ruby agent
-- Syntax change: support md-flushes after ver8.4
+- bsc#971508, many syntax change after drbdv8.4
+- Syntax change: support md-flushes in disk section
 - Syntax change: protocol option move to net section
 - Syntax change: move al-extents/verify-alg from syncer section
                  to disk/net section.
 - Syntax change: Support options section in conf, but no UI.
+- Fix gsub search in in ruby agent
 - Version 3.1.20
 
 -------------------------------------------------------------------
