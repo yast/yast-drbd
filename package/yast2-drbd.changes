@@ -1,8 +1,18 @@
 -------------------------------------------------------------------
+Thu Mar 17 01:59:37 UTC 2016 - nwang@suse.com
+
+- Fix gsub search in in ruby agent
+- Syntax change: support md-flushes after ver8.4
+- Syntax change: protocol option move to net section
+- Syntax change: move al-extents/verify-alg from syncer section
+                 to disk/net section.
+- Syntax change: Support options section in conf, but no UI.
+- Version 3.1.20
+
+-------------------------------------------------------------------
 Wed Jan 20 07:26:13 UTC 2016 - nwang@suse.com
 
-- Dummy. Replace ag_drbd with new generated one.
-- From rubygem-racc 1.4.14
+- Replace ag_drbd with new generated one by rubygem-racc 1.4.14
 
 -------------------------------------------------------------------
 Thu Nov 19 09:03:24 UTC 2015 - nwang@suse.com
