@@ -384,7 +384,7 @@ module Yast
             nodescf = {}
             Builtins.foreach(nodes) do |n|
               nodecf = {}
-              Builtins.foreach(["device", "disk", "meta-disk", "address"]) do |k|
+              Builtins.foreach(["device", "disk", "meta-disk", "address", "node-id"]) do |k|
                 v = Convert.to_string(
                   SCR.Read(
                     Builtins.topath(
