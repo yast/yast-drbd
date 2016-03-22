@@ -30,13 +30,18 @@ module Yast
         )
       ) do |resname, resconfig|
         next if Ops.get(Drbd.resource_config, resname) == nil
+        node_number = 0
         items = Item(Id(resname))
         items = Builtins.add(items, resname)
         Builtins.foreach(Ops.get_map(resconfig, "on", {})) do |nodename, nodeconfig|
+          node_number += 1
+          if node_number > 2
+            items = Builtins.add(items, "...")
+            break
+          end
           items = Builtins.add(items, nodename)
         end
         table_items = Builtins.add(table_items, items)
-        0
       end
 
       VBox(
@@ -45,7 +50,7 @@ module Yast
           Opt(:hvstretch),
           Table(
             Id(:res_list_table),
-            Header("Resource      ", "Node-1       ", "Node-2       "),
+            Header("Resource      ", "Node-1       ", "Node-2       ", "More...       "),
             table_items
           )
         ),
@@ -131,113 +136,55 @@ module Yast
       deep_copy(ret)
     end
 
-    def res_basic_config_get_dialog(res_config)
-      res_config = deep_copy(res_config)
-      node_name = []
-
-      Builtins.foreach(Ops.get_map(res_config, "on", {})) do |name, val|
-        node_name = Builtins.add(node_name, name)
-      end
-
+    def res_basic_config_get_dialog(resname)
       VBox(
         TextEntry(
           Id(:resname),
           _("Resource Name"),
-          Ops.get_string(res_config, "resname", "")
+          resname
         ),
         Frame(
           "Nodes Configurations",
           HBox(
-            MarginBox(
-              1,
-              1,
-              Frame(
-                "Node 1",
-                VBox(
-                  TextEntry(Id(:n1_name), "Name", Ops.get(node_name, 0, "")),
-                  TextEntry(
-                    Id(:n1_addr),
-                    "Address:Port",
-                    Ops.get_string(
-                      res_config,
-                      ["on", Ops.get(node_name, 0, ""), "address"],
-                      ""
-                    )
-                  ),
-                  TextEntry(
-                    Id(:n1_devc),
-                    "Device",
-                    Ops.get_string(
-                      res_config,
-                      ["on", Ops.get(node_name, 0, ""), "device"],
-                      ""
-                    )
-                  ),
-                  TextEntry(
-                    Id(:n1_disk),
-                    "Disk",
-                    Ops.get_string(
-                      res_config,
-                      ["on", Ops.get(node_name, 0, ""), "disk"],
-                      ""
-                    )
-                  ),
-                  TextEntry(
-                    Id(:n1_meta),
-                    "Meta-disk",
-                    Ops.get_string(
-                      res_config,
-                      ["on", Ops.get(node_name, 0, ""), "meta-disk"],
-                      "internal"
-                    )
-                  )
+            VBox(
+              SelectionBox(Id(:node_box), _("Nodes")),
+              Left(
+                HBox(
+                  PushButton(Id(:node_add), _("Add")),
+                  PushButton(Id(:node_edit), _("Edit")),
+                  PushButton(Id(:node_del), _("Delete"))
                 )
               )
             ),
-            MarginBox(
-              1,
-              1,
-              Frame(
-                "Node 2",
-                VBox(
-                  TextEntry(Id(:n2_name), "Name", Ops.get(node_name, 1, "")),
-                  TextEntry(
-                    Id(:n2_addr),
-                    "Address:Port",
-                    Ops.get_string(
-                      res_config,
-                      ["on", Ops.get(node_name, 1, ""), "address"],
-                      ""
-                    )
-                  ),
-                  TextEntry(
-                    Id(:n2_devc),
-                    "Device",
-                    Ops.get_string(
-                      res_config,
-                      ["on", Ops.get(node_name, 1, ""), "device"],
-                      ""
-                    )
-                  ),
-                  TextEntry(
-                    Id(:n2_disk),
-                    "Disk",
-                    Ops.get_string(
-                      res_config,
-                      ["on", Ops.get(node_name, 1, ""), "disk"],
-                      ""
-                    )
-                  ),
-                  TextEntry(
-                    Id(:n2_meta),
-                    "Meta-disk",
-                    Ops.get_string(
-                      res_config,
-                      ["on", Ops.get(node_name, 1, ""), "meta-disk"],
-                      "internal"
+            VBox(
+              MarginBox(
+                1,
+                1,
+                Frame(
+                  "Node",
+                  VBox(
+                    TextEntry(Id(:n_name), "Name"),
+                    TextEntry(
+                      Id(:n_addr),
+                      "Address:Port"
+                    ),
+                    TextEntry(
+                      Id(:n_devc),
+                      "Device"
+                    ),
+                    TextEntry(
+                      Id(:n_disk),
+                      "Disk"
+                    ),
+                    TextEntry(
+                      Id(:n_meta),
+                      "Meta-disk"
                     )
                   )
                 )
+              ),
+              Right(
+                PushButton(Id(:node_save), _("Save")),
               )
             )
           )
@@ -253,24 +200,25 @@ module Yast
       )
     end
 
-    def update_add_disk_list
+    def update_add_disk_list(node_list)
       # Update new add disk used of drbd res for LVM filter
       # Ignore the removed disk
+      disk = nil
       local_hname = Drbd.local_hostname
 
-      node1 = UI.QueryWidget(Id(:n1_name), :Value).to_s.strip()
-      node2 = UI.QueryWidget(Id(:n2_name), :Value).to_s.strip()
-
-      if local_hname == node1
-        disk = UI.QueryWidget(Id(:n1_disk), :Value).to_s.strip()
-      elsif local_hname == node2
-        disk = UI.QueryWidget(Id(:n2_disk), :Value).to_s.strip()
-      else
-        disk = nil
-        Builtins.y2error("Disk is not belong to local. localhost is %1,
-          node1 is %2, node2 is %3.", local_hname, node1, node2)
+      node_list.each do |node|
+        if local_hname == node
+          disk =node
+          break
+        end
       end
-      Builtins.y2debug("Add %1 to add disk list.", disk)
+
+      if disk
+        Builtins.y2debug("Add %1 to add disk list.", disk)
+      else
+        Builtins.y2error("Disk is not belong to local. localhost is %1,
+          nodes are %2.", local_hname, node_list)
+      end
 
       if disk && !Drbd.local_disks_ori.include?(disk) &&
         !Drbd.local_disks_added.include?(disk)
@@ -291,43 +239,34 @@ module Yast
         "resname",
         Convert.to_string(UI.QueryWidget(Id(:resname), :Value))
       )
+
+      if ! res_config.has_key?("on")
+        res_config["on"] = {}
+      end
+
+      # Since n_name can't be edit, so set direct is OK
       Ops.set(
         res_config,
-        "on",
+        ["on", Convert.to_string(UI.QueryWidget(Id(:n_name), :Value))],
         {
-          Convert.to_string(UI.QueryWidget(Id(:n1_name), :Value)) => {
             "address"   => Convert.to_string(
-              UI.QueryWidget(Id(:n1_addr), :Value)
+              UI.QueryWidget(Id(:n_addr), :Value)
             ),
             "device"    => Convert.to_string(
-              UI.QueryWidget(Id(:n1_devc), :Value)
+              UI.QueryWidget(Id(:n_devc), :Value)
             ),
             "disk"      => Convert.to_string(
-              UI.QueryWidget(Id(:n1_disk), :Value)
+              UI.QueryWidget(Id(:n_disk), :Value)
             ),
             "meta-disk" => Convert.to_string(
-              UI.QueryWidget(Id(:n1_meta), :Value)
+              UI.QueryWidget(Id(:n_meta), :Value)
             )
-          },
-          Convert.to_string(UI.QueryWidget(Id(:n2_name), :Value)) => {
-            "address"   => Convert.to_string(
-              UI.QueryWidget(Id(:n2_addr), :Value)
-            ),
-            "device"    => Convert.to_string(
-              UI.QueryWidget(Id(:n2_devc), :Value)
-            ),
-            "disk"      => Convert.to_string(
-              UI.QueryWidget(Id(:n2_disk), :Value)
-            ),
-            "meta-disk" => Convert.to_string(
-              UI.QueryWidget(Id(:n2_meta), :Value)
-            )
-          }
         }
       )
 
       deep_copy(res_config)
     end
+
 
 
     def res_advance_config_get_dialog(res_config)
@@ -570,23 +509,163 @@ module Yast
       deep_copy(new_map)
     end
 
+    def fill_nodes_entries(node_list)
+      i = current = 0
+      items = []
+      node_list.each do |name|
+        items = items.push(Item(Id(i), name))
+        i += 1
+      end
+      # Using current to make sure back to original posion after click
+      # CurrentItem initial as 0
+      current = UI.QueryWidget(:node_box, :CurrentItem).to_i
+      current = i-1 if current >= i
+      UI.ChangeWidget(:node_box, :Items, items)
+      UI.ChangeWidget(:node_box, :CurrentItem, current)
+
+      nil
+    end
+
+    def fill_node_info(res_config, node_name)
+      UI.ChangeWidget(Id(:n_name), :Value, node_name)
+      UI.ChangeWidget(Id(:n_addr), :Value,
+         Ops.get_string(res_config,
+                      ["on", node_name, "address"],
+                      ""))
+      UI.ChangeWidget(Id(:n_devc), :Value,
+         Ops.get_string(res_config,
+                      ["on", node_name, "device"],
+                      ""))
+      UI.ChangeWidget(Id(:n_disk), :Value,
+         Ops.get_string(res_config,
+                      ["on", node_name, "disk"],
+                      ""))
+      UI.ChangeWidget(Id(:n_meta), :Value,
+         Ops.get_string(res_config,
+                      ["on", node_name, "meta-disk"],
+                      "internal"))
+
+      # Do not allowed to modify node name. Add/Delete only.
+      UI.ChangeWidget(Id(:n_name), :Enabled, false)
+
+      nil
+    end
+
+    # return `cancel or a string
+    def node_name_input_dialog(title, value)
+      ret = nil
+
+      UI.OpenDialog(
+        MarginBox(
+          1,
+          1,
+          VBox(
+            MinWidth(100, InputField(Id(:text), Opt(:hstretch), title, value)),
+            VSpacing(1),
+            Right(
+              HBox(
+                PushButton(Id(:ok), _("OK")),
+                PushButton(Id(:cancel), _("Cancel"))
+              )
+            )
+          )
+        )
+      )
+      while true
+        ret = UI.UserInput
+        if ret == :ok
+          val = Convert.to_string(UI.QueryWidget(:text, :Value))
+          if val.size != 0
+            ret = val
+            break
+          else
+            Popup.Message(_("Node name can not be empty."))
+          end
+        end
+        break if ret == :cancel
+      end
+      UI.CloseDialog
+      deep_copy(ret)
+    end
+
+    def switchButtonsOn(frame)
+      if frame == "Right"
+        enable = false
+      else
+        enable = true
+      end
+      disable = !enable
+
+      UI.ChangeWidget(Id(:node_box), :Enabled, enable)
+      UI.ChangeWidget(Id(:node_add), :Enabled, enable)
+      UI.ChangeWidget(Id(:node_edit), :Enabled, enable)
+      UI.ChangeWidget(Id(:node_del), :Enabled, enable)
+
+      UI.ChangeWidget(Id(:n_name), :Enabled, disable)
+      UI.ChangeWidget(Id(:n_addr), :Enabled, disable)
+      UI.ChangeWidget(Id(:n_devc), :Enabled, disable)
+      UI.ChangeWidget(Id(:n_disk), :Enabled, disable)
+      UI.ChangeWidget(Id(:n_meta), :Enabled, disable)
+      UI.ChangeWidget(Id(:node_save), :Enabled, disable)
+    end
+
+    def autoGenerateNodeID(res_config)
+      res_config = deep_copy(res_config)
+
+      node_id = 0
+      Builtins.foreach(Ops.get_map(res_config, "on", {})) do |name, val|
+        res_config["on"][name]["node-id"] = node_id
+        node_id += 1
+      end
+
+      deep_copy(res_config)
+    end
 
     def ResDialog(resname)
+      current = 0
       ret = nil
+      # No need to empty all field if value not invalid
+      invalid = false
       cur_page = :basic
-      res_config = Ops.get_map(Drbd.resource_config, resname, {})
-      Ops.set(res_config, "resname", resname)
+      orires = resname
 
-      my_SetContents("basic_conf", res_basic_config_get_dialog(res_config))
+      res_config = Ops.get_map(Drbd.resource_config, orires, {})
+      # New create a res and delete the old res after finished
+      Ops.set(res_config, "resname", orires)
+
+      my_SetContents("basic_conf", res_basic_config_get_dialog(orires))
       #Popup::Warning(resname);
+      switchButtonsOn("Left")
+
+      node_list = []
+      Builtins.foreach(Ops.get_map(res_config, "on", {})) do |name, val|
+        node_list = Builtins.add(node_list, name)
+      end
 
       Wizard.DisableNextButton
       Wizard.DisableAbortButton
 
       while true
         Wizard.SelectTreeItem("resource_conf")
-        ret = UI.UserInput
 
+        # May need to check only when cur_page == :basic
+        if invalid == false
+          fill_nodes_entries(node_list)
+
+          if node_list.empty?
+            fill_node_info(res_config, "")
+            switchButtonsOn("Right")
+          else
+            current = UI.QueryWidget(:node_box, :CurrentItem).to_i
+            fill_node_info(res_config, node_list[current])
+          end
+        end
+
+        # Select box disable notify by default
+        UI.ChangeWidget(Id(:node_box), :Notify, true)
+        invalid = false
+
+        ret = UI.UserInput
         Builtins.y2debug("in ResDialog(), UserInput ret=%1", ret)
 
         if ret == :help
@@ -601,52 +680,112 @@ module Yast
 
         next if Builtins.contains(@DIALOG, Builtins.tostring(ret))
 
-
-        if ret == :advance || ret == :ok && cur_page == :basic
-          if Convert.to_string(UI.QueryWidget(Id(:n1_name), :Value)) ==
-              Convert.to_string(UI.QueryWidget(Id(:n2_name), :Value))
-            Popup.Warning(_("Node names must be different."))
-            ret = nil
-            next
-          end
-
-          if UI.QueryWidget(Id(:n1_name), :Value).to_s.include?(".") || UI.QueryWidget(Id(:n2_name), :Value).to_s.include?(".")
+        if ret == :advance || ret == :node_save || ret == :ok && cur_page == :basic
+          if UI.QueryWidget(Id(:n_name), :Value).to_s.include?(".")
             Popup.Warning(_('Node names must not include "." , using the local hostname.'))
 
-            if UI.QueryWidget(Id(:n1_name), :Value).to_s.include?(".")
-              UI.SetFocus(Id(:n1_name))
-            else
-              UI.SetFocus(Id(:n2_name))
-            end
+            UI.SetFocus(Id(:n_name))
+            invalid = true
             ret = nil
             next
           end
-
-          Drbd.modified = true
 
           Builtins.foreach(
             [
               :resname,
-              :n1_addr,
-              :n1_name,
-              :n1_devc,
-              :n1_disk,
-              :n1_meta,
-              :n2_name,
-              :n2_addr,
-              :n2_devc,
-              :n2_disk,
-              :n2_meta
+              :n_addr,
+              :n_name,
+              :n_devc,
+              :n_disk,
+              :n_meta
             ]
           ) do |the_id|
             str = Convert.to_string(UI.QueryWidget(Id(the_id), :Value))
             if str == nil || Builtins.size(str) == 0
               Popup.Warning(_("Please fill out all fields."))
+              invalid = true
               ret = nil
               raise Break
             end
           end
+
+          if ret == :ok
+            if node_list.size < 2
+              Popup.Warning(_("Please configure at least two nodes."))
+              invalid = true
+              ret = nil
+              next
+            end
+          end
+
+          Drbd.modified = true
+
           next if ret == nil
+        end
+
+        if ret == :node_box
+          # No need to check integrity since it will disabled when configuring
+          res_config = save_basic_config(res_config)
+          next
+        end
+
+        if ret == :node_save
+          res_config = save_basic_config(res_config)
+
+          # Need to refresh the node_list when initial resource
+          if node_list.empty?
+            Builtins.foreach(Ops.get_map(res_config, "on", {})) do |name, val|
+              node_list = Builtins.add(node_list, name)
+            end
+          end
+
+          switchButtonsOn("Left")
+          next
+        end
+
+        if ret == :node_add
+          # No need to check integrity since it will disabled when configuring
+          ret = node_name_input_dialog(
+            _("Enter the node name:"),
+            ""
+          )
+          next if ret == :cancel
+
+          if node_list.include?(ret.to_s)
+            Popup.Warning(_("Node name must be different."))
+            ret = nil
+            next
+          end
+
+          Ops.set(res_config, ["on", ret.to_s], {})
+          node_list.push(ret.to_s)
+
+          # Point to the new add node
+          # Need to point after updating the node_box
+          fill_nodes_entries(node_list)
+          UI.ChangeWidget(:node_box, :CurrentItem, node_list.size - 1)
+          switchButtonsOn("Right")
+          UI.ChangeWidget(Id(:node_del), :Enabled, true)
+
+          ret = nil
+          next
+        end
+
+        if ret == :node_edit
+          switchButtonsOn("Right")
+          UI.ChangeWidget(Id(:n_name), :Enabled, false)
+          next
+        end
+
+        if ret == :node_del
+          current = UI.QueryWidget(:node_box, :CurrentItem).to_i
+
+          res_config["on"].delete(node_list[current])
+          node_list.delete_at(current)
+
+          switchButtonsOn("Left")
+          ret = nil
+          next
         end
 
         if ret == :advance
@@ -654,9 +793,6 @@ module Yast
 
           res_config = save_basic_config(res_config)
           Builtins.y2debug("res_config = %1", res_config)
-
-          # For change LVM filter automatically
-          update_add_disk_list
 
           my_SetContents(
             "advance_conf",
@@ -666,7 +802,9 @@ module Yast
           UI.ChangeWidget(
             Id(:protocol),
             :Value,
-            #Ops.get() including the logical of has_key, otherwise will use like
+            # First using the protocol in net section.
+            # Ops.get() including the logical of has_key
+            # otherwise will use like:
             # (res_config.has_key?("net") &&
             # res_config["net"].has_key?("protocol") &&
             # Ops.get_string(res_config["net"], "protocol", "C")) ||
@@ -689,7 +827,10 @@ module Yast
           cur_page = :basic
 
           res_config = save_advance_config(res_config)
-          my_SetContents("basic_conf", res_basic_config_get_dialog(res_config))
+          my_SetContents("basic_conf", res_basic_config_get_dialog(
+            Ops.get_string(res_config, "resname")))
+
+          switchButtonsOn("Left")
 
           Wizard.DisableNextButton
           Wizard.DisableAbortButton
@@ -706,33 +847,34 @@ module Yast
           Builtins.y2debug("res_config=%1", res_config)
 
           # For change LVM filter automatically
-          update_add_disk_list
+          update_add_disk_list(node_list)
 
-          if Ops.greater_than(Builtins.size(resname), 0)
+          if Ops.greater_than(Builtins.size(orires), 0)
+            # Remove the original res configuration
             Drbd.resource_config = Builtins.remove(
               Drbd.resource_config,
-              resname
+              orires
             )
-            Ops.set(Drbd.resource_config, resname, nil)
-            resname = Ops.get_string(res_config, "resname", "")
-            Builtins.y2debug("resname=%1", resname)
-            if Ops.greater_than(Builtins.size(resname), 0)
-              res_config = Builtins.remove(res_config, "resname")
-              Ops.set(Drbd.resource_config, resname, res_config)
-              Builtins.y2debug("new resname = %1", resname)
-              Builtins.y2debug(
-                "mcdebug drbd::resource_config = %1",
-                Drbd.resource_config
-              )
-            end
+            #Ops.set(Drbd.resource_config, orires, nil)
           else
             Builtins.y2debug("add new resouce")
-            resname = Ops.get_string(res_config, "resname", "")
-            if Ops.greater_than(Builtins.size(resname), 0)
-              res_config = Builtins.remove(res_config, "resname")
-              Ops.set(Drbd.resource_config, resname, res_config)
-            end
           end
+
+          # Set the new res configuration
+          newres = Ops.get_string(res_config, "resname", "")
+          Builtins.y2debug("resname=%1", newres)
+
+          if Ops.greater_than(Builtins.size(newres), 0)
+            res_config = Builtins.remove(res_config, "resname")
+            res_config = autoGenerateNodeID(res_config)
+            Ops.set(Drbd.resource_config, newres, res_config)
+            Builtins.y2debug("new resname = %1", newres)
+            Builtins.y2debug(
+              "mcdebug drbd::resource_config = %1",
+              Drbd.resource_config
+            )
+          end
+
           break
         end
       end
