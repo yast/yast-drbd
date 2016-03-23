@@ -474,7 +474,9 @@ module Yast
             UI.QueryWidget(Id(:protocol), :Value)
           ),
           "verify-alg"     => Ops.get_string(
-            res_config, ["net", "verify-alg"], "")
+            res_config, ["net", "verify-alg"], ""),
+          "use-rle"     => Ops.get_string(
+            res_config, ["net", "use-rle"], ""),
         }
       )
 
@@ -866,7 +868,11 @@ module Yast
 
           if Ops.greater_than(Builtins.size(newres), 0)
             res_config = Builtins.remove(res_config, "resname")
+            # Generate node-id section
             res_config = autoGenerateNodeID(res_config)
+            # Generate connection-mesh section in Write function
+            # Since may 'Finish' in 'global' dialog
+
             Ops.set(Drbd.resource_config, newres, res_config)
             Builtins.y2debug("new resname = %1", newres)
             Builtins.y2debug(

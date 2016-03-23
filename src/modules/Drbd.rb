@@ -67,10 +67,12 @@ module Yast
           "sndbuf-size",
           "ko-count",
           "protocol",
-          "verify-alg"
+          "verify-alg",
+          "use-rle"
         ],
         "startup" => ["wfc-timeout", "degr-wfc-timeout"],
-        "options" => ["cpu-mask", "on-no-data-accessible"]
+        "options" => ["cpu-mask", "on-no-data-accessible"],
+        "connection-mesh" => ["hosts"],
       }
       @local_hostname = ""
       @local_ports = []
@@ -616,6 +618,21 @@ module Yast
       nil
     end
 
+    def calcConnectionMesh()
+      @resource_config.each do |resname, res_config|
+        node_list = []
+        Builtins.foreach(Ops.get_map(res_config, "on", {})) do |name, val|
+         node_list = Builtins.add(node_list, name)
+        end
+
+        if !res_config.has_key?("connection-mesh")
+          res_config["connection-mesh"] = {}
+        end
+        Ops.set(@resource_config, [resname, "connection-mesh", "hosts"], node_list.join(" "))
+      end
+
+    end
+
     def Write
       # DRBD write dialog caption
       caption = _("Writing DRBD Configuration")
@@ -715,6 +732,10 @@ module Yast
       #resource config here
       Progress.NextStage
       @resource_config = del_empty_item(@resource_config)
+
+      #Generate connection-mesh since it can't not read by conf
+      calcConnectionMesh()
+
       recursive_write_map(
         path(".drbd.resources"),
         Convert.convert(

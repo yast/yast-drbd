@@ -1,7 +1,7 @@
 
 class DrbdParser
 
-token TK_GLOBAL TK_RESOURCE TK_ON TK_NET TK_DISK_S TK_SYNCER TK_STARTUP TK_DISABLE_IP_VERIFICATION TK_PROTOCOL TK_ADDRESS TK_DISK TK_DEVICE TK_META_DISK TK_MINOR_COUNT TK_INTEGER TK_STRING TK_ON_IO_ERROR TK_SIZE TK_TIMEOUT TK_CONNECT_INT TK_PING_INT TK_MAX_BUFFERS TK_IPADDR TK_UNPLUG_WATERMARK TK_MAX_EPOCH_SIZE TK_SNDBUF_SIZE TK_RATE TK_AL_EXTENTS TK_WFC_TIMEOUT TK_DEGR_WFC_TIMEOUT TK_KO_COUNT TK_ON_DISCONNECT TK_DIALOG_REFRESH TK_USAGE_COUNT TK_COMMON TK_HANDLERS TK_FENCING TK_USE_BMBV TK_NO_DISK_BARRIER TK_NO_DISK_FLUSHES TK_NO_DISK_DRAIN TK_MAX_BIO_BVECS TK_PINT_TIMEOUT TK_ALLOW_TWO_PRIMARIES TK_CRAM_HMAC_ALG TK_SHARED_SECRET TK_AFTER_SB_0PRI TK_AFTER_SB_1PRI TK_AFTER_SB_2PRI TK_DATA_INTEGRITY_ALG TK_RR_CONFLICT TK_NO_TCP_CORK TK_CPU_MASK TK_VERIFY_ALG TK_AFTER TK_FLEXIBLE_META_DISK TK_PRI_ON_INCON_DEGR TK_PRI_LOST_AFTER_SB TK_PRI_LOST TK_FENCE_PEER TK_LOCAL_IO_ERROR TK_SPLIT_BRAIN TK_BEFORE_RESYNC_TARGET TK_AFTER_RESYNC_TARGET TK_WAIT_AFTER_SB TK_BECOME_PRIMARY_ON TK_IPV6ADDR TK_IPV6 TK_FLOATING TK_STACK_ON_TOP_OF TK_MINOR TK_OPTIONS TK_NO_DATA_ACCESSIBLE TK_MD_FLUSHES TK_NODE_ID
+token TK_GLOBAL TK_RESOURCE TK_ON TK_NET TK_DISK_S TK_SYNCER TK_STARTUP TK_DISABLE_IP_VERIFICATION TK_PROTOCOL TK_ADDRESS TK_DISK TK_DEVICE TK_META_DISK TK_MINOR_COUNT TK_INTEGER TK_STRING TK_ON_IO_ERROR TK_SIZE TK_TIMEOUT TK_CONNECT_INT TK_PING_INT TK_MAX_BUFFERS TK_IPADDR TK_UNPLUG_WATERMARK TK_MAX_EPOCH_SIZE TK_SNDBUF_SIZE TK_RATE TK_AL_EXTENTS TK_WFC_TIMEOUT TK_DEGR_WFC_TIMEOUT TK_KO_COUNT TK_ON_DISCONNECT TK_DIALOG_REFRESH TK_USAGE_COUNT TK_COMMON TK_HANDLERS TK_FENCING TK_USE_BMBV TK_NO_DISK_BARRIER TK_NO_DISK_FLUSHES TK_NO_DISK_DRAIN TK_MAX_BIO_BVECS TK_PINT_TIMEOUT TK_ALLOW_TWO_PRIMARIES TK_CRAM_HMAC_ALG TK_SHARED_SECRET TK_AFTER_SB_0PRI TK_AFTER_SB_1PRI TK_AFTER_SB_2PRI TK_DATA_INTEGRITY_ALG TK_RR_CONFLICT TK_NO_TCP_CORK TK_CPU_MASK TK_VERIFY_ALG TK_AFTER TK_FLEXIBLE_META_DISK TK_PRI_ON_INCON_DEGR TK_PRI_LOST_AFTER_SB TK_PRI_LOST TK_FENCE_PEER TK_LOCAL_IO_ERROR TK_SPLIT_BRAIN TK_BEFORE_RESYNC_TARGET TK_AFTER_RESYNC_TARGET TK_WAIT_AFTER_SB TK_BECOME_PRIMARY_ON TK_IPV6ADDR TK_IPV6 TK_FLOATING TK_STACK_ON_TOP_OF TK_MINOR TK_OPTIONS TK_NO_DATA_ACCESSIBLE TK_MD_FLUSHES TK_NODE_ID TK_CONNECTION_MESH TK_HOSTS TK_USE_RLE
 
 rule
 	config: global_sec common_sec resources { $drbd['global'] = val[0]; $drbd['common'] = val[1]; $drbd['resources'] = val[2]; return $drbd; }
@@ -77,6 +77,7 @@ rule
 		   | TK_ON hostname '{' host_stmts '}' { return ["#{val[0]}", "#{val[1]}", val[3]]; }
 		   | TK_FLOATING ip_and_port '{' floating_stmts '}' { return ["#{val[0]}", "#{val[1]}", val[3]]; }
 		   | TK_STACK_ON_TOP_OF resource_name '{' stack_on_top_of_stmts '}' { return ["#{val[0]}", "#{val[1]}", val[3]]; }
+		   | TK_CONNECTION_MESH '{' conn_mesh_stmts '}' { return ["#{val[0]}", val[2]]; }
 
 	hostname: TK_STRING { return val[0]; }
 
@@ -93,6 +94,16 @@ rule
 			 | TK_MD_FLUSHES TK_STRING { return ["#{val[0]}", val[1]]; }
 			 | TK_MAX_BIO_BVECS TK_STRING { return ["#{val[0]}", val[1]]; }
 			 | TK_AL_EXTENTS TK_STRING { return ["#{val[0]}", val[1]]; }
+
+    /* conn_mesh_section don't have ';' */
+	conn_mesh_stmts: /* none */ { return {}; }
+              | conn_mesh_stmts conn_mesh_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
+              | conn_mesh_stmts conn_mesh_section { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
+
+    /* TK_HOSTS will generated automatically */
+	conn_mesh_stmt: TK_HOSTS { return ["#{val[0]}", ""]; }
+
+	conn_mesh_section: TK_NET '{' net_stmts '}' { return ["#{val[0]}", val[2]]; }
 
 	net_stmts: /* none */ { return {}; }
              | net_stmts net_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; } 
@@ -117,6 +128,7 @@ rule
 			| TK_NO_TCP_CORK { return ["#{val[0]}", true]; }
 			| TK_PROTOCOL TK_STRING { return ["#{val[0]}", val[1]]; }
 			| TK_VERIFY_ALG TK_STRING { return ["#{val[0]}", val[1]]; }
+			| TK_USE_RLE TK_STRING { return ["#{val[0]}", val[1]]; }
 
 	sync_stmts: /* none */  { return {}; }
 	          | sync_stmts sync_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
@@ -223,6 +235,10 @@ $drbd = Hash.new()
 				@q.push [:TK_DISK, 'disk']
 			when /\Anet/
 				@q.push [:TK_NET, 'net']
+			when /\Aconnection-mesh/
+				@q.push [:TK_CONNECTION_MESH, 'connection-mesh']
+			when /\Ahosts\s+[\w ]+/
+				@q.push [:TK_HOSTS, 'hosts']
 			when /\Aminor/
 				@q.push [:TK_MINOR, 'minor']
 			when /\Asyncer/
@@ -237,6 +253,8 @@ $drbd = Hash.new()
 				@q.push [:TK_FENCING, 'fencing']	
 			when /\Ause-bmbv/
 				@q.push [:TK_USE_BMBV, 'use-bmbv']
+			when /\Ause-rle/
+				@q.push [:TK_USE_RLE, 'use-rle']
 			when /\Ano-disk-barrier/
 				@q.push [:TK_NO_DISK_BARRIER, 'no-disk-barrier']
 			when /\Ano-disk-flushes/
@@ -751,6 +769,21 @@ def writeFile()
           resfile.puts "   handlers {"
           $drbd["resources"][res_name]["handlers"].each_key do |key|
             resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["handlers"][key]+";"
+          end
+          resfile.puts "   }"
+        end
+
+        if $drbd["resources"][res_name].has_key?("connection-mesh") then
+          resfile.puts "   connection-mesh {"
+          $drbd["resources"][res_name]["connection-mesh"].each_key do |key|
+            if key == "net"
+              resfile.puts "      net"+"\t"" {"
+              $drbd["resources"][res_name]["connection-mesh"]["net"].each_key do |key|
+                resfile.puts "         "+key+"\t"+$drbd["resources"][res_name]["connection-mesh"]["net"][key]+";"
+              end
+            else
+              resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["connection-mesh"][key]+";"
+            end
           end
           resfile.puts "   }"
         end
