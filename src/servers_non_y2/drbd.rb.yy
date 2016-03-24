@@ -1,7 +1,7 @@
 
 class DrbdParser
 
-token TK_GLOBAL TK_RESOURCE TK_ON TK_NET TK_DISK_S TK_SYNCER TK_STARTUP TK_DISABLE_IP_VERIFICATION TK_PROTOCOL TK_ADDRESS TK_DISK TK_DEVICE TK_META_DISK TK_MINOR_COUNT TK_INTEGER TK_STRING TK_ON_IO_ERROR TK_SIZE TK_TIMEOUT TK_CONNECT_INT TK_PING_INT TK_MAX_BUFFERS TK_IPADDR TK_UNPLUG_WATERMARK TK_MAX_EPOCH_SIZE TK_SNDBUF_SIZE TK_RATE TK_AL_EXTENTS TK_WFC_TIMEOUT TK_DEGR_WFC_TIMEOUT TK_KO_COUNT TK_ON_DISCONNECT TK_DIALOG_REFRESH TK_USAGE_COUNT TK_COMMON TK_HANDLERS TK_FENCING TK_USE_BMBV TK_NO_DISK_BARRIER TK_NO_DISK_FLUSHES TK_NO_DISK_DRAIN TK_MAX_BIO_BVECS TK_PINT_TIMEOUT TK_ALLOW_TWO_PRIMARIES TK_CRAM_HMAC_ALG TK_SHARED_SECRET TK_AFTER_SB_0PRI TK_AFTER_SB_1PRI TK_AFTER_SB_2PRI TK_DATA_INTEGRITY_ALG TK_RR_CONFLICT TK_NO_TCP_CORK TK_CPU_MASK TK_VERIFY_ALG TK_AFTER TK_FLEXIBLE_META_DISK TK_PRI_ON_INCON_DEGR TK_PRI_LOST_AFTER_SB TK_PRI_LOST TK_FENCE_PEER TK_LOCAL_IO_ERROR TK_SPLIT_BRAIN TK_BEFORE_RESYNC_TARGET TK_AFTER_RESYNC_TARGET TK_WAIT_AFTER_SB TK_BECOME_PRIMARY_ON TK_IPV6ADDR TK_IPV6 TK_FLOATING TK_STACK_ON_TOP_OF TK_MINOR TK_OPTIONS TK_NO_DATA_ACCESSIBLE TK_MD_FLUSHES TK_NODE_ID TK_CONNECTION_MESH TK_HOSTS TK_USE_RLE
+token TK_GLOBAL TK_RESOURCE TK_ON TK_NET TK_DISK_S TK_SYNCER TK_STARTUP TK_DISABLE_IP_VERIFICATION TK_PROTOCOL TK_ADDRESS TK_DISK TK_DEVICE TK_META_DISK TK_MINOR_COUNT TK_INTEGER TK_STRING TK_ON_IO_ERROR TK_SIZE TK_TIMEOUT TK_CONNECT_INT TK_PING_INT TK_MAX_BUFFERS TK_IPADDR TK_UNPLUG_WATERMARK TK_MAX_EPOCH_SIZE TK_SNDBUF_SIZE TK_RATE TK_AL_EXTENTS TK_WFC_TIMEOUT TK_DEGR_WFC_TIMEOUT TK_KO_COUNT TK_ON_DISCONNECT TK_DIALOG_REFRESH TK_USAGE_COUNT TK_COMMON TK_HANDLERS TK_FENCING TK_USE_BMBV TK_NO_DISK_BARRIER TK_NO_DISK_FLUSHES TK_NO_DISK_DRAIN TK_MAX_BIO_BVECS TK_PINT_TIMEOUT TK_ALLOW_TWO_PRIMARIES TK_CRAM_HMAC_ALG TK_SHARED_SECRET TK_AFTER_SB_0PRI TK_AFTER_SB_1PRI TK_AFTER_SB_2PRI TK_DATA_INTEGRITY_ALG TK_RR_CONFLICT TK_NO_TCP_CORK TK_CPU_MASK TK_VERIFY_ALG TK_AFTER TK_FLEXIBLE_META_DISK TK_PRI_ON_INCON_DEGR TK_PRI_LOST_AFTER_SB TK_PRI_LOST TK_FENCE_PEER TK_LOCAL_IO_ERROR TK_SPLIT_BRAIN TK_BEFORE_RESYNC_TARGET TK_AFTER_RESYNC_TARGET TK_WAIT_AFTER_SB TK_BECOME_PRIMARY_ON TK_IPV6ADDR TK_IPV6 TK_FLOATING TK_STACK_ON_TOP_OF TK_MINOR TK_OPTIONS TK_NO_DATA_ACCESSIBLE TK_MD_FLUSHES TK_NODE_ID TK_CONNECTION_MESH TK_HOSTS TK_USE_RLE TK_CONNECTION TK_HOST TK_PORT
 
 rule
 	config: global_sec common_sec resources { $drbd['global'] = val[0]; $drbd['common'] = val[1]; $drbd['resources'] = val[2]; return $drbd; }
@@ -78,6 +78,7 @@ rule
 		   | TK_FLOATING ip_and_port '{' floating_stmts '}' { return ["#{val[0]}", "#{val[1]}", val[3]]; }
 		   | TK_STACK_ON_TOP_OF resource_name '{' stack_on_top_of_stmts '}' { return ["#{val[0]}", "#{val[1]}", val[3]]; }
 		   | TK_CONNECTION_MESH '{' conn_mesh_stmts '}' { return ["#{val[0]}", val[2]]; }
+		   | TK_CONNECTION '{' conn_stmts '}' { return ["#{val[0]}", val[2]]; }
 
 	hostname: TK_STRING { return val[0]; }
 
@@ -104,6 +105,13 @@ rule
 	conn_mesh_stmt: TK_HOSTS { return ["#{val[0]}", ""]; }
 
 	conn_mesh_section: TK_NET '{' net_stmts '}' { return ["#{val[0]}", val[2]]; }
+
+    /* next 'connection' will overlap previous 'connection'*/
+	conn_stmts: /* none */ { return {}; }
+		      | conn_stmts conn_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
+
+	conn_stmt: TK_HOST hostname TK_PORT TK_STRING { return ["#{val[1]}", val[3]]; }
+		      | TK_HOST hostname TK_ADDRESS TK_STRING TK_PORT TK_STRING { return ["#{val[1]}", "#{val[3]}:#{val[5]}"]; }
 
 	net_stmts: /* none */ { return {}; }
              | net_stmts net_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; } 
@@ -237,8 +245,12 @@ $drbd = Hash.new()
 				@q.push [:TK_NET, 'net']
 			when /\Aconnection-mesh/
 				@q.push [:TK_CONNECTION_MESH, 'connection-mesh']
+			when /\Aconnection/
+				@q.push [:TK_CONNECTION, 'connection']
 			when /\Ahosts\s+[\w ]+/
 				@q.push [:TK_HOSTS, 'hosts']
+			when /\Ahost/
+				@q.push [:TK_HOST, 'host']
 			when /\Aminor/
 				@q.push [:TK_MINOR, 'minor']
 			when /\Asyncer/
@@ -349,6 +361,8 @@ $drbd = Hash.new()
 				@q.push [:TK_DEVICE, 'device']
 			when /\Aaddress/
 				@q.push [:TK_ADDRESS, 'address']
+			when /\Aport/
+				@q.push [:TK_PORT, 'port']
 			when /\Anode-id/
 				@q.push [:TK_NODE_ID, 'node-id']
 			when /\Ameta-disk/
