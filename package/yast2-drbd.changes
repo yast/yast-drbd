@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Fri Mar 25 02:36:28 UTC 2016 - nwang@suse.com
+
+- fate#320398, support drbd9 to extend to multiple node
+- Syntax change: support read/write automatically node-id.
+- Syntax change: support connection-mesh and net section in it.
+- Syntax compatible: won't pop up error for connection section.
+                 not support write connection section.
+- Version 3.1.21
+
+-------------------------------------------------------------------
 Thu Mar 17 01:59:37 UTC 2016 - nwang@suse.com
 
 - bsc#971508, many syntax change after drbdv8.4
