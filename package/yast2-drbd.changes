@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 25 02:57:08 UTC 2016 - nwang@suse.com
+
+- fate#320398, add require to drbd9.0 for fate#315096.
+
+-------------------------------------------------------------------
 Fri Mar 25 02:36:28 UTC 2016 - nwang@suse.com
 
 - fate#320398, support drbd9 to extend to multiple node

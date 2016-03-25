@@ -33,6 +33,7 @@ BuildRequires:  yast2-devtools
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  yast2-testsuite
 Requires:       yast2
+Requires:       drbd >= 9.0
 BuildArch:      noarch
 Requires:       yast2-ruby-bindings >= 1.0.0
 
