@@ -193,7 +193,7 @@ module Yast
         Bottom(
           HBox(
             PushButton(Id(:advance), "Advanced Config"),
-            PushButton(Id(:cancel_inner), "Cancel"),
+            PushButton(Id(:cancel_inner), "Ca&ncel"),
             PushButton(Id(:ok), "OK")
           )
         )

@@ -247,7 +247,7 @@ $drbd = Hash.new()
 				@q.push [:TK_CONNECTION_MESH, 'connection-mesh']
 			when /\Aconnection/
 				@q.push [:TK_CONNECTION, 'connection']
-			when /\Ahosts\s+[\w ]+/
+			when /\Ahosts\s+[\w\-_ ]+/
 				@q.push [:TK_HOSTS, 'hosts']
 			when /\Ahost/
 				@q.push [:TK_HOST, 'host']

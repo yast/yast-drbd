@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Apr 21 09:05:07 UTC 2016 - nwang@suse.com
+
+- bsc#976562, fix error when using hyphen in node name.
+
+-------------------------------------------------------------------
 Fri Mar 25 02:57:08 UTC 2016 - nwang@suse.com
 
 - fate#320398, add require to drbd9.0 for fate#315096.
