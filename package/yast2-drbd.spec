@@ -1,7 +1,7 @@
 #
 # spec file for package yast2-drbd
 #
-# Copyright (c) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2016 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -17,7 +17,7 @@
 
 
 Name:           yast2-drbd
-Version:        3.1.21
+Version:        3.1.22
 Release:        0
 
 %define _fwdefdir /etc/sysconfig/SuSEfirewall2.d/services

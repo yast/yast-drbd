@@ -13,6 +13,7 @@ module Yast
       Yast.import "Label"
       Yast.import "Wizard"
       Yast.import "Service"
+      Yast.import "IP"
       Yast.import "Drbd"
 
       Yast.include include_target, "drbd/helps.rb"
@@ -623,6 +624,47 @@ module Yast
       deep_copy(res_config)
     end
 
+    def ValidIPaddress
+      addressField = Convert.to_string(UI.QueryWidget(Id(:n_addr), :Value))
+
+      if addressField.include?("ipv6")
+        # eg. ipv6 [fd01:2345:6789:abcd::1]:7800
+        if ! (addressField.include?("[") and addressField.include?("]"))
+          Popup.Warning(_("IPv6 address must be placed inside brackets."))
+          return false
+        end
+
+        # IPv6 should including port
+        if addressField.split("]")[1] and addressField.split("]")[1].include?(":")
+          ip = addressField.split("]")[0].split("[")[1]
+        else
+          Popup.Warning(_("IP/port should use 'addr:port' combination."))
+          return false
+        end
+      else
+        if ! addressField.include?(":")
+          Popup.Warning(_("IP/port should use 'addr:port' combination."))
+          return false
+        end
+
+        ip = addressField.split(":")[0]
+      end
+
+      if IP.Check(ip) != true
+        Popup.Message(_("Please enter a valid IP address."))
+        return false
+      end
+
+      # Checking the port is number
+      if addressField.split(":").size == 1 or
+         addressField.split(":")[-1].to_i == 0
+        Popup.Message(_("Please enter a valid port number."))
+        return false
+      end
+
+      true
+    end
+
     def ResDialog(resname)
       current = 0
       ret = nil
@@ -709,6 +751,12 @@ module Yast
               ret = nil
               raise Break
             end
+          end
+
+          if ! ValidIPaddress()
+              invalid = true
+              ret = nil
+              next
           end
 
           if ret == :ok

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 31 04:42:58 UTC 2016 - nwang@suse.com
+
+- bsc#981779, add IP validation check of resource.
+- Version 3.1.22
+
+-------------------------------------------------------------------
 Thu Apr 21 09:05:07 UTC 2016 - nwang@suse.com
 
 - bsc#976562, fix error when using hyphen in node name.

@@ -75,7 +75,7 @@ module Yast
           _(
             "\n" +
               "\t\t<p>\"Name\" is mandatory and must match the Linux host name (uname -n) of one of the nodes. Should not include \".\" in hostname.</p>\n" +
-              "\t\t<p>\"Address:Port\": A resource needs one IP address per device, which is used to wait for incoming connections from the partner device to reach the device. Each DRBD resource needs a TCP port which is used to connect to the node's partner device.</p>\n" +
+              "\t\t<p>\"Address:Port\": A resource needs one IP address per device, which is used to wait for incoming connections from the partner device to reach the device. Each DRBD resource needs a TCP port which is used to connect to the node's partner device. For IPv6, the actual address that follows the ipv6 keyword must be placed inside brackets: ipv6 [2001:1945:fc03:abcd::1]:7788</p>\n" +
               "\t\t<p>\"Device\": The name of the block device node of the resource being described. You must use this device with your application (file system) and you must not use the low level block device which is specified with the disk parameter,following its minor number. Otherwise, you may omit the name, or the word minor and its number. If you omit the name a default of /dev/drbd'minor number' will be used.\n" +
               "\t\tLike: '/dev/drbd{service} minor {minor drbd number [0...255]}' or '/dev/drbd{minor drbd number [0...255]}'</p>\n" +
               "\t\t<p>\"Disk\":  DRBD uses this block device to actually store and retrieve the data.  Never access such a device while DRBD is running on top of  it.</p>\n" +
