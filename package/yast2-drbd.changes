@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun  7 10:34:50 UTC 2016 - igonzalezsosa@suse.com
+
+- Stop generating autodocs (fate#320356)
+- Version 3.1.23
+
+-------------------------------------------------------------------
 Tue May 31 04:42:58 UTC 2016 - nwang@suse.com
 
 - bsc#981779, add IP validation check of resource.
