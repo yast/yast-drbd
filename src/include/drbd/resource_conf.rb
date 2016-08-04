@@ -294,7 +294,7 @@ module Yast
             ComboBox(
               Id(:on_io_error),
               "on-io-error",
-              ["detach", "panic", "pass_on"]
+              ["detach", "call-local-io-error", "pass_on"]
             ),
             HSpacing(),
             TextEntry(
@@ -308,6 +308,12 @@ module Yast
               "al-extents",
               Ops.get_string(res_config, ["disk_s", "al-extents"]) ||
               Ops.get_string(res_config, ["syncer", "al-extents"], "")
+            ),
+            HSpacing(),
+            TextEntry(
+              Id(:resync_rate),
+              "resync_rate",
+              Ops.get_string(res_config, ["disk_s", "resync-rate"], "")
             )
           )
         ),
@@ -358,16 +364,6 @@ module Yast
             )
           )
         ),
-        Frame(
-          "Syncer",
-          HBox(
-            TextEntry(
-              Id(:rate),
-              "rate",
-              Ops.get_string(res_config, ["syncer", "rate"], "")
-            )
-          )
-        ),
         VStretch(),
         Bottom(
           HBox(
@@ -404,7 +400,6 @@ module Yast
           Ops.set(res_config, "disk_s", {"al-extents" => Ops.get_string(
            res_config, ["syncer", "al-extents"])})
         end
-        Ops.set(res_config, ["syncer", "al-extents"], nil)
 
         if Ops.get(res_config, ["disk_s", "on-io-error"]) == nil
           Ops.set(res_config, "disk_s", {
@@ -442,6 +437,9 @@ module Yast
           "al-extents" => Convert.to_string(
             UI.QueryWidget(Id(:al_extents), :Value)
           ),
+          "resync-rate" => Convert.to_string(
+            UI.QueryWidget(Id(:resync_rate), :Value)
+          ),
           "size"        => Convert.to_string(UI.QueryWidget(Id(:size), :Value))
         }
       )
@@ -478,14 +476,6 @@ module Yast
             res_config, ["net", "verify-alg"], ""),
           "use-rle"     => Ops.get_string(
             res_config, ["net", "use-rle"], ""),
-        }
-      )
-
-      Ops.set(
-        res_config,
-        "syncer",
-        {
-          "rate"       => Convert.to_string(UI.QueryWidget(Id(:rate), :Value))
         }
       )
 

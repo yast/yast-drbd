@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug  4 07:51:32 UTC 2016 - nwang@suse.com
+
+- Syntax change: support resync-rate in disk section, fix bsc#991253
+- bsc#992066, replace panic of on-io-error handler to local-io-error
+- Version 3.1.24
+
+-------------------------------------------------------------------
 Tue Jun  7 10:34:50 UTC 2016 - igonzalezsosa@suse.com
 
 - Stop generating autodocs (fate#320356)
