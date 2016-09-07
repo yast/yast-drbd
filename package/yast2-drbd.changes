@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  8 02:30:51 UTC 2016 - nwang@suse.com
+
+- fate#321158, remove automatic change lvm filter
+- Version 3.1.25
+
+-------------------------------------------------------------------
 Thu Aug  4 07:51:32 UTC 2016 - nwang@suse.com
 
 - Syntax change: support resync-rate in disk section, fix bsc#991253

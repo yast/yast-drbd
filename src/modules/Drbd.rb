@@ -50,7 +50,6 @@ module Yast
       @modified = false
       @global_config = {}
       @lvm_config = {}
-      @auto_lvm_filter = true
       @resource_config = {}
       @drbd_dir = "/etc"
       @start_daemon = false
@@ -76,7 +75,6 @@ module Yast
       @local_hostname = ""
       @local_ports = []
       @local_disks_ori = []
-      @local_disks_added = []
 
       @global_error = ""
     end
@@ -322,8 +320,8 @@ module Yast
         end
 
         if Ops.get(@lvm_config, "filter") == nil
-          # The default value is get from HA doc
-          Ops.set(@lvm_config, "filter", "[ \"r|/dev/sda.*|\" ]")
+          # The default value is get from lvm.conf to exclude the cdrom
+          Ops.set(@lvm_config, "filter", "[ \"r|/dev/cdrom|\" ]")
         end
         if Ops.get(@lvm_config, "write_cache_state") == nil
           Ops.set(@lvm_config, "write_cache_state", "0")
@@ -699,11 +697,6 @@ module Yast
         @lvm_config
       )
 
-      # Change(add reject rules) filter automatically
-      if @auto_lvm_filter && !@local_disks_added.empty?
-        format_lvm_filter
-      end
-
       ["filter", "write_cache_state"].each do |key|
         if Ops.get(@lvm_config, key) != nil
           SCR.Write(
@@ -790,7 +783,6 @@ module Yast
     publish :variable => :modified, :type => "boolean"
     publish :variable => :global_config, :type => "map"
     publish :variable => :lvm_config, :type => "map"
-    publish :variable => :auto_lvm_filter, :type => "boolean"
     publish :variable => :resource_config, :type => "map"
     publish :variable => :drbd_dir, :type => "string"
     publish :variable => :start_daemon, :type => "boolean"
@@ -798,7 +790,6 @@ module Yast
     publish :variable => :local_hostname, :type => "string"
     publish :variable => :local_ports, :type => "list <string>"
     publish :variable => :local_disks_ori, :type => "list <string>"
-    publish :variable => :local_disks_added, :type => "list <string>"
     publish :variable => :global_error, :type => "string"
     publish :function => :Read, :type => "boolean ()"
     publish :function => :Write, :type => "boolean ()"

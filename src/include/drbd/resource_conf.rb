@@ -221,11 +221,6 @@ module Yast
           nodes are %2.", local_hname, node_list)
       end
 
-      if disk && !Drbd.local_disks_ori.include?(disk) &&
-        !Drbd.local_disks_added.include?(disk)
-        Drbd.local_disks_added.push(disk)
-      end
-
       nil
     end
 

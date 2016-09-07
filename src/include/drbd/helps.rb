@@ -120,7 +120,7 @@ module Yast
               "\t\t<p>Refer to 'man lvm.conf' for further information including the file layout.</p>\n" +
               "\t\t\t\t\t\t\t\t\t\t  \n" +
               "\t\t<p><b>Device Filter</b>: This masks the underlying block device from the list of devices LVM scans for Physical Volume signatures. This way, LVM is instructed to read Physical Volume signatures from DRBD devices, rather than from the underlying backing block devices.</p>" +
-              "\t\t<p><b>AutoFilter</b>: According to the configuration of drbd, LVM filter will always be changed automatically. To change it manually, disable the checkbox of AutoFilter.</p>\n" +
+              "\t\t<p><b>LVM Filter</b>: A filter that tells LVM2 to only use a restricted set of devices.</p>\n" +
               "\t\t<p>The filter consists of an array of regular expressions. These expressions can be delimited by a character of your choice, and prefixed with either an 'a' (for accept) or 'r' (for reject).</p>" +
               "\t\t<p>For example, setting filter as [\"r|/dev/sda.*|\"]</p>\n" +
               "\n" +
