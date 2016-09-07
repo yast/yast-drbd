@@ -17,7 +17,7 @@
 
 
 Name:           yast2-drbd
-Version:        3.1.24
+Version:        3.1.25
 Release:        0
 
 %define _fwdefdir /etc/sysconfig/SuSEfirewall2.d/services

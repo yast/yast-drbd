@@ -16,8 +16,6 @@ module Yast
       @cache = true
       @lvmetad = false
 
-      # Default is always true (auto)
-      @auto_lvm_filter = true
     end
 
     def lvm_conf_Read
@@ -44,16 +42,6 @@ module Yast
         _("LVM Filter Configuration of DRBD"),
         Left(
           VBox(
-            VBox(
-              Left(
-                CheckBox(
-                  Id(:AutoFilter),
-                  Opt(:notify),
-                  _("Modify LVM Device filter Automatically"),
-                  @auto_lvm_filter
-                )
-              )
-            ),
             VBox(
               Left(
                 InputField(
@@ -130,7 +118,6 @@ module Yast
 
     def lvm_conf_Write
       @filter = UI.QueryWidget(Id(:Filter), :Value).to_s
-      @auto_lvm_filter = UI.QueryWidget(Id(:AutoFilter), :Value)
 
       @cache = UI.QueryWidget(Id(:LVMCache), :Value)
       if @cache
@@ -146,40 +133,24 @@ module Yast
         lvmetad_str = "0"
       end
 
-      Drbd.auto_lvm_filter = @auto_lvm_filter
       Ops.set(Drbd.lvm_config, "write_cache_state", cache_str)
       Ops.set(Drbd.lvm_config, "use_lvmetad", lvmetad_str)
 
-      if !@auto_lvm_filter
-        Ops.set(Drbd.lvm_config, "filter", @filter)
-        Builtins.y2debug("Change Device Filter manually.")
-      end
+      Ops.set(Drbd.lvm_config, "filter", @filter)
 
       Drbd.modified = true
 
       true
     end
 
-    def status_switch
-      if UI.QueryWidget(Id(:AutoFilter), :Value)
-        UI.ChangeWidget(Id(:Filter), :Enabled, false)
-      else
-        UI.ChangeWidget(Id(:Filter), :Enabled, true)
-      end
-
-      nil
-    end
-
     def ConfigureLVMDialog
       lvm_conf_Read
 
       my_SetContents("lvm_conf", lvm_conf_GetDialog)
-      status_switch
 
       ret = nil
       while true
         Wizard.SelectTreeItem("lvm_conf")
-        status_switch
 
         ret = UI.UserInput
 
@@ -192,7 +163,7 @@ module Yast
           ret = Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem))
         end
 
-        if ret == :Filter || ret == :LVMCache || ret == :AutoFilter
+        if ret == :Filter || ret == :LVMCache
           Drbd.modified = true
           next
         end
