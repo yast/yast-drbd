@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep  9 09:26:45 UTC 2016 - nwang@suse.com
+
+- bsc#997838, fix error of rename a exist drbd resource.
+- Version 3.1.26
+
+-------------------------------------------------------------------
 Thu Sep  8 02:30:51 UTC 2016 - nwang@suse.com
 
 - fate#321158, remove automatic change lvm filter

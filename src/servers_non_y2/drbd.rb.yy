@@ -103,7 +103,7 @@ rule
               | conn_mesh_stmts conn_mesh_section { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
 
     /* TK_HOSTS will generated automatically */
-	conn_mesh_stmt: TK_HOSTS { return ["#{val[0]}", ""]; }
+	conn_mesh_stmt: TK_HOSTS { return ["#{val[0]}", "none"]; }
 
 	conn_mesh_section: TK_NET '{' net_stmts '}' { return ["#{val[0]}", val[2]]; }
 

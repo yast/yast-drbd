@@ -1253,7 +1253,7 @@ module_eval(<<'.,.,', 'drbd.rb.yy', 102)
 
 module_eval(<<'.,.,', 'drbd.rb.yy', 105)
   def _reduce_63(val, _values, result)
-     return ["#{val[0]}", ""]; 
+     return ["#{val[0]}", "none"]; 
     result
   end
 .,.,
