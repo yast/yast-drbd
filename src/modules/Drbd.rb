@@ -617,6 +617,11 @@ module Yast
 
     def calcConnectionMesh()
       @resource_config.each do |resname, res_config|
+        # continue if res_config is nil (deleted)
+        if res_config == nil
+          next
+        end
+
         node_list = []
         Builtins.foreach(Ops.get_map(res_config, "on", {})) do |name, val|
          node_list = Builtins.add(node_list, name)
