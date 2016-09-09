@@ -886,11 +886,9 @@ module Yast
 
           if Ops.greater_than(Builtins.size(orires), 0)
             # Remove the original res configuration
-            Drbd.resource_config = Builtins.remove(
-              Drbd.resource_config,
-              orires
-            )
-            #Ops.set(Drbd.resource_config, orires, nil)
+            # Since resource_config is in memory, should
+            # rewrite as nil to remove
+            Ops.set(Drbd.resource_config, orires, nil)
           else
             Builtins.y2debug("add new resouce")
           end
