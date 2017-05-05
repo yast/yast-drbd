@@ -46,11 +46,6 @@ YaST2 - Configuration of Distributed Replicated Block Devices. With
 this module you can configure a distributed storage system, frequently
 used on high availability (HA) clusters.
 
-
-Authors:
---------
-    cmeng@novell.com
-
 %prep
 %setup -n %{name}-%{version}
 
