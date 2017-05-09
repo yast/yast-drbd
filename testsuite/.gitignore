@@ -1,0 +1,6 @@
+*.err.tmp
+*.exp
+*.log
+*.out.tmp
+*.sum
+run/runtest.sh
