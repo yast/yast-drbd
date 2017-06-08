@@ -31,3 +31,15 @@ Makefile.in
 /ltversion.m4
 /lt~obsolete.m4
 /missing
+/.yardoc
+/doc
+drbd.pot
+/pluglib-bindings.ami
+testsuite/config/default.exp
+testsuite/config/unix.exp
+testsuite/config/unknown.exp
+testsuite/run/runtest.sh
+testsuite/site.exp
+testsuite/yast2-drbd.log
+testsuite/yast2-drbd.sum
+testsuite/yast2-drbd.test/testsuite.exp
