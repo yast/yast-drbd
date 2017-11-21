@@ -134,6 +134,9 @@ module Yast
           "<p><b><big>Global Configuration of DRBD</big></b></p>"
         ) +
           _(
+            "<p>Check <b>\"Udev Always Use VNR\"</b> treat implicit the same as explicit volumes, only one single volume with the implicit volume number 0</p>"
+          ) +
+          _(
             "<p>Check <b>\"Disable IP Verification\"</b> to disable one of drbdadm's sanity check</p>"
           ) +
           _(

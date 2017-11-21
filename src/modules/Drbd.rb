@@ -285,7 +285,7 @@ module Yast
 
         #read global configs
         Builtins.foreach(
-          ["disable-ip-verification", "minor-count", "dialog-refresh"]
+          ["disable-ip-verification", "udev-always-use-vnr", "minor-count", "dialog-refresh"]
         ) do |key|
           val = Convert.to_string(
             SCR.Read(Builtins.topath(Builtins.sformat(".drbd.global.%1", key)))
@@ -683,7 +683,7 @@ module Yast
         @global_config
       )
       Builtins.foreach(
-        ["disable-ip-verification", "minor-count", "dialog-refresh"]
+        ["disable-ip-verification", "udev-always-use-vnr", "minor-count", "dialog-refresh"]
       ) do |key|
         if Ops.get(@global_config, key) != nil
           SCR.Write(
