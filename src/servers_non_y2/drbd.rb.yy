@@ -1,7 +1,7 @@
 
 class DrbdParser
 
-token TK_GLOBAL TK_RESOURCE TK_ON TK_NET TK_DISK_S TK_SYNCER TK_STARTUP TK_DISABLE_IP_VERIFICATION TK_PROTOCOL TK_ADDRESS TK_DISK TK_DEVICE TK_META_DISK TK_MINOR_COUNT TK_INTEGER TK_STRING TK_ON_IO_ERROR TK_SIZE TK_TIMEOUT TK_CONNECT_INT TK_PING_INT TK_MAX_BUFFERS TK_IPADDR TK_UNPLUG_WATERMARK TK_MAX_EPOCH_SIZE TK_SNDBUF_SIZE TK_RATE TK_AL_EXTENTS TK_WFC_TIMEOUT TK_DEGR_WFC_TIMEOUT TK_KO_COUNT TK_ON_DISCONNECT TK_DIALOG_REFRESH TK_USAGE_COUNT TK_COMMON TK_HANDLERS TK_FENCING TK_USE_BMBV TK_NO_DISK_BARRIER TK_NO_DISK_FLUSHES TK_NO_DISK_DRAIN TK_MAX_BIO_BVECS TK_PINT_TIMEOUT TK_ALLOW_TWO_PRIMARIES TK_CRAM_HMAC_ALG TK_SHARED_SECRET TK_AFTER_SB_0PRI TK_AFTER_SB_1PRI TK_AFTER_SB_2PRI TK_DATA_INTEGRITY_ALG TK_RR_CONFLICT TK_NO_TCP_CORK TK_CPU_MASK TK_VERIFY_ALG TK_AFTER TK_FLEXIBLE_META_DISK TK_PRI_ON_INCON_DEGR TK_PRI_LOST_AFTER_SB TK_PRI_LOST TK_FENCE_PEER TK_LOCAL_IO_ERROR TK_SPLIT_BRAIN TK_BEFORE_RESYNC_TARGET TK_AFTER_RESYNC_TARGET TK_WAIT_AFTER_SB TK_BECOME_PRIMARY_ON TK_IPV6ADDR TK_IPV6 TK_FLOATING TK_STACK_ON_TOP_OF TK_MINOR TK_OPTIONS TK_NO_DATA_ACCESSIBLE TK_MD_FLUSHES TK_NODE_ID TK_CONNECTION_MESH TK_HOSTS TK_USE_RLE TK_CONNECTION TK_HOST TK_PORT TK_RESYNC_RATE
+token TK_GLOBAL TK_RESOURCE TK_ON TK_NET TK_DISK_S TK_SYNCER TK_STARTUP TK_DISABLE_IP_VERIFICATION TK_PROTOCOL TK_ADDRESS TK_DISK TK_DEVICE TK_META_DISK TK_MINOR_COUNT TK_INTEGER TK_STRING TK_ON_IO_ERROR TK_SIZE TK_TIMEOUT TK_CONNECT_INT TK_PING_INT TK_MAX_BUFFERS TK_IPADDR TK_UNPLUG_WATERMARK TK_MAX_EPOCH_SIZE TK_SNDBUF_SIZE TK_RATE TK_AL_EXTENTS TK_WFC_TIMEOUT TK_DEGR_WFC_TIMEOUT TK_KO_COUNT TK_ON_DISCONNECT TK_DIALOG_REFRESH TK_USAGE_COUNT TK_COMMON TK_HANDLERS TK_FENCING TK_USE_BMBV TK_NO_DISK_BARRIER TK_NO_DISK_FLUSHES TK_NO_DISK_DRAIN TK_MAX_BIO_BVECS TK_PINT_TIMEOUT TK_ALLOW_TWO_PRIMARIES TK_CRAM_HMAC_ALG TK_SHARED_SECRET TK_AFTER_SB_0PRI TK_AFTER_SB_1PRI TK_AFTER_SB_2PRI TK_DATA_INTEGRITY_ALG TK_RR_CONFLICT TK_NO_TCP_CORK TK_CPU_MASK TK_VERIFY_ALG TK_AFTER TK_FLEXIBLE_META_DISK TK_PRI_ON_INCON_DEGR TK_PRI_LOST_AFTER_SB TK_PRI_LOST TK_FENCE_PEER TK_LOCAL_IO_ERROR TK_SPLIT_BRAIN TK_BEFORE_RESYNC_TARGET TK_AFTER_RESYNC_TARGET TK_WAIT_AFTER_SB TK_BECOME_PRIMARY_ON TK_IPV6ADDR TK_IPV6 TK_FLOATING TK_STACK_ON_TOP_OF TK_MINOR TK_OPTIONS TK_NO_DATA_ACCESSIBLE TK_MD_FLUSHES TK_NODE_ID TK_CONNECTION_MESH TK_HOSTS TK_USE_RLE TK_CONNECTION TK_HOST TK_PORT TK_RESYNC_RATE TK_QUORUM TK_UDEV_ALWAYS_USE_VNR
 
 rule
 	config: global_sec common_sec resources { $drbd['global'] = val[0]; $drbd['common'] = val[1]; $drbd['resources'] = val[2]; return $drbd; }
@@ -12,6 +12,7 @@ rule
         	  | glob_stmts glob_stmt ';' { nk = val[1][0]; val[0][nk] = val[1][1]; return val[0]; }
 	glob_stmt: TK_USAGE_COUNT TK_STRING { return ["#{val[0]}", val[1]]; }
              | TK_DISABLE_IP_VERIFICATION { return ["#{val[0]}", true]; }
+             | TK_UDEV_ALWAYS_USE_VNR { return ["#{val[0]}", true]; }
 		     | TK_MINOR_COUNT TK_STRING { return ["#{val[0]}", val[1]]; }
 		     | TK_DIALOG_REFRESH TK_STRING { return ["#{val[0]}", val[1]];}
 
@@ -207,6 +208,7 @@ rule
 
 	options_stmt: TK_CPU_MASK TK_STRING { return ["#{val[0]}", val[1]]; }
 		        | TK_NO_DATA_ACCESSIBLE TK_STRING { return ["#{val[0]}", val[1]]; }
+		        | TK_QUORUM TK_STRING { return ["#{val[0]}", val[1]]; }
 
 end			 
 
@@ -222,6 +224,8 @@ $drbd = Hash.new()
 			when /\A\s+/
 			when /\Adisable-ip-verification/
 				@q.push [:TK_DISABLE_IP_VERIFICATION, 'disable-ip-verification']
+			when /\Audev-always-use-vnr/
+				@q.push [:TK_UDEV_ALWAYS_USE_VNR, 'udev-always-use-vnr']
 			when /\Ausage-count/
 				@q.push [:TK_USAGE_COUNT, 'usage-count']
 			when /\Adialog-refresh/
@@ -320,6 +324,8 @@ $drbd = Hash.new()
 				@q.push [:TK_NO_TCP_CORK, 'no-tcp-cork']
 			when /\Acpu-mask/
 				@q.push [:TK_CPU_MASK, 'cpu-mask']
+			when /\Aquorum/
+				@q.push [:TK_QUORUM, 'quorum']
 			when /\Averify-alg/
 				@q.push [:TK_VERIFY_ALG, 'verify-alg']	
 			when /\Afloating/
@@ -419,11 +425,11 @@ File.open($drbdcfg+".YaST2prepare", "r") do |file|
    file.each_line do |line| 
       line = line.gsub(/#.*$/, '').chomp
       if (line =~ /^skip\s+/) then in_skip = true end
-      if (line =~ /^\}/ && in_skip == true) then 
+      if (line =~ /^\}/ && in_skip == true)
       	 in_skip = false 
          line = ""
       end
-      if (! in_skip ) then
+      if (! in_skip )
          $configstr += line.gsub(/#.*$/, '').chomp
       end
    end
@@ -435,7 +441,7 @@ dp.parse($configstr)
 
 $debug = 0
 def errlog (str)
-    if $debug == 1 then
+    if $debug == 1
 	$stderr.puts str
     end
 end	
@@ -445,7 +451,7 @@ def convertYcp (str)
 end
 
 def doList (path)
-  if path.length == 0 then
+  if path.length == 0
     puts "[ \"global\", \"resources\", \"common\" ]"
     return
   end
@@ -455,11 +461,11 @@ def doList (path)
     path.each do |it|
 	  errlog it.to_s
 	  errlog "xxx"+res.to_s
-	  if res.has_key?(it.chomp) then
+	  if res.has_key?(it.chomp)
 		res = res[it.chomp]
       else
 	    errlog "quit as not key. " + it
-        puts "nil"
+        puts "false"
         return
       end
     end
@@ -467,12 +473,12 @@ def doList (path)
 	errlog "xxx"+res.to_s
 	errlog "xxx"+$drbd.to_s
 
-	if res == nil then
-		puts "nil"
+	if res == nil
+		puts "false"
 		return
 	end
 
-    if res.length == 0 then
+    if res.length == 0
        str = "[]"
     else
        str = "[ "
@@ -486,24 +492,24 @@ def doList (path)
 
   rescue NoMethodError
     errlog "quit as exceptions happends."
-    puts "nil"
+    puts "false"
     return
   end
 end
 
 def doRead(path)
-  if path.length == 0 then
-    puts "nil"
+  if path.length == 0
+    puts "false"
     return
   end
 
   res = $drbd
   begin
     path.each do |it|
-      if res.has_key?(it.chomp) then
+      if res.has_key?(it.chomp)
         res = res[it.chomp]
       else
-        puts "nil"
+        puts "false"
         return
       end
     end
@@ -511,7 +517,7 @@ def doRead(path)
     puts '"'+convertYcp(res.to_s)+'"'
     return 
   rescue NoMethodError
-    puts "nil"
+    puts "false"
     return
   end
 
@@ -519,7 +525,7 @@ end
 
 def stripQuote(path)
   path.each_index do |it|
-    if ! path[it] == "" and path[it][0] == '"' then
+    if ! path[it] == "" and path[it][0] == '"'
 	  path[it]=path[it][1..-2]
 	end
   end
@@ -530,53 +536,53 @@ def doWrite(path, args)
   errlog "write path is "+path.to_s
   errlog "write args is "+args
 
-  if path.length == 0 then
+  if path.length == 0
     commitChange()
-    puts "nil"
+    puts "true"
     return
   end
 
   path.each_index do |it|
     errlog "found "+path[it]
-    if path[it] != "" and path[it][0] == '"' then
+    if path[it] != "" and path[it][0] == '"'
 	  errlog path[it]+" is changed to "+path[it].chomp()[1..-2]
       path[it]=path[it].chomp()[1..-2]
     end
-	if path[it] != "" and path[it][0..1] == "\\\"" then
+	if path[it] != "" and path[it][0..1] == "\\\""
 		errlog path[it]+" is changed to "+path[it].chomp()[1..-3]+"\""
 		path[it]=path[it].chomp()[1..-3]+"\""
 	end
   end
 
-  if args[0..1] == "\\\"" then
+  if args[0..1] == "\\\""
     errlog "args is changed to " + args[1..-3] + "\""
 	args = args.chomp()[1..-3]+"\""
   end
 
   errlog path.to_s
 
-  if path.length < 2 then
-    puts "nil"
+  if path.length < 2
+    puts "false"
     return
   end
 
-  if path[-2].chomp == "on" then
+  if path[-2].chomp == "on"
     errlog "prepare to change the node name"
     res = $drbd
     res_b = res
     begin
       path.each do |it|
-        if res.has_key?(it.chomp) then
+        if res.has_key?(it.chomp)
           res_b = res
           res = res[it.chomp]
         else
-		  puts "nil"
+		  puts "false"
 		  return
         end
       end
 
       errlog "found the node name, change it"
-	  if args != "nil" then
+	  if args != "nil"
         res_b.delete(args)
         res_b[args] = res_b[path[-1].chomp]
         res_b.delete(path[-1].chomp)
@@ -584,17 +590,17 @@ def doWrite(path, args)
 	    res_b.delete(path[-1].chomp)
 	  end
       writeFile
-      puts "nil"
+      puts "true"
       return
     rescue
-      puts "nil"
+      puts "false"
       return
     end
 
-  elsif path[-2].chomp == "resources" then
+  elsif path[-2].chomp == "resources"
     errlog "prepare to change the resource name"
-    if $drbd["resources"].has_key?(path[-1].chomp) then
-	  if args != "nil" then
+    if $drbd["resources"].has_key?(path[-1].chomp)
+	  if args != "nil"
         $drbd["resources"].delete(args)
         $drbd["resources"][args] = $drbd["resources"][path[-1].chomp]
         $drbd["resources"].delete(path[-1].chomp)
@@ -602,7 +608,7 @@ def doWrite(path, args)
 	    $drbd["resources"].delete(path[-1].chomp)
       end	  
       writeFile
-      puts "nil"
+      puts "true"
       return
     end
 
@@ -612,7 +618,7 @@ def doWrite(path, args)
     res_b = res
     begin
       path.each do |it|
-        if res.has_key?(it.chomp) then
+        if res.has_key?(it.chomp)
           res_b = res
           res = res[it.chomp]
         else
@@ -623,16 +629,16 @@ def doWrite(path, args)
       end
 
       errlog "found the attribute name, change it"
-	  if args != "nil" then
+	  if args != "nil"
         res_b[path[-1].chomp] = args
 	  else
         res_b.delete(path[-1].chomp)
       end	
       writeFile
-      puts "nil"
+      puts "true"
       return
     rescue
-      puts "nil"
+      puts "false"
       return
     end
   end
@@ -647,11 +653,11 @@ def writeFile()
     file.puts "include \"/etc/drbd.d/global_common.conf\";"
 	File.open("/etc/drbd.d/global_common.conf.YaST2new", "w") do |gccfile|
 
-    if $drbd.has_key?("global") then
+    if $drbd.has_key?("global")
       gccfile.puts "global {"
       $drbd["global"].each_key do |key|
-	    if key == "disable-ip-verification" then
-		  if $drbd["global"][key] == "" or $drbd["global"][key] == "true" then
+	    if key == "disable-ip-verification" or key == "udev-always-use-vnr"
+		  if $drbd["global"][key] == "" or $drbd["global"][key] == "true"
 		    gccfile.puts "   "+key+";"
 		  end
 		else
@@ -661,10 +667,10 @@ def writeFile()
       gccfile.puts "}"
     end # <-- has global
 
-	if $drbd.has_key?("common") then
+	if $drbd.has_key?("common")
 		gccfile.puts "common {"
 
-        if $drbd["common"].has_key?("disk_s") then
+        if $drbd["common"].has_key?("disk_s")
           gccfile.puts "   disk {"
           $drbd["common"]["disk_s"].each_key do |key|
             gccfile.puts "      "+key+"\t"+$drbd["common"]["disk_s"][key]+";"
@@ -672,7 +678,7 @@ def writeFile()
           gccfile.puts "   }"
         end
 
-        if $drbd["common"].has_key?("syncer") then
+        if $drbd["common"].has_key?("syncer")
           gccfile.puts "   syncer {"
           $drbd["common"]["syncer"].each_key do |key|
             gccfile.puts "      "+key+"\t"+$drbd["common"]["syncer"][key]+";"
@@ -680,7 +686,7 @@ def writeFile()
           gccfile.puts "   }"
         end
 
-        if $drbd["common"].has_key?("net") then
+        if $drbd["common"].has_key?("net")
           gccfile.puts "   net {"
           $drbd["common"]["net"].each_key do |key|
             gccfile.puts "      "+key+"\t"+$drbd["common"]["net"][key]+";"
@@ -688,7 +694,7 @@ def writeFile()
           gccfile.puts "   }"
         end
 
-        if $drbd["common"].has_key?("startup") then
+        if $drbd["common"].has_key?("startup")
           gccfile.puts "   startup {"
           $drbd["common"]["startup"].each_key do |key|
             gccfile.puts "      "+key+"\t"+$drbd["common"]["startup"][key]+";"
@@ -696,7 +702,7 @@ def writeFile()
           gccfile.puts "   }"
         end
 
-        if $drbd["common"].has_key?("options") then
+        if $drbd["common"].has_key?("options")
           gccfile.puts "   options {"
           $drbd["common"]["options"].each_key do |key|
             gccfile.puts "      "+key+"\t"+$drbd["common"]["options"][key]+";"
@@ -704,7 +710,7 @@ def writeFile()
           gccfile.puts "   }"
         end
 
-        if $drbd["common"].has_key?("handlers") then
+        if $drbd["common"].has_key?("handlers")
           gccfile.puts "   handlers {"
           $drbd["common"]["handlers"].each_key do |key|
             gccfile.puts "      "+key+"\t"+$drbd["common"]["handlers"][key]+";"
@@ -717,7 +723,7 @@ def writeFile()
 
 	end # <-- end of File.open(gccfile)
 
-    if $drbd.has_key?("resources") then
+    if $drbd.has_key?("resources")
       $drbd["resources"].each_key do |res_name|
 
 	    file.puts "include \"/etc/drbd.d/"+res_name+".res\";" # <-- put the config of resource into a split file.
@@ -726,23 +732,23 @@ def writeFile()
 
         resfile.puts "resource "+res_name+" {"
 
-        if $drbd["resources"][res_name].has_key?("protocol") then
+        if $drbd["resources"][res_name].has_key?("protocol")
           resfile.puts "   protocol\t"+$drbd["resources"][res_name]["protocol"]+";"
         end
-		if $drbd["resources"][res_name].has_key?("device") then
+		if $drbd["resources"][res_name].has_key?("device")
           resfile.puts "   device\t"+$drbd["resources"][res_name]["device"]+";"
         end
-		if $drbd["resources"][res_name].has_key?("disk") then
+		if $drbd["resources"][res_name].has_key?("disk")
           resfile.puts "   disk\t"+$drbd["resources"][res_name]["disk"]+";"
         end
-		if $drbd["resources"][res_name].has_key?("meta-disk") then
+		if $drbd["resources"][res_name].has_key?("meta-disk")
           resfile.puts "   meta-disk\t"+$drbd["resources"][res_name]["meta-disk"]+";"
         end
-        if $drbd["resources"][res_name].has_key?("node-id") then
+        if $drbd["resources"][res_name].has_key?("node-id")
           resfile.puts "   node-id\t"+$drbd["resources"][res_name]["node-id"]+";"
         end
 
-        if $drbd["resources"][res_name].has_key?("disk_s") then
+        if $drbd["resources"][res_name].has_key?("disk_s")
           resfile.puts "   disk {"
           $drbd["resources"][res_name]["disk_s"].each_key do |key|
             resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["disk_s"][key]+";"
@@ -750,7 +756,7 @@ def writeFile()
           resfile.puts "   }"
         end
 
-        if $drbd["resources"][res_name].has_key?("syncer") then
+        if $drbd["resources"][res_name].has_key?("syncer")
           resfile.puts "   syncer {"
           $drbd["resources"][res_name]["syncer"].each_key do |key|
             resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["syncer"][key]+";"
@@ -758,7 +764,7 @@ def writeFile()
           resfile.puts "   }"
         end
 
-        if $drbd["resources"][res_name].has_key?("net") then
+        if $drbd["resources"][res_name].has_key?("net")
           resfile.puts "   net {"
           $drbd["resources"][res_name]["net"].each_key do |key|
             resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["net"][key]+";"
@@ -766,7 +772,7 @@ def writeFile()
           resfile.puts "   }"
         end
 
-        if $drbd["resources"][res_name].has_key?("startup") then
+        if $drbd["resources"][res_name].has_key?("startup")
           resfile.puts "   startup {"
           $drbd["resources"][res_name]["startup"].each_key do |key|
             resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["startup"][key]+";"
@@ -774,7 +780,7 @@ def writeFile()
           resfile.puts "   }"
         end
 
-        if $drbd["resources"][res_name].has_key?("options") then
+        if $drbd["resources"][res_name].has_key?("options")
           resfile.puts "   options {"
           $drbd["resources"][res_name]["options"].each_key do |key|
             resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["options"][key]+";"
@@ -782,7 +788,7 @@ def writeFile()
           resfile.puts "   }"
         end
 
-        if $drbd["resources"][res_name].has_key?("handlers") then
+        if $drbd["resources"][res_name].has_key?("handlers")
           resfile.puts "   handlers {"
           $drbd["resources"][res_name]["handlers"].each_key do |key|
             resfile.puts "      "+key+"\t"+$drbd["resources"][res_name]["handlers"][key]+";"
@@ -790,7 +796,7 @@ def writeFile()
           resfile.puts "   }"
         end
 
-        if $drbd["resources"][res_name].has_key?("connection-mesh") then
+        if $drbd["resources"][res_name].has_key?("connection-mesh")
           resfile.puts "   connection-mesh {"
           $drbd["resources"][res_name]["connection-mesh"].each_key do |key|
             if key == "net"
@@ -805,7 +811,7 @@ def writeFile()
           resfile.puts "   }"
         end
 
-        if $drbd["resources"][res_name].has_key?("on") then
+        if $drbd["resources"][res_name].has_key?("on")
           $drbd["resources"][res_name]["on"].each_key do |node_name|
             resfile.puts "   on "+node_name+" {"
             $drbd["resources"][res_name]["on"][node_name].each_key do |key|
@@ -815,7 +821,7 @@ def writeFile()
           end
         end
 
-		if $drbd["resources"][res_name].has_key?("stacked-on-top-of") then
+		if $drbd["resources"][res_name].has_key?("stacked-on-top-of")
 		  $drbd["resources"][res_name]["stacked-on-top-of"].each_key do |rn|
 		    resfile.puts "   stack_on_top_of "+rn+" {"
 			$drbd["resources"][res_name]["stacked-on-top-of"][rn].each_key do |key|
@@ -825,9 +831,9 @@ def writeFile()
 		  end
 		end
 
-		if $drbd["resources"][res_name].has_key?("floating") then
+		if $drbd["resources"][res_name].has_key?("floating")
 		  $drbd["resources"][res_name]["floating"].each_key do |ipp|
-		    if $drbd["resources"][res_name]["floating"][ipp] == {} then
+		    if $drbd["resources"][res_name]["floating"][ipp] == {}
 			  resfile.puts "   floating "+ipp+";"
 			else
 			  resfile.puts "   floating "+ipp+" {"
