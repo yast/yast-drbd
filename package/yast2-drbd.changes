@@ -1,13 +1,8 @@
 -------------------------------------------------------------------
-Tue Nov 21 08:33:05 UTC 2017 - nwang@suse.com
-
-- bsc#1069132, fix error message when write resource conf to disk.
-- Version 3.3.1
-
--------------------------------------------------------------------
 Tue Nov 21 08:30:41 UTC 2017 - nwang@suse.com
 
 - bsc#1069131, compat udev-always-with-vnr and quorum.
+- bsc#1069132, fix error message when write resource conf to disk.
 - Version 3.3.0
 
 -------------------------------------------------------------------
