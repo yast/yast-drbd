@@ -14,6 +14,7 @@ module Yast
 
       @disipver = "false"
       @disiohin = "false"
+      @udevusevnr = "true"
       @diagref = "0"
       @mc = "0"
     end
@@ -23,6 +24,11 @@ module Yast
         Drbd.global_config,
         "disable-ip-verification",
         "false"
+      )
+      @udevusevnr = Ops.get_string(
+        Drbd.global_config,
+        "udev-always-use-vnr",
+        "true"
       )
       @diagref = Ops.get_string(Drbd.global_config, "dialog-refresh", "1")
       @mc = Ops.get_string(Drbd.global_config, "minor-count", "5")
@@ -56,6 +62,14 @@ module Yast
               ),
               Left(
                 CheckBox(
+                  Id("UdevAlwaysUseVnr"),
+                  Opt(:notify),
+                  _("Udev Always Use VNR"),
+                  @udevusevnr == "true"
+                )
+              ),
+              Left(
+                CheckBox(
                   Id("DisableIpVerification"),
                   Opt(:notify),
                   _("Disable IP Verification"),
@@ -73,6 +87,9 @@ module Yast
       @disipver = Convert.to_boolean(
         UI.QueryWidget(Id("DisableIpVerification"), :Value)
       ) ? "true" : nil
+      @udevusevnr = Convert.to_boolean(
+        UI.QueryWidget(Id("UdevAlwaysUseVnr"), :Value)
+      ) ? "true" : nil
       @diagref = Builtins.sformat(
         "%1",
         UI.QueryWidget(Id("DialogRefresh"), :Value)
@@ -80,6 +97,7 @@ module Yast
       @mc = Builtins.sformat("%1", UI.QueryWidget(Id("MinorCount"), :Value))
 
       Ops.set(Drbd.global_config, "disable-ip-verification", @disipver)
+      Ops.set(Drbd.global_config, "udev-always-use-vnr", @udevusevnr)
       Ops.set(Drbd.global_config, "dialog-refresh", @diagref)
       Ops.set(Drbd.global_config, "minor-count", @mc)
 

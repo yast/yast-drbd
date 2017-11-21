@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Tue Nov 21 15:06:43 UTC 2017 - nwang@suse.com
+
+- Merge fixes of bsc#1069131 and bsc#1069132 to openSUSE TW and SLE15.
+- Version 4.0.0
+
+-------------------------------------------------------------------
+Tue Nov 21 08:30:41 UTC 2017 - nwang@suse.com
+
+- bsc#1069131, compat udev-always-with-vnr and quorum.
+- bsc#1069132, fix error message when write resource conf to disk.
+- Version 3.3.0
+
+-------------------------------------------------------------------
 Fri Sep  9 09:26:45 UTC 2016 - nwang@suse.com
 
 - bsc#997838, fix error of rename a exist drbd resource.
