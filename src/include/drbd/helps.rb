@@ -134,7 +134,13 @@ module Yast
           "<p><b><big>Global Configuration of DRBD</big></b></p>"
         ) +
           _(
-            "<p>Check <b>\"Udev Always Use VNR\"</b> treat implicit the same as explicit volumes, only one single volume with the implicit volume number 0</p>"
+            "<p>Check <b>\"Udev Always Use VNR\"</b> treat implicit define volume number the same\n" +
+              "                as explicit volumes. When udev asks drbdadm for a list of device\n" +
+              "                related symlinks, drbdadm would suggest symlinks with differing\n" +
+              "                naming conventions, depending on whether the resource has explicit\n" +
+              "                volume VNR { } definitions or only one single volume with the implicit\n" +
+              "                volume number 0.\n" +
+              "                This is enable by default, should be off for legacy backward compatibility.</p>"
           ) +
           _(
             "<p>Check <b>\"Disable IP Verification\"</b> to disable one of drbdadm's sanity check</p>"
