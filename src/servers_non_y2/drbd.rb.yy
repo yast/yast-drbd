@@ -465,7 +465,7 @@ def doList (path)
 		res = res[it.chomp]
       else
 	    errlog "quit as not key. " + it
-        puts "nil"
+        puts "false"
         return
       end
     end
@@ -474,7 +474,7 @@ def doList (path)
 	errlog "xxx"+$drbd.to_s
 
 	if res == nil then
-		puts "nil"
+		puts "false"
 		return
 	end
 
@@ -492,14 +492,14 @@ def doList (path)
 
   rescue NoMethodError
     errlog "quit as exceptions happends."
-    puts "nil"
+    puts "false"
     return
   end
 end
 
 def doRead(path)
   if path.length == 0 then
-    puts "nil"
+    puts "false"
     return
   end
 
@@ -509,7 +509,7 @@ def doRead(path)
       if res.has_key?(it.chomp) then
         res = res[it.chomp]
       else
-        puts "nil"
+        puts "false"
         return
       end
     end
@@ -517,7 +517,7 @@ def doRead(path)
     puts '"'+convertYcp(res.to_s)+'"'
     return 
   rescue NoMethodError
-    puts "nil"
+    puts "false"
     return
   end
 
@@ -538,7 +538,7 @@ def doWrite(path, args)
 
   if path.length == 0 then
     commitChange()
-    puts "nil"
+    puts "true"
     return
   end
 
@@ -562,7 +562,7 @@ def doWrite(path, args)
   errlog path.to_s
 
   if path.length < 2 then
-    puts "nil"
+    puts "false"
     return
   end
 
@@ -576,7 +576,7 @@ def doWrite(path, args)
           res_b = res
           res = res[it.chomp]
         else
-		  puts "nil"
+		  puts "false"
 		  return
         end
       end
@@ -590,10 +590,10 @@ def doWrite(path, args)
 	    res_b.delete(path[-1].chomp)
 	  end
       writeFile
-      puts "nil"
+      puts "true"
       return
     rescue
-      puts "nil"
+      puts "false"
       return
     end
 
@@ -608,7 +608,7 @@ def doWrite(path, args)
 	    $drbd["resources"].delete(path[-1].chomp)
       end	  
       writeFile
-      puts "nil"
+      puts "true"
       return
     end
 
@@ -635,10 +635,10 @@ def doWrite(path, args)
         res_b.delete(path[-1].chomp)
       end	
       writeFile
-      puts "nil"
+      puts "true"
       return
     rescue
-      puts "nil"
+      puts "false"
       return
     end
   end
