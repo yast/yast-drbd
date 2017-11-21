@@ -134,31 +134,27 @@ module Yast
           "<p><b><big>Global Configuration of DRBD</big></b></p>"
         ) +
           _(
-            "<p>Check <b>\"Udev Always Use VNR\"</b> treat implicit define volume number the same\n" +
-              "                as explicit volumes. When udev asks drbdadm for a list of device\n" +
-              "                related symlinks, drbdadm would suggest symlinks with differing\n" +
-              "                naming conventions, depending on whether the resource has explicit\n" +
-              "                volume VNR { } definitions or only one single volume with the implicit\n" +
-              "                volume number 0.\n" +
-              "                This is enable by default, should be off for legacy backward compatibility.</p>"
+            "<p>Check <b>\"Udev Always Use VNR\"</b> treat implicit define volume number the same " \
+            "as explicit volumes. When udev asks drbdadm for a list of device related symlinks, " \
+            "drbdadm would suggest symlinks with differing naming conventions, depending on whether " \
+            "the resource has explicit volume VNR { } definitions or only one single volume with the implicit " \
+            "volume number 0." \
+            "This is enable by default, should be off for legacy backward compatibility.</p>"
           ) +
           _(
             "<p>Check <b>\"Disable IP Verification\"</b> to disable one of drbdadm's sanity check</p>"
           ) +
           _(
-            "<p><b>Dialog Refresh:</b> The user dialog counts and displays the seconds it waited so\n" +
-              "                far. You might want to disable this if you have the console\n" +
-              "                of your server connected to a serial terminal server with\n" +
-              "                limited logging capacity.\n" +
-              "                The Dialog will print the count each 'dialog-refresh' seconds,\n" +
-              "                set it to 0 to disable redrawing completely. </p>"
+            "<p><b>Dialog Refresh:</b> The user dialog counts and displays the seconds it waited so " \
+              "far. You might want to disable this if you have the console " \
+              "of your server connected to a serial terminal server with limited logging capacity. " \
+              "The Dialog will print the count each 'dialog-refresh' seconds, " \
+              "set it to 0 to disable redrawing completely. </p>"
           ) +
           _(
-            "<p><b>Minor Count:</b>\n" +
-              "           use this if you want to define more resources later\n" +
-              "           without reloading the module.\n" +
-              "           by default we load the module with exactly as many devices\n" +
-              "           as configured mentioned in this file. </p>"
+            "<p><b>Minor Count:</b> " \
+              "use this if you want to define more resources later without reloading the module. " \
+              "by default we load the module with exactly as many devices as configured mentioned in this file. </p>"
           ),
         # Summary dialog help 1/3
         "summary"       => _(
