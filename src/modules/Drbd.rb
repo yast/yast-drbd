@@ -69,7 +69,7 @@ module Yast
           "use-rle"
         ],
         "startup" => ["wfc-timeout", "degr-wfc-timeout"],
-        "options" => ["cpu-mask", "on-no-data-accessible"],
+        "options" => ["cpu-mask", "on-no-data-accessible", "quorum"],
         "connection-mesh" => ["hosts"],
       }
       @local_hostname = ""
