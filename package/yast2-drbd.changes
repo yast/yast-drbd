@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 26 06:58:42 UTC 2018 - nwang@suse.com
+
+- SuSEFirewall2 replace by firewalld(fate#323460)
+- Version 4.0.1
+
+-------------------------------------------------------------------
 Tue Nov 21 15:06:43 UTC 2017 - nwang@suse.com
 
 - Merge fixes of bsc#1069131 and bsc#1069132 to openSUSE TW and SLE15.

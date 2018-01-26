@@ -17,22 +17,24 @@
 
 
 Name:           yast2-drbd
-Version:        4.0.0
+Version:        4.0.1
 Release:        0
 
-%define _fwdefdir /etc/sysconfig/SuSEfirewall2.d/services
+%define _fwdefdir %{_libexecdir}/firewalld/services
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
-Source1:        drbd-cluster.fwd
+Source1:        drbd.firewalld.xml
 
 BuildRequires:  perl-XML-Writer
 BuildRequires:  ruby
 BuildRequires:  update-desktop-files
-BuildRequires:  yast2
-BuildRequires:  yast2-devtools
+# SuSEFirewall2 replaced by Firewalld(fate#323460)
+BuildRequires:  yast2 >= 4.0.37
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  yast2-testsuite
-Requires:       yast2
+BuildRequires:  firewall-macros
+# SuSEFirewall2 replaced by Firewalld(fate#323460)
+Requires:       yast2 >= 4.0.37
 Requires:       drbd >= 9.0
 BuildArch:      noarch
 Requires:       yast2-ruby-bindings >= 1.0.0
@@ -56,7 +58,10 @@ used on high availability (HA) clusters.
 %yast_install
 
 mkdir -p $RPM_BUILD_ROOT/%{_fwdefdir}
-install -m 644 %{S:1} $RPM_BUILD_ROOT/%{_fwdefdir}/drbd
+install -m 644 %{S:1} $RPM_BUILD_ROOT/%{_fwdefdir}/drbd.xml
+
+%post
+%firewalld_reload
 
 %files
 %defattr(-,root,root)
@@ -69,6 +74,8 @@ install -m 644 %{S:1} $RPM_BUILD_ROOT/%{_fwdefdir}/drbd
 %{yast_agentdir}/ag_drbd
 %{yast_agentdir}/drbd.rb.yy
 %doc %{yast_docdir}
-%config %{_fwdefdir}/drbd
+%dir %{_libexecdir}/firewalld
+%dir %{_fwdefdir}
+%{_fwdefdir}/drbd.xml
 
 %changelog

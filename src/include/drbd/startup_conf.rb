@@ -74,9 +74,9 @@ module Yast
       # Just a dialog
       firewall_widget = CWMFirewallInterfaces.CreateOpenFirewallWidget(
         {
-          #servie:drbd is the  name of /etc/sysconfig/SuSEfirewall2.d/services/drbd
+          #drbd is the name of /usr/lib/firewalld.d/services/drbd.xml
           "services"        => [
-            "service:drbd"
+            "drbd"
           ],
           "display_details" => true
         }

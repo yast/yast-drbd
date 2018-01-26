@@ -29,6 +29,7 @@
 # Representation of the configuration of drbd.
 # Input and output routines.
 require "yast"
+require "y2firewall/firewalld"
 
 module Yast
   class DrbdClass < Module
@@ -40,8 +41,6 @@ module Yast
       Yast.import "Report"
       Yast.import "Summary"
       Yast.import "Service"
-      Yast.import "SuSEFirewall"
-      Yast.import "SuSEFirewallServices"
 
       Yast.import "Mode"
       Yast.import "PackageSystem"
@@ -198,14 +197,14 @@ module Yast
           _("Read resources"),
           _("Read LVM configurations"),
           _("Read daemon status"),
-          _("Read SuSEFirewall Settings")
+          _("Read Firewall Settings")
         ],
         [
           _("Reading global settings..."),
           _("Reading resources..."),
           _("Reading LVM configurations..."),
           _("Reading daemon status..."),
-          _("Read SuSEFirewall Settings"),
+          _("Read Firewall Settings"),
           _("Finished")
         ],
         ""
@@ -428,8 +427,8 @@ module Yast
 
       Progress.NextStage
 
-      # read the SuSEfirewall2
-      SuSEFirewall.Read
+      # read the firewall
+      firewalld.read
 
       # Progress finished
       Progress.NextStage
@@ -653,14 +652,14 @@ module Yast
           _("Write resources"),
           _("Write LVM configurations"),
           _("Set daemon status"),
-          _("Write the SuSEfirewall settings")
+          _("Write the firewall settings")
         ],
         [
           _("Writing global settings..."),
           _("Writing resources..."),
           _("Writing LVM configurations..."),
           _("Setting daemon status..."),
-          _("Writing the SuSEFirewall settings"),
+          _("Writing the Firewall settings"),
           _("Finished")
         ],
         ""
@@ -771,12 +770,13 @@ module Yast
       finding_local("port")
 
       # DRBD only use TCP port
-      SuSEFirewallServices.SetNeededPortsAndProtocols(
-        "service:drbd",
-        { "tcp_ports" => @local_ports }
-      )
+      begin
+        Y2Firewall::Firewalld::Service.modify_ports(name: "drbd", tcp_ports: @local_ports)
+      rescue Y2Firewall::Firewalld::Service::NotFound
+        y2error("Firewalld 'drbd' service is not available.")
+      end
 
-      SuSEFirewall.Write
+      firewalld.write
 
       # Progress finished
       Progress.NextStage
@@ -798,6 +798,13 @@ module Yast
     publish :variable => :global_error, :type => "string"
     publish :function => :Read, :type => "boolean ()"
     publish :function => :Write, :type => "boolean ()"
+
+  private
+
+    def firewalld
+      Y2Firewall:Firewalld.instance
+    end
+
   end
 
   Drbd = DrbdClass.new
