@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 23 09:52:06 UTC 2018 - nwang@suse.com
+
+- bsc#1082507, add missing colon for ruby instance
+- Version 4.0.2
+
+-------------------------------------------------------------------
 Fri Jan 26 06:58:42 UTC 2018 - nwang@suse.com
 
 - SuSEFirewall2 replace by firewalld(fate#323460)

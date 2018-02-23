@@ -802,7 +802,7 @@ module Yast
   private
 
     def firewalld
-      Y2Firewall:Firewalld.instance
+      Y2Firewall::Firewalld.instance
     end
 
   end
