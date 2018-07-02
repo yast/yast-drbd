@@ -14,6 +14,7 @@ X-SuSE-YaST-AutoInst=all
 X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=drbd
+X-SuSE-YaST-Keywords=high,availability,ha,storage,block,device,cluster
 
 Icon=yast-iscsi-client
 Exec=/sbin/yast2 drbd 
