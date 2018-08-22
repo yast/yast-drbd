@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug 22 16:14:46 CEST 2018 - schubi@suse.de
+
+- Switched license in spec file from SPDX2 to SPDX3 format.
+
+-------------------------------------------------------------------
 Thu Jun 28 14:17:10 CEST 2018 - schubi@suse.de
 
 - Added additional searchkeys to desktop file (fate#321043).
