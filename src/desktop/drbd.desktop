@@ -16,7 +16,7 @@ X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=drbd
 X-SuSE-YaST-Keywords=high,availability,ha,storage,block,device,cluster
 
-Icon=yast-iscsi-client
+Icon=yast-drbd
 Exec=/sbin/yast2 drbd 
 
 Name=DRBD

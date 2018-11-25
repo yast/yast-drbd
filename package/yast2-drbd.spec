@@ -17,7 +17,7 @@
 
 
 Name:           yast2-drbd
-Version:        4.0.3
+Version:        4.1.0
 Release:        0
 
 %define _fwdefdir %{_libexecdir}/firewalld/services
@@ -78,5 +78,6 @@ install -m 644 %{S:1} $RPM_BUILD_ROOT/%{_fwdefdir}/drbd.xml
 %dir %{_libexecdir}/firewalld
 %dir %{_fwdefdir}
 %{_fwdefdir}/drbd.xml
+%{_datadir}/icons/*
 
 %changelog
