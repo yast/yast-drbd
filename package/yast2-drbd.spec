@@ -78,6 +78,6 @@ install -m 644 %{S:1} $RPM_BUILD_ROOT/%{_fwdefdir}/drbd.xml
 %dir %{_libexecdir}/firewalld
 %dir %{_fwdefdir}
 %{_fwdefdir}/drbd.xml
-%{_datadir}/icons/*
+%{yast_icondir}
 
 %changelog
