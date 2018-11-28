@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient id="d" x1="3" x2="29" y1="7" y2="7" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#a51d2d" offset="0"/>
+<stop stop-color="#e01b24" offset=".076923"/>
+<stop stop-color="#a51d2d" offset=".49935"/>
+<stop stop-color="#a51d2d" offset="1"/>
+</linearGradient>
+<linearGradient id="c" x1="3" x2="29" y1="13" y2="13" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#e5a50a" offset="0"/>
+<stop stop-color="#f6d32d" offset=".076923"/>
+<stop stop-color="#e5a50a" offset=".49935"/>
+<stop stop-color="#e5a50a" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="3" x2="29" y1="19" y2="19" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#26a269" offset="0"/>
+<stop stop-color="#33d17a" offset=".076923"/>
+<stop stop-color="#26a269" offset=".49935"/>
+<stop stop-color="#26a269" offset="1"/>
+</linearGradient>
+<linearGradient id="a" x1="3" x2="29" y1="25" y2="25" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0997c5" offset="0"/>
+<stop stop-color="#0bbaf4" offset=".076923"/>
+<stop stop-color="#0997c5" offset=".49935"/>
+<stop stop-color="#0997c5" offset="1"/>
+</linearGradient>
+</defs>
+<rect x="12" y="80" width="104" height="40" rx="52" ry="12" fill="url(#a)"/>
+<rect x="12" y="80" width="104" height="24" rx="52" ry="12" fill="#0bbaf4"/>
+<rect x="12" y="56" width="104" height="40" rx="52" ry="12" fill="url(#b)"/>
+<rect x="12" y="56" width="104" height="24" rx="52" ry="12" fill="#33d17a"/>
+<rect x="12" y="32" width="104" height="40" rx="52" ry="12" fill="url(#c)"/>
+<rect x="12" y="32" width="104" height="24" rx="52" ry="12" fill="#f6d32d"/>
+<rect x="12" y="8" width="104" height="40" rx="52" ry="12" fill="url(#d)"/>
+<rect x="12" y="8" width="104" height="24" rx="52" ry="12" fill="#e01b24"/>
+</svg>
