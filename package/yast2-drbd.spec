@@ -17,7 +17,7 @@
 
 
 Name:           yast2-drbd
-Version:        4.1.0
+Version:        4.2.0
 Release:        0
 
 %define _fwdefdir %{_libexecdir}/firewalld/services
@@ -25,13 +25,11 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 Source1:        drbd.firewalld.xml
 
-BuildRequires:  perl-XML-Writer
 BuildRequires:  ruby
 BuildRequires:  update-desktop-files
 # SuSEFirewall2 replaced by Firewalld(fate#323460)
 BuildRequires:  yast2 >= 4.0.39
 BuildRequires:  yast2-devtools >= 3.1.10
-BuildRequires:  yast2-testsuite
 BuildRequires:  firewall-macros
 # SuSEFirewall2 replaced by Firewalld(fate#323460)
 Requires:       yast2 >= 4.0.39
