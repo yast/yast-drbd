@@ -18,7 +18,7 @@
 %define _fwdefdir %{_libexecdir}/firewalld/services
 
 Name:           yast2-drbd
-Version:        4.2.0
+Version:        4.2.1
 Release:        0
 Summary:        YaST2 - DRBD Configuration
 License:        GPL-2.0-or-later
