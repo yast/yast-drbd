@@ -32,7 +32,7 @@ BuildRequires:  ruby
 BuildRequires:  update-desktop-files
 # SuSEFirewall2 replaced by Firewalld(fate#323460)
 BuildRequires:  yast2 >= 4.0.39
-BuildRequires:  yast2-devtools >= 3.1.10
+BuildRequires:  yast2-devtools >= 4.2.2
 BuildRequires:  firewall-macros
 
 # SuSEFirewall2 replaced by Firewalld(fate#323460)
