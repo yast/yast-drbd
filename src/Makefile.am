@@ -27,7 +27,7 @@ scrconf_DATA = \
   scrconf/drbd_lvm.scr
 
 desktop_DATA = \
-  desktop/drbd.desktop
+  desktop/org.opensuse.yast.DRBD.desktop
 
 symbolicdir = @icondir@/hicolor/symbolic/apps
 symbolic_DATA = \

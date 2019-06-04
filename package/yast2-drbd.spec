@@ -12,16 +12,19 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
+%define _fwdefdir %{_libexecdir}/firewalld/services
 
 Name:           yast2-drbd
-Version:        4.2.0
+Version:        4.2.1
 Release:        0
+Summary:        YaST2 - DRBD Configuration
+License:        GPL-2.0-or-later
+Group:          System/YaST
+Url:            https://github.com/yast/yast-drbd
 
-%define _fwdefdir %{_libexecdir}/firewalld/services
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 Source1:        drbd.firewalld.xml
 
@@ -29,17 +32,15 @@ BuildRequires:  ruby
 BuildRequires:  update-desktop-files
 # SuSEFirewall2 replaced by Firewalld(fate#323460)
 BuildRequires:  yast2 >= 4.0.39
-BuildRequires:  yast2-devtools >= 3.1.10
+BuildRequires:  yast2-devtools >= 4.2.2
 BuildRequires:  firewall-macros
+
 # SuSEFirewall2 replaced by Firewalld(fate#323460)
 Requires:       yast2 >= 4.0.39
 Requires:       drbd >= 9.0
-BuildArch:      noarch
 Requires:       yast2-ruby-bindings >= 1.0.0
 
-Summary:        YaST2 - DRBD Configuration
-License:        GPL-2.0-or-later
-Group:          System/YaST
+BuildArch:      noarch
 
 %description
 YaST2 - Configuration of Distributed Replicated Block Devices. With
@@ -47,30 +48,29 @@ this module you can configure a distributed storage system, frequently
 used on high availability (HA) clusters.
 
 %prep
-%setup -n %{name}-%{version}
+%setup -q
 
 %build
 %yast_build
 
 %install
 %yast_install
+%yast_metainfo
 
-mkdir -p $RPM_BUILD_ROOT/%{_fwdefdir}
-install -m 644 %{S:1} $RPM_BUILD_ROOT/%{_fwdefdir}/drbd.xml
+mkdir -p %{buildroot}%{_fwdefdir}
+install -m 644 %{S:1} %{buildroot}%{_fwdefdir}/drbd.xml
 
 %post
 %firewalld_reload
 
 %files
-%defattr(-,root,root)
-%{yast_yncludedir}/drbd/
-%{yast_clientdir}/drbd.rb
-%{yast_clientdir}/drbd_*.rb
-%{yast_moduledir}/Drbd.*
-%{yast_desktopdir}/drbd.desktop
-%{yast_scrconfdir}/*.scr
-%{yast_agentdir}/ag_drbd
-%{yast_agentdir}/drbd.rb.yy
+%{yast_yncludedir}
+%{yast_clientdir}
+%{yast_moduledir}
+%{yast_desktopdir}
+%{yast_metainfodir}
+%{yast_scrconfdir}
+%{yast_agentdir}
 %doc %{yast_docdir}
 %license COPYING
 %dir %{_libexecdir}/firewalld

@@ -19,6 +19,7 @@ X-SuSE-YaST-Keywords=high,availability,ha,storage,block,device,cluster
 Icon=yast-drbd
 Exec=/sbin/yast2 drbd 
 
-Name=DRBD
-GenericName=Configure the DRBD(Distributed Replicated Block Device) device
+Name=YaST DRBD
+GenericName=DRBD
+Comment=Configure the DRBD(Distributed Replicated Block Device) device
 X-KDE-SubstituteUID=true
