@@ -79,7 +79,7 @@ module Yast
       end
 
       Wizard.CreateTree(tree, "DRBD")
-      Wizard.SetDesktopTitleAndIcon("org.openSUSE.YaST.DRBD")
+      Wizard.SetDesktopTitleAndIcon("org.opensuse.yast.DRBD")
 
       # Buttons redefinition
       Wizard.SetNextButton(:next, Label.FinishButton)
