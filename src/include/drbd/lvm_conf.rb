@@ -14,18 +14,11 @@ module Yast
 
       @filter = ""
       @cache = true
-      @lvmetad = false
 
     end
 
     def lvm_conf_Read
       @filter = Ops.get_string( Drbd.lvm_config, "filter", "" )
-      lvmetad_str = Ops.get_string( Drbd.lvm_config, "use_lvmetad", "0" )
-      if lvmetad_str == "0"
-        @lvmetad = false
-      else
-        @lvmetad = true
-      end
 
       cache_str = Ops.get_string( Drbd.lvm_config, "write_cache_state", "0" )
       if cache_str == "0"
@@ -81,37 +74,10 @@ module Yast
         )
       )
 
-      _Tlvmetad = Frame(
-        _("Use lvmetad for LVM"),
-        Left(
-          HSquash(
-            VBox(
-              VBox(
-                Left(
-                  CheckBox(
-                    Id(:LVMetad),
-                    Opt(:notify),
-                    _("Use LVM metad"),
-                    @lvmetad
-                  )
-                ),
-                Left(Label(
-                  _(
-                    "Warning!  Should not use lvmetad for cluster."
-                  )
-                )),
-              ),
-            )
-          )
-        )
-      )
-
       VBox(
         _Tfilter,
         VSpacing(1),
         _Tcache,
-        VSpacing(1),
-        _Tlvmetad,
         VStretch()
       )
     end
@@ -126,15 +92,7 @@ module Yast
         cache_str = "0"
       end
 
-      @lvmetad = UI.QueryWidget(Id(:LVMetad), :Value)
-      if @lvmetad
-        lvmetad_str = "1"
-      else
-        lvmetad_str = "0"
-      end
-
       Ops.set(Drbd.lvm_config, "write_cache_state", cache_str)
-      Ops.set(Drbd.lvm_config, "use_lvmetad", lvmetad_str)
 
       Ops.set(Drbd.lvm_config, "filter", @filter)
 
