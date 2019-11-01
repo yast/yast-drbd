@@ -126,8 +126,6 @@ module Yast
               "\n" +
               "\t\t<p><b>LVM cache</b>: Enable/turn on writing the LVM cache is default. Should disable the LVM cache when combined drbd with LVM.</p>\n" +
               "\n" +
-              "\t\t<p><b>LVMetad</b>: When lvmetad is enabled, the volume group metadata and PV state flags are obtained from the lvmetad instance and no scanning is done by the individual commands. Because lvmetad's cache cannot be synchronized between nodes, users are advised to disable lvmetad in cluster environments.</p>\n" +
-              "\n" +
               "\t\t"
           ),
         "global_conf"   => _(
