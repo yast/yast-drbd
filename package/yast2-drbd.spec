@@ -73,7 +73,7 @@ install -m 644 %{S:1} %{buildroot}%{_fwdefdir}/drbd.xml
 %{yast_agentdir}
 %doc %{yast_docdir}
 %license COPYING
-%dir %{_libexecdir}/firewalld
+%dir %{_prefix}/lib/firewalld
 %dir %{_fwdefdir}
 %{_fwdefdir}/drbd.xml
 %{yast_icondir}
