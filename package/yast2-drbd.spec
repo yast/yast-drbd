@@ -18,7 +18,7 @@
 %define _fwdefdir %{_libexecdir}/firewalld/services
 
 Name:           yast2-drbd
-Version:        4.3.0
+Version:        4.3.1
 Release:        0
 Summary:        YaST2 - DRBD Configuration
 License:        GPL-2.0-or-later
@@ -39,6 +39,9 @@ BuildRequires:  firewall-macros
 Requires:       yast2 >= 4.0.39
 Requires:       drbd >= 9.0
 Requires:       yast2-ruby-bindings >= 1.0.0
+
+Supplements:    autoyast(drbd)
+
 
 BuildArch:      noarch
 
