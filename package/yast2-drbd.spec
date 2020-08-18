@@ -32,6 +32,7 @@ BuildRequires:  update-desktop-files
 # SuSEFirewall2 replaced by Firewalld(fate#323460)
 BuildRequires:  yast2 >= 4.0.39
 BuildRequires:  yast2-devtools >= 4.2.2
+Requires:       yast2 >= 4.0.39
 Requires:       drbd >= 9.0
 Requires:       yast2-ruby-bindings >= 1.0.0
 Supplements:    autoyast(drbd)
