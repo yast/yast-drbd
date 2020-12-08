@@ -1,5 +1,6 @@
 # YaST - The DRBD Module #
 
-[![Travis Build](https://travis-ci.org/yast/yast-drbd.svg?branch=master)](https://travis-ci.org/yast/yast-drbd)
-[![Jenkins Build](http://img.shields.io/jenkins/s/https/ci.opensuse.org/yast-drbd-master.svg)](https://ci.opensuse.org/view/Yast/job/yast-drbd-master/)
-
+[![Workflow Status](https://github.com/yast/yast-drbd/workflows/CI/badge.svg?branch=master)](
+https://github.com/yast/yast-drbd/actions?query=branch%3Amaster)
+[![Jenkins Status](https://ci.opensuse.org/buildStatus/icon?job=yast-yast-drbd-master)](
+https://ci.opensuse.org/view/Yast/job/yast-yast-drbd-master/)
