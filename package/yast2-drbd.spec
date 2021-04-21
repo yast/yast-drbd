@@ -1,7 +1,7 @@
 #
 # spec file for package yast2-drbd
 #
-# Copyright (c) 2020 SUSE LLC
+# Copyright (c) 2021 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -18,7 +18,7 @@
 
 %define _fwdefdir %{_prefix}/lib/firewalld/services
 Name:           yast2-drbd
-Version:        4.4.0
+Version:        4.4.1
 Release:        0
 Summary:        YaST2 - DRBD Configuration
 License:        GPL-2.0-or-later
@@ -32,8 +32,8 @@ BuildRequires:  update-desktop-files
 # SuSEFirewall2 replaced by Firewalld(fate#323460)
 BuildRequires:  yast2 >= 4.0.39
 BuildRequires:  yast2-devtools >= 4.2.2
-Requires:       yast2 >= 4.0.39
 Requires:       drbd >= 9.0
+Requires:       yast2 >= 4.0.39
 Requires:       yast2-ruby-bindings >= 1.0.0
 Supplements:    autoyast(drbd)
 BuildArch:      noarch
@@ -67,7 +67,6 @@ install -m 644 %{SOURCE1} %{buildroot}%{_fwdefdir}/drbd.xml
 %{yast_metainfodir}
 %{yast_scrconfdir}
 %{yast_agentdir}
-%doc %{yast_docdir}
 %license COPYING
 %dir %{_prefix}/lib/firewalld
 %dir %{_fwdefdir}
