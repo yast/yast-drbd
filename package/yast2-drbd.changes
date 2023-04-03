@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 03 15:01:34 UTC 2023 - Xin Liang <xliang@suse.com>
+
+- Validate DRBD Device name (bsc#1207952)
+- Bump version to 4.5.1
+
+-------------------------------------------------------------------
 Wed Apr 06 13:24:58 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
 
 - Bump version to 4.5.0 (bsc#1198109)
