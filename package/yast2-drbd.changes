@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr  3 09:50:00 UTC 2023 - Xin Liang <xliang@suse.com>
+
+- Validate DRBD Device name (bsc#1207952)
+- 4.4.3
+
+-------------------------------------------------------------------
 Fri May 21 10:12:51 UTC 2021 - Dominique Leuenberger <dimstar@opensuse.org>
 
 - Do not make package noarch: we require a dependency (drbd) that
