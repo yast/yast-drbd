@@ -609,6 +609,16 @@ module Yast
       deep_copy(res_config)
     end
 
+    def ValidDeviceName
+      dev_name = UI.QueryWidget(Id(:n_devc), :Value).to_s
+      if ! (dev_name =~ /(\/dev\/|)(drbd0|drbd[1-9][0-9]*)$/)
+        Popup.Warning(_("Valid \"Device\" value should be:\n\
+- /dev/drbd0\n- /dev/drbd[1-9][0-9]*\n- drbd0\n- drbd[1-9][0-9]*"))
+        return false
+      end
+      true
+    end
+
     def ValidIPaddress
       addressField = Convert.to_string(UI.QueryWidget(Id(:n_addr), :Value))
 
@@ -739,6 +749,12 @@ module Yast
           end
 
           if ! ValidIPaddress()
+              invalid = true
+              ret = nil
+              next
+          end
+
+	  if ! ValidDeviceName()
               invalid = true
               ret = nil
               next
